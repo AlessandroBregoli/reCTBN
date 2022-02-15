@@ -1,3 +1,8 @@
+mod node;
+mod params;
+mod network;
+mod ctbn;
+
 #[cfg(test)]
 mod tests {
     #[test]
