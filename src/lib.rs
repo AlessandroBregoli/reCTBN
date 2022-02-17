@@ -2,6 +2,7 @@ mod node;
 mod params;
 mod network;
 mod ctbn;
+mod tools;
 
 #[cfg(test)]
 mod tests {
