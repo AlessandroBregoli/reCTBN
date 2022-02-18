@@ -2,6 +2,7 @@ use ndarray::prelude::*;
 use petgraph::prelude::*;
 use crate::network;
 use crate::node;
+use crate::params;
 use crate::params::Params;
 
 pub struct Trajectory {
@@ -14,7 +15,7 @@ pub struct Dataset {
 }
 
 
-fn trajectory_generator(net: &Box<dyn network::Network>, n_trajectories: u64, t_end: f64) -> Dataset {
+pub fn trajectory_generator(net: &Box<dyn network::Network>, n_trajectories: u64, t_end: f64) -> Dataset {
     let mut dataset = Dataset{
         trajectories: Vec::new()
     };
@@ -23,9 +24,9 @@ fn trajectory_generator(net: &Box<dyn network::Network>, n_trajectories: u64, t_
     for _ in 0..n_trajectories {
         let t = 0.0;
         let mut time: Vec<f64> = Vec::new();
-        let mut events: Vec<Vec<u32>> = Vec::new();
-        let mut current_state: Vec<u32> = node_idx.iter().map(|x| {
-            match net.get_node_weight(&x).get_params() {
+        let mut events: Vec<Vec<params::StateType>> = Vec::new();
+        let mut current_state: Vec<params::StateType> = node_idx.iter().map(|x| {
+            match net.get_node(&x).get_params() {
                 node::NodeType::DiscreteStatesContinousTime(params) => 
                     params.get_random_state_uniform()
 }

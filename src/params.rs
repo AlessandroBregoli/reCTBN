@@ -17,8 +17,11 @@ pub trait Params {
     fn get_random_state_uniform(&self) -> StateType;
     fn get_random_residence_time(&self, state: usize, u: usize) -> Result<f64, ParamsError>;
     fn get_random_state(&self, state: usize, u:usize) -> Result<StateType, ParamsError>;
+    fn get_reserved_space_as_parent(&self) -> usize;
+    fn state_to_index(&self, state: &StateType) -> usize;
 }
 
+#[derive(Clone)]
 pub enum StateType {
     Discrete(u32)
 }
@@ -90,5 +93,16 @@ impl Params for DiscreteStatesContinousTimeParams {
            },
            Option::None => Err(ParamsError::ParametersNotInitialized(String::from("CIM not initialized")))
        }
+    }
+
+
+    fn get_reserved_space_as_parent(&self) -> usize {
+        self.domain.len()
+    }
+
+    fn state_to_index(&self, state: &StateType) -> usize {
+        match state {
+            StateType::Discrete(val) => val.clone() as usize
+        }
     }
 }
