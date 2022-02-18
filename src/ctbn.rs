@@ -13,25 +13,15 @@ pub struct CtbnNetwork {
 }
 
 impl network::Network for CtbnNetwork {
-    fn add_node(&mut self, n:  node::Node) -> Result<petgraph::graph::NodeIndex, network::NetworkError> {
-        match &n.params {
-            node::ParamsType::DiscreteStatesContinousTime(_) => {
-                if self.network.node_weights().any(|x| x.label == n.label) {
-                    //TODO: Insert a better error description
-                    return Err(network::NetworkError::NodeInsertionError(String::from("Label already used")));
-                }
-                let idx = self.network.add_node(n);
-                Ok(idx)
-            },
-            //TODO: Insert a better error description
-            _ => Err(network::NetworkError::NodeInsertionError(String::from("unsupported node")))
-        }
+    fn add_node(&mut self, mut n:  node::Node) -> Result<petgraph::graph::NodeIndex, network::NetworkError> {
+        n.reset_params();
+        Ok(self.network.add_node(n))        
     }
 
     fn add_edge(&mut self, parent: &petgraph::stable_graph::NodeIndex, child: &petgraph::graph::NodeIndex) {
         self.network.add_edge(parent.clone(), child.clone(), {});
-        let mut p = self.network.node_weight(child.clone());
-        match p.
+        let mut p = self.network.node_weight_mut(child.clone()).unwrap();
+        p.reset_params();
     }
 
     fn get_node_indices(&self) -> petgraph::stable_graph::NodeIndices<node::Node>{

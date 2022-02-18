@@ -1,5 +1,4 @@
-use petgraph::prelude::*;
-use crate::node;
+use petgraph::prelude::*; use crate::node;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
