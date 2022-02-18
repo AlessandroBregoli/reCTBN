@@ -32,7 +32,7 @@ impl network::Network for CtbnNetwork {
         self.network.node_weight(node_idx.clone()).unwrap()
     }
 
-    fn get_param_index(&self, node: &petgraph::stable_graph::NodeIndex, u: Vec<StateType>) -> usize{
+    fn get_param_index_parents(&self, node: &petgraph::stable_graph::NodeIndex, u: &Vec<StateType>) -> usize{
         self.network.neighbors_directed(node.clone(), Direction::Incoming).zip(u).fold((0, 1), |mut acc, x| {
             let n = self.get_node(node);
             acc.0 += n.state_to_index(&x.1) * acc.1;
@@ -40,6 +40,19 @@ impl network::Network for CtbnNetwork {
             acc
 
         }).0
+    }
+
+
+    fn get_param_index_network(&self, node: &petgraph::stable_graph::NodeIndex, current_state: &Vec<StateType>) -> usize{
+        self.get_param_index_parents(node, &current_state.iter()
+                                     .zip(self.get_node_indices())
+                                     .filter_map(|x| {
+                                         match self.network.find_edge(x.1, node.clone()) {
+                                            Some(_) => Some(x.0.clone()),
+                                            None => None
+                                         }
+                                     }).collect()
+                                     )
     }
 
 }

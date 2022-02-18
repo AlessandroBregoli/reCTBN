@@ -35,6 +35,14 @@ pub fn trajectory_generator(net: &Box<dyn network::Network>, n_trajectories: u64
         events.push(current_state.clone());
         time.push(t.clone());
         while t < t_end {
+            next_transitions.iter_mut().zip(net.get_node_indices()).map(|x| {
+                if let None = x.0 {
+                    *(x.0) = Some(match net.get_node(&x.1).get_params(){
+                        node::NodeType::DiscreteStatesContinousTime(params) => 
+                            params.get_random_residence_time(x.1, net.get_param_index_network(&x.1, &current_state)).unwrap()
+                    });
+                }});
+
             
         }
 
