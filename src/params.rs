@@ -1,6 +1,5 @@
 use ndarray::prelude::*;
 use std::collections::{HashMap, BTreeSet};
-use petgraph::prelude::*;
 use rand::Rng;
 use thiserror::Error;
 
