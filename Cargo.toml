@@ -11,3 +11,6 @@ ndarray = "*"
 thiserror = "*"
 rand = "*"
 bimap = "*"
+
+[dev-dependencies]
+approx = "*"
