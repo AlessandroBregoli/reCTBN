@@ -11,6 +11,13 @@ pub struct Node {
 }
 
 impl Node {
+    pub fn init(params: NodeType, label: String) -> Node {
+        Node{
+            params: params,
+            label:label
+        }
+    }
+
     pub fn reset_params(&mut self) {
         match &mut self.params {
             NodeType::DiscreteStatesContinousTime(params) => {params.reset_params();}

@@ -1,14 +1,6 @@
-mod node;
-mod params;
-mod network;
-mod ctbn;
-mod tools;
+pub mod node;
+pub mod params;
+pub mod network;
+pub mod ctbn;
+pub mod tools;
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
-    }
-}

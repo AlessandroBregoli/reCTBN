@@ -12,6 +12,15 @@ pub struct CtbnNetwork {
     nodes: Vec<node::Node>
 }
 
+impl CtbnNetwork {
+    pub fn init() -> CtbnNetwork {
+        CtbnNetwork {
+            adj_matrix: None,
+            nodes: Vec::new()
+        }
+    }
+}
+
 impl network::Network for CtbnNetwork {
     fn initialize_adj_matrix(&mut self) {
         self.adj_matrix = Some(Array2::<u16>::zeros((self.nodes.len(), self.nodes.len()).f()));
@@ -84,4 +93,87 @@ impl network::Network for CtbnNetwork {
             }).collect()
     }
 
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::network::Network;
+    use crate::node;
+    use crate::params;
+    use std::collections::BTreeSet;
+
+    fn define_binary_node(name: String) -> node::Node {
+        let mut domain = BTreeSet::new();
+        domain.insert(String::from("A"));
+        domain.insert(String::from("B"));
+        let params = params::DiscreteStatesContinousTimeParams::init(domain);
+        let n = node::Node::init(node::NodeType::DiscreteStatesContinousTime(params),name);
+        return n;
+    }
+
+    #[test]
+    fn define_simpe_ctbn() {
+        let _ = CtbnNetwork::init();
+        assert!(true);
+    }
+
+    #[test]
+    fn add_node_to_ctbn() {
+        let mut net = CtbnNetwork::init();
+        let n1 = net.add_node(define_binary_node(String::from("n1"))).unwrap();
+        assert_eq!(String::from("n1"), net.get_node(n1).label);
+    }
+
+    #[test]
+    fn add_edge_to_ctbn() {
+        let mut net = CtbnNetwork::init();
+        let n1 = net.add_node(define_binary_node(String::from("n1"))).unwrap();
+        let n2 = net.add_node(define_binary_node(String::from("n2"))).unwrap();
+        net.add_edge(n1, n2);
+        let cs = net.get_children_set(n1);
+        assert_eq!(n2, cs[0]);
+    }
+
+    #[test]
+    fn children_and_parents() {
+        let mut net = CtbnNetwork::init();
+        let n1 = net.add_node(define_binary_node(String::from("n1"))).unwrap();
+        let n2 = net.add_node(define_binary_node(String::from("n2"))).unwrap();
+        net.add_edge(n1, n2);
+        let cs = net.get_children_set(n1);
+        assert_eq!(n2, cs[0]);
+        let ps = net.get_parent_set(n2);
+        assert_eq!(n1, ps[0]);
+    }
+
+
+    #[test]
+    fn compute_index_ctbn() {
+        let mut net = CtbnNetwork::init();
+        let n1 = net.add_node(define_binary_node(String::from("n1"))).unwrap();
+        let n2 = net.add_node(define_binary_node(String::from("n2"))).unwrap();
+        let n3 = net.add_node(define_binary_node(String::from("n3"))).unwrap();
+        net.add_edge(n1, n2);
+        net.add_edge(n3, n2);
+        let idx = net.get_param_index_network(n2, &vec![
+                                              params::StateType::Discrete(1), 
+                                              params::StateType::Discrete(1), 
+                                              params::StateType::Discrete(1)]);
+        assert_eq!(3, idx);
+
+
+        let idx = net.get_param_index_network(n2, &vec![
+                                              params::StateType::Discrete(0), 
+                                              params::StateType::Discrete(1), 
+                                              params::StateType::Discrete(1)]);
+        assert_eq!(2, idx);
+
+
+        let idx = net.get_param_index_network(n2, &vec![
+                                              params::StateType::Discrete(1), 
+                                              params::StateType::Discrete(1), 
+                                              params::StateType::Discrete(0)]);
+        assert_eq!(1, idx);
+    }
 }

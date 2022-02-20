@@ -23,7 +23,7 @@ pub fn trajectory_generator(net: &Box<dyn network::Network>, n_trajectories: u64
     for _ in 0..n_trajectories {
         let mut t = 0.0;
         let mut time: Vec<f64> = Vec::new();
-        let mut events: Vec<Vec<u32>> = Vec::new();
+        let mut events: Vec<Array1<u32>> = Vec::new();
         let mut current_state: Vec<params::StateType> = node_idx.iter().map(|x| {
             net.get_node(*x).get_random_state_uniform()
         }).collect();
@@ -63,9 +63,9 @@ pub fn trajectory_generator(net: &Box<dyn network::Network>, n_trajectories: u64
                                 .unwrap();
 
 
-            events.push(current_state.iter().map(|x| match x {
+            events.push(Array::from_vec(current_state.iter().map(|x| match x {
                 params::StateType::Discrete(state) => state.clone()
-                }).collect());
+                }).collect()));
             next_transitions[next_node_transition] = None;
             
             for child in net.get_children_set(next_node_transition){
@@ -78,10 +78,11 @@ pub fn trajectory_generator(net: &Box<dyn network::Network>, n_trajectories: u64
                 params::StateType::Discrete(state) => state.clone()
                 }).collect());
         time.push(t.clone());
+        
 
         dataset.trajectories.push(Trajectory {
-            time: array![time],
-            events: array![events]
+            time: Array::from_vec(time),
+            events: Array2::from_shape_vec((events.len(), current_state.len()), events.iter().flatten().cloned().collect()).unwrap()
         });
 
 
