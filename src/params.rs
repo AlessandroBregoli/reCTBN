@@ -4,6 +4,7 @@ use rand::Rng;
 use thiserror::Error;
 
 
+/// Error types for trait Params 
 #[derive(Error, Debug)]
 pub enum ParamsError {
     #[error("Unsupported method")]
@@ -12,20 +13,49 @@ pub enum ParamsError {
     ParametersNotInitialized(String)
 }
 
-pub trait Params {
-    fn reset_params(&mut self);
-    fn get_random_state_uniform(&self) -> StateType;
-    fn get_random_residence_time(&self, state: usize, u: usize) -> Result<f64, ParamsError>;
-    fn get_random_state(&self, state: usize, u:usize) -> Result<StateType, ParamsError>;
-    fn get_reserved_space_as_parent(&self) -> usize;
-    fn state_to_index(&self, state: &StateType) -> usize;
-}
-
+/// Allowed type of states
 #[derive(Clone)]
 pub enum StateType {
     Discrete(u32)
 }
 
+/// Parameters
+/// The Params trait is the core element for building different types of nodes. The goal is to
+/// define the set of method required to describes a generic node.
+pub trait Params {
+    fn reset_params(&mut self);
+
+    /// Randomly generate a possible state of the node disregarding the state of the node and it's
+    /// parents.
+    fn get_random_state_uniform(&self) -> StateType;
+
+    /// Randomly generate a residence time for the given node taking into account the node state
+    /// and its parent set.
+    fn get_random_residence_time(&self, state: usize, u: usize) -> Result<f64, ParamsError>;
+
+
+    /// Randomly generate a possible state for the given node taking into account the node state
+    /// and its parent set.
+    fn get_random_state(&self, state: usize, u:usize) -> Result<StateType, ParamsError>;
+
+    /// Used by childern of the node described by this parameters to reserve spaces in their CIMs.
+    fn get_reserved_space_as_parent(&self) -> usize;
+
+    /// Index used by discrete node to represents their states as usize.
+    fn state_to_index(&self, state: &StateType) -> usize;
+}
+
+
+/// Parameters for a discrete node in continous time. It contains. This represents the parameters
+/// of a classical discrete node for ctbn and it's composed by the following elements:
+/// - **domain**: an ordered and exhaustive set of possible states
+/// - **cim**: Conditional Intensity Matrix
+/// - **Sufficient Statistics**: the sufficient statistics are mainly used during the parameter
+/// l   earning task and are composed by:
+///     - **transitions**: number of transitions from one state to another given a specific
+///     realization of the parent set
+///     - **residence_time**: permanence time in each possible states given a specific
+///     realization of the parent set
 pub struct DiscreteStatesContinousTimeParams {
     domain: BTreeSet<String>,
     cim: Option<Array3<f64>>,
@@ -57,6 +87,9 @@ impl Params for DiscreteStatesContinousTimeParams {
     }
 
     fn get_random_residence_time(&self, state: usize, u:usize) -> Result<f64, ParamsError> {
+        // Generate a random residence time given the current state of the node and its parent set.
+        // The method used is described in:
+        // https://en.wikipedia.org/wiki/Exponential_distribution#Generating_exponential_variates
        match &self.cim {
            Option::Some(cim) => {   
             let mut rng = rand::thread_rng();
@@ -70,6 +103,9 @@ impl Params for DiscreteStatesContinousTimeParams {
 
 
     fn get_random_state(&self, state: usize, u:usize) -> Result<StateType, ParamsError>{
+        // Generate a random transition given the current state of the node and its parent set.
+        // The method used is described in:
+        // https://en.wikipedia.org/wiki/Multinomial_distribution#Sampling_from_a_multinomial_distribution
        match &self.cim {
            Option::Some(cim) => {   
             let mut rng = rand::thread_rng();
