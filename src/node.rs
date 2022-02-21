@@ -1,6 +1,7 @@
 use std::collections::BTreeSet;
 use crate::params::*;
 
+/// Enumerator representing the parameters supported in this library.
 pub enum NodeType {
     DiscreteStatesContinousTime(DiscreteStatesContinousTimeParams)
 }
