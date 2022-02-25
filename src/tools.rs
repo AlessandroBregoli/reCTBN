@@ -25,7 +25,7 @@ pub fn trajectory_generator(net: &Box<dyn network::Network>, n_trajectories: u64
         let mut time: Vec<f64> = Vec::new();
         let mut events: Vec<Array1<u32>> = Vec::new();
         let mut current_state: Vec<params::StateType> = node_idx.iter().map(|x| {
-            net.get_node(*x).get_random_state_uniform()
+            net.get_node(*x).params.get_random_state_uniform()
         }).collect();
         let mut next_transitions: Vec<Option<f64>> = (0..node_idx.len()).map(|_| Option::None).collect();
         events.push(current_state.iter().map(|x| match x {
@@ -35,8 +35,8 @@ pub fn trajectory_generator(net: &Box<dyn network::Network>, n_trajectories: u64
         while t < t_end {
             for (idx, val) in next_transitions.iter_mut().enumerate(){
                 if let None = val {
-                    *val = Some(net.get_node(idx)
-                                .get_random_residence_time(net.get_node(idx).state_to_index(&current_state[idx]), 
+                    *val = Some(net.get_node(idx).params
+                                .get_random_residence_time(net.get_node(idx).params.state_to_index(&current_state[idx]), 
                                                            net.get_param_index_network(idx, &current_state)).unwrap() + t);
                 }
             };
@@ -55,9 +55,9 @@ pub fn trajectory_generator(net: &Box<dyn network::Network>, n_trajectories: u64
             t = next_transitions[next_node_transition].unwrap().clone();
             time.push(t.clone());
 
-            current_state[next_node_transition] = net.get_node(next_node_transition)
+            current_state[next_node_transition] = net.get_node(next_node_transition).params
                                 .get_random_state(
-                                    net.get_node(next_node_transition).
+                                    net.get_node(next_node_transition).params.
                                     state_to_index(
                                         &current_state[next_node_transition]),
                                         net.get_param_index_network(next_node_transition, &current_state))
