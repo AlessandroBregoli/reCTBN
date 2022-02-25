@@ -7,10 +7,58 @@ use crate::network;
 
 
 
+///CTBN network. It represents both the structure and the parameters of a CTBN. CtbnNetwork is
+///composed by the following elements:
+///- **adj_metrix**: a 2d ndarray representing the adjacency matrix
+///- **nodes**: a vector containing all the nodes and their parameters.
+///The index of a node inside the vector is also used as index for the adj_matrix.
+///
+///# Examples
+///
+///```
+///    
+/// use std::collections::BTreeSet;
+/// use rustyCTBN::network::Network;
+/// use rustyCTBN::node;
+/// use rustyCTBN::params;
+/// use rustyCTBN::ctbn::*;
+///
+/// //Create the domain for a discrete node
+/// let mut domain = BTreeSet::new(); 
+/// domain.insert(String::from("A"));
+/// domain.insert(String::from("B"));
+///
+/// //Create the parameters for a discrete node using the domain
+/// let params = params::DiscreteStatesContinousTimeParams::init(domain); 
+///
+/// //Create the node using the parameters
+/// let X1 = node::Node::init(node::NodeType::DiscreteStatesContinousTime(params),String::from("X1"));
+///
+/// let mut domain = BTreeSet::new();
+/// domain.insert(String::from("A"));
+/// domain.insert(String::from("B"));
+/// let params = params::DiscreteStatesContinousTimeParams::init(domain);
+/// let X2 = node::Node::init(node::NodeType::DiscreteStatesContinousTime(params),String::from("X2"));
+/// 
+/// //Initialize a ctbn
+/// let mut net = CtbnNetwork::init();
+///
+/// //Add nodes
+/// let X1 = net.add_node(X1).unwrap();
+/// let X2 = net.add_node(X2).unwrap();
+/// 
+/// //Add an edge
+/// net.add_edge(X1, X2);
+///
+/// //Get all the children of node X1
+/// let cs = net.get_children_set(X1);
+/// assert_eq!(X2, cs[0]);
+/// ```
 pub struct CtbnNetwork {
     adj_matrix: Option<Array2<u16>>,
     nodes: Vec<node::Node>
 }
+
 
 impl CtbnNetwork {
     pub fn init() -> CtbnNetwork {
@@ -78,6 +126,7 @@ impl network::Network for CtbnNetwork {
                 }
             }).collect()
     }
+
     fn get_children_set(&self, node: usize) -> Vec<usize>{
         self.adj_matrix.as_ref()
             .unwrap()
