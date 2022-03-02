@@ -20,6 +20,7 @@ pub trait Network {
     ///Get all the indices of the nodes contained inside the network
     fn get_node_indices(&self) -> std::ops::Range<usize>;
     fn get_node(&self, node_idx: usize) -> &node::Node;
+    fn get_node_mut(&mut self, node_idx: usize) -> &mut node::Node;
 
     ///Compute the index that must be used to access the parameter of a node given a specific
     ///configuration of the network. Usually, the only values really used in *current_state* are

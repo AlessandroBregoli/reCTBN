@@ -102,6 +102,11 @@ impl network::Network for CtbnNetwork {
     }
 
 
+    fn get_node_mut(&mut self, node_idx: usize) -> &mut node::Node{
+        &mut self.nodes[node_idx]
+    }
+
+
     fn get_param_index_network(&self, node: usize, current_state: &Vec<StateType>) -> usize{
         self.adj_matrix.as_ref().unwrap().column(node).iter().enumerate().fold((0, 1), |mut acc, x| {
             if x.1 > &0 {

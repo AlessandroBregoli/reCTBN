@@ -65,10 +65,10 @@ pub enum Params {
 ///     - **residence_time**: permanence time in each possible states given a specific
 ///     realization of the parent set
 pub struct DiscreteStatesContinousTimeParams {
-    domain: BTreeSet<String>,
-    cim: Option<Array3<f64>>,
-    transitions: Option<Array3<u64>>,
-    residence_time: Option<Array2<f64>>,
+    pub domain: BTreeSet<String>,
+    pub cim: Option<Array3<f64>>,
+    pub transitions: Option<Array3<u64>>,
+    pub residence_time: Option<Array2<f64>>,
 }
 
 impl DiscreteStatesContinousTimeParams {
