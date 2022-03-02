@@ -22,6 +22,7 @@ pub enum StateType {
 /// Parameters
 /// The Params trait is the core element for building different types of nodes. The goal is to
 /// define the set of method required to describes a generic node.
+#[enum_dispatch(Params)]
 pub trait ParamsTrait {
     fn reset_params(&mut self);
 
@@ -46,59 +47,11 @@ pub trait ParamsTrait {
 
 /// The Params enum is the core element for building different types of nodes. The goal is to
 /// define all the supported type of parameters.
+#[enum_dispatch]
 pub enum Params {
     DiscreteStatesContinousTime(DiscreteStatesContinousTimeParams),
 }
 
-impl ParamsTrait for Params {
-    fn reset_params(&mut self) {
-        match self {
-            Params::DiscreteStatesContinousTime(p) => p.reset_params()
-        }
-    }
-
-    fn get_random_state_uniform(&self) -> StateType{
-        match self {
-            Params::DiscreteStatesContinousTime(p) => p.get_random_state_uniform()
-        }
-    }
-
-
-    /// Randomly generate a residence time for the given node taking into account the node state
-    /// and its parent set.
-    fn get_random_residence_time(&self, state: usize, u: usize) -> Result<f64, ParamsError> {
-        match self {
-            Params::DiscreteStatesContinousTime(p) => p.get_random_residence_time(state, u)
-        }
-    }
-
-
-    /// Randomly generate a possible state for the given node taking into account the node state
-    /// and its parent set.
-    fn get_random_state(&self, state: usize, u: usize) -> Result<StateType, ParamsError> {
-        match self {
-            Params::DiscreteStatesContinousTime(p) => p.get_random_state(state, u)
-        }
-    }
-
-
-    /// Used by childern of the node described by this parameters to reserve spaces in their CIMs.
-    fn get_reserved_space_as_parent(&self) -> usize {
-        match self {
-            Params::DiscreteStatesContinousTime(p) => p.get_reserved_space_as_parent()
-        }
-    }
-
-
-    /// Index used by discrete node to represents their states as usize.
-    fn state_to_index(&self, state: &StateType) -> usize {
-        match self {
-            Params::DiscreteStatesContinousTime(p) => p.state_to_index(state)
-        }
-    }
-
-
-}
 
 /// DiscreteStatesContinousTime.
 /// This represents the parameters of a classical discrete node for ctbn and it's composed by the
