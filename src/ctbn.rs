@@ -1,7 +1,7 @@
 use std::collections::{HashMap, BTreeSet};
 use ndarray::prelude::*;
 use crate::node;
-use crate::params::StateType;
+use crate::params::{StateType, Params, ParamsTrait};
 use crate::network;
 
 
@@ -29,16 +29,16 @@ use crate::network;
 /// domain.insert(String::from("B"));
 ///
 /// //Create the parameters for a discrete node using the domain
-/// let params = params::DiscreteStatesContinousTimeParams::init(domain); 
+/// let param = params::DiscreteStatesContinousTimeParams::init(domain); 
 ///
 /// //Create the node using the parameters
-/// let X1 = node::Node::init(Box::from(params),String::from("X1"));
+/// let X1 = node::Node::init(params::Params::DiscreteStatesContinousTime(param),String::from("X1"));
 ///
 /// let mut domain = BTreeSet::new();
 /// domain.insert(String::from("A"));
 /// domain.insert(String::from("B"));
-/// let params = params::DiscreteStatesContinousTimeParams::init(domain);
-/// let X2 = node::Node::init(Box::from(params), String::from("X2"));
+/// let param = params::DiscreteStatesContinousTimeParams::init(domain);
+/// let X2 = node::Node::init(params::Params::DiscreteStatesContinousTime(param), String::from("X2"));
 /// 
 /// //Initialize a ctbn
 /// let mut net = CtbnNetwork::init();
@@ -156,8 +156,8 @@ mod tests {
         let mut domain = BTreeSet::new();
         domain.insert(String::from("A"));
         domain.insert(String::from("B"));
-        let params = params::DiscreteStatesContinousTimeParams::init(domain);
-        let n = node::Node::init(Box::from(params), name);
+        let param = params::DiscreteStatesContinousTimeParams::init(domain) ;
+        let n = node::Node::init(params::Params::DiscreteStatesContinousTime(param), name);
         return n;
     }
 

@@ -11,6 +11,7 @@ ndarray = "*"
 thiserror = "*"
 rand = "*"
 bimap = "*"
+enum_dispatch = "*"
 
 [dev-dependencies]
 approx = "*"

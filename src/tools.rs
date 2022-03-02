@@ -2,7 +2,7 @@ use ndarray::prelude::*;
 use crate::network;
 use crate::node;
 use crate::params;
-use crate::params::Params;
+use crate::params::ParamsTrait;
 
 pub struct Trajectory {
     time: Array1<f64>,

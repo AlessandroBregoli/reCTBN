@@ -2,12 +2,12 @@ use crate::params::*;
 
 
 pub struct Node {
-    pub params: Box<dyn Params>,
+    pub params:  Params,
     pub label: String
 }
 
 impl Node {
-    pub fn init(params: Box<dyn Params>, label: String) -> Node {
+    pub fn init(params: Params, label: String) -> Node {
         Node{
             params: params,
             label:label
