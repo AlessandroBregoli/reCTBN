@@ -1,6 +1,7 @@
 use thiserror::Error;
 use crate::params;
 use crate::node;
+use std::collections::BTreeSet;
 
 /// Error types for trait Network
 #[derive(Error, Debug)]
@@ -26,6 +27,6 @@ pub trait Network {
     ///configuration of the network. Usually, the only values really used in *current_state* are
     ///the ones in the parent set of the *node*.
     fn get_param_index_network(&self, node: usize, current_state: &Vec<params::StateType>) -> usize;
-    fn get_parent_set(&self, node: usize) -> Vec<usize>;
-    fn get_children_set(&self, node: usize) -> Vec<usize>;
+    fn get_parent_set(&self, node: usize) -> BTreeSet<usize>;
+    fn get_children_set(&self, node: usize) -> BTreeSet<usize>;
 }

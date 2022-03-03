@@ -7,4 +7,5 @@ pub mod params;
 pub mod network;
 pub mod ctbn;
 pub mod tools;
+pub mod parameter_learning;
 
