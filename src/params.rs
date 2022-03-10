@@ -16,7 +16,7 @@ pub enum ParamsError {
 /// Allowed type of states
 #[derive(Clone)]
 pub enum StateType {
-    Discrete(u32),
+    Discrete(usize),
 }
 
 /// Parameters
@@ -91,7 +91,7 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
 
     fn get_random_state_uniform(&self) -> StateType {
         let mut rng = rand::thread_rng();
-        StateType::Discrete(rng.gen_range(0..(self.domain.len() as u32)))
+        StateType::Discrete(rng.gen_range(0..(self.domain.len())))
     }
 
     fn get_random_residence_time(&self, state: usize, u: usize) -> Result<f64, ParamsError> {
@@ -138,7 +138,7 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
                     next_state.0 + 1
                 };
 
-                Ok(StateType::Discrete(next_state as u32))
+                Ok(StateType::Discrete(next_state))
             }
             Option::None => Err(ParamsError::ParametersNotInitialized(String::from(
                 "CIM not initialized",
@@ -177,7 +177,7 @@ mod tests {
     #[test]
     fn test_uniform_generation() {
         let param = create_ternary_discrete_time_continous_param();
-        let mut states = Array1::<u32>::zeros(10000);
+        let mut states = Array1::<usize>::zeros(10000);
 
         states.mapv_inplace(|_| {
             if let StateType::Discrete(val) = param.get_random_state_uniform() {
@@ -194,7 +194,7 @@ mod tests {
     #[test]
     fn test_random_generation_state() {
         let param = create_ternary_discrete_time_continous_param();
-        let mut states = Array1::<u32>::zeros(10000);
+        let mut states = Array1::<usize>::zeros(10000);
 
         states.mapv_inplace(|_| {
             if let StateType::Discrete(val) = param.get_random_state(1, 0).unwrap() {

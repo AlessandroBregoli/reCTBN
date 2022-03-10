@@ -97,6 +97,10 @@ impl network::Network for CtbnNetwork {
         0..self.nodes.len()
     }
 
+    fn get_number_of_nodes(&self) -> usize {
+        self.nodes.len()
+    }
+
     fn get_node(&self, node_idx: usize) -> &node::Node{
         &self.nodes[node_idx]
     }
@@ -113,6 +117,15 @@ impl network::Network for CtbnNetwork {
                 acc.0 += self.nodes[x.0].params.state_to_index(&current_state[x.0]) * acc.1;
                 acc.1 *= self.nodes[x.0].params.get_reserved_space_as_parent();
             }
+            acc
+        }).0
+    }
+
+
+    fn get_param_index_from_custom_parent_set(&self, current_state: &Vec<StateType>, parent_set: &BTreeSet<usize>) -> usize {
+        parent_set.iter().fold((0, 1), |mut acc, x| {
+            acc.0 += self.nodes[*x].params.state_to_index(&current_state[*x]) * acc.1;
+            acc.1 *= self.nodes[*x].params.get_reserved_space_as_parent();
             acc
         }).0
     }
@@ -229,5 +242,32 @@ mod tests {
                                               params::StateType::Discrete(1), 
                                               params::StateType::Discrete(0)]);
         assert_eq!(1, idx);
+
+    }
+
+
+
+    #[test]
+    fn compute_index_from_custom_parent_set() {
+        let mut net = CtbnNetwork::init();
+        let n1 = net.add_node(define_binary_node(String::from("n1"))).unwrap();
+        let n2 = net.add_node(define_binary_node(String::from("n2"))).unwrap();
+        let n3 = net.add_node(define_binary_node(String::from("n3"))).unwrap();
+
+
+        let idx = net.get_param_index_from_custom_parent_set(&vec![
+                                              params::StateType::Discrete(0), 
+                                              params::StateType::Discrete(0), 
+                                              params::StateType::Discrete(1)],
+                                              &BTreeSet::from([1]));
+        assert_eq!(0, idx);
+
+
+        let idx = net.get_param_index_from_custom_parent_set(&vec![
+                                              params::StateType::Discrete(0), 
+                                              params::StateType::Discrete(0), 
+                                              params::StateType::Discrete(1)],
+                                              &BTreeSet::from([1,2]));
+        assert_eq!(2, idx);
     }
 }

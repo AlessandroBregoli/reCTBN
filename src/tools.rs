@@ -5,16 +5,16 @@ use crate::params;
 use crate::params::ParamsTrait;
 
 pub struct Trajectory {
-    time: Array1<f64>,
-    events: Array2<u32>
+    pub time: Array1<f64>,
+    pub events: Array2<usize>
 }
 
 pub struct Dataset {
-    trajectories: Vec<Trajectory>
+    pub trajectories: Vec<Trajectory>
 }
 
 
-pub fn trajectory_generator(net: Box<dyn network::Network>, n_trajectories: u64, t_end: f64) -> Dataset {
+pub fn trajectory_generator(net: Box<&dyn network::Network>, n_trajectories: u64, t_end: f64) -> Dataset {
     let mut dataset = Dataset{
         trajectories: Vec::new()
     };
@@ -23,7 +23,7 @@ pub fn trajectory_generator(net: Box<dyn network::Network>, n_trajectories: u64,
     for _ in 0..n_trajectories {
         let mut t = 0.0;
         let mut time: Vec<f64> = Vec::new();
-        let mut events: Vec<Array1<u32>> = Vec::new();
+        let mut events: Vec<Array1<usize>> = Vec::new();
         let mut current_state: Vec<params::StateType> = node_idx.iter().map(|x| {
             net.get_node(*x).params.get_random_state_uniform()
         }).collect();
@@ -135,7 +135,7 @@ mod tests {
             }
         }
 
-        let data = trajectory_generator(Box::from(net), 4, 1.0);
+        let data = trajectory_generator(Box::new(&net), 4, 1.0);
 
         assert_eq!(4, data.trajectories.len());
         assert_relative_eq!(1.0, data.trajectories[0].time[data.trajectories[0].time.len()-1]);
