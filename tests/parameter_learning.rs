@@ -42,8 +42,8 @@ fn learn_binary_cim_MLE() {
     }
 
     let data = trajectory_generator(Box::new(&net), 100, 100.0);
-
-    let (CIM, M, T) = MLE(Box::new(&net), &data, 1, None);
+    let mle = MLE{};
+    let (CIM, M, T) = mle.fit(Box::new(&net), &data, 1, None);
     print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);
     assert_eq!(CIM.shape(), [2, 2, 2]);
     assert_relative_eq!(-1.0, CIM[[0, 0, 0]], epsilon=0.2);
@@ -83,8 +83,8 @@ fn learn_ternary_cim_MLE() {
     }
 
     let data = trajectory_generator(Box::new(&net), 100, 200.0);
-
-    let (CIM, M, T) = MLE(Box::new(&net), &data, 1, None);
+    let mle = MLE{};
+    let (CIM, M, T) = mle.fit(Box::new(&net), &data, 1, None);
     print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);
     assert_eq!(CIM.shape(), [3, 3, 3]);
     assert_relative_eq!(-1.0, CIM[[0, 0, 0]], epsilon=0.2);
