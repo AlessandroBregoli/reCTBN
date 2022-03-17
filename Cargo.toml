@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 
-ndarray = "*"
+ndarray = {version="*", features=["approx"]}
 thiserror = "*"
 rand = "*"
 bimap = "*"

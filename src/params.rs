@@ -102,7 +102,7 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
             Option::Some(cim) => {
                 let mut rng = rand::thread_rng();
                 let lambda = cim[[u, state, state]] * -1.0;
-                let x: f64 = rng.gen_range(0.0..1.0);
+                let x: f64 = rng.gen_range(0.0..=1.0);
                 Ok(-x.ln() / lambda)
             }
             Option::None => Err(ParamsError::ParametersNotInitialized(String::from(
@@ -119,14 +119,16 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
             Option::Some(cim) => {
                 let mut rng = rand::thread_rng();
                 let lambda = cim[[u, state, state]] * -1.0;
-                let x: f64 = rng.gen_range(0.0..1.0);
+                let urand: f64 = rng.gen_range(0.0..=1.0);
 
                 let next_state = cim.slice(s![u, state, ..]).map(|x| x / lambda).iter().fold(
                     (0, 0.0),
                     |mut acc, ele| {
-                        if &acc.1 + ele < x && ele > &0.0 {
-                            acc.1 += x;
+                        if &acc.1 + ele < urand && ele > &0.0 {
                             acc.0 += 1;
+                        }
+                        if ele > &0.0 {
+                            acc.1 += ele;
                         }
                         acc
                     },
