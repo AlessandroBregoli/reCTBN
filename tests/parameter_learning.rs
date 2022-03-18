@@ -43,7 +43,7 @@ fn learn_binary_cim_MLE() {
 
     let data = trajectory_generator(&net, 100, 100.0);
     let mle = MLE{};
-    let (CIM, M, T) = mle.fit(Box::new(&net), &data, 1, None);
+    let (CIM, M, T) = mle.fit(&net, &data, 1, None);
     print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);
     assert_eq!(CIM.shape(), [2, 2, 2]);
     assert!(CIM.abs_diff_eq(&arr3(&[
@@ -84,7 +84,7 @@ fn learn_ternary_cim_MLE() {
 
     let data = trajectory_generator(&net, 100, 200.0);
     let mle = MLE{};
-    let (CIM, M, T) = mle.fit(Box::new(&net), &data, 1, None);
+    let (CIM, M, T) = mle.fit(&net, &data, 1, None);
     print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);
     assert_eq!(CIM.shape(), [3, 3, 3]);
     assert!(CIM.abs_diff_eq(&arr3(&[
@@ -125,7 +125,7 @@ fn learn_ternary_cim_MLE_no_parents() {
 
     let data = trajectory_generator(&net, 100, 200.0);
     let mle = MLE{};
-    let (CIM, M, T) = mle.fit(Box::new(&net), &data, 0, None);
+    let (CIM, M, T) = mle.fit(&net, &data, 0, None);
     print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);
     assert_eq!(CIM.shape(), [1, 3, 3]);
     assert!(CIM.abs_diff_eq(&arr3(&[[[-3.0, 2.0, 1.0], 

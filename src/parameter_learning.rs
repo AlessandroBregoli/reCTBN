@@ -6,17 +6,17 @@ use ndarray::{concatenate, Slice};
 use std::collections::BTreeSet;
 
 pub trait ParameterLearning{
-    fn fit(
+    fn fit<T:network::Network>(
         &self,
-        net: Box<&dyn network::Network>,
+        net: &T,
         dataset: &tools::Dataset,
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
     ) -> (Array3<f64>, Array3<usize>, Array2<f64>);
 }
 
-pub fn sufficient_statistics(
-    net: Box<&dyn network::Network>,
+pub fn sufficient_statistics<T:network::Network>(
+    net: &T,
     dataset: &tools::Dataset,
     node: usize,
     parent_set: &BTreeSet<usize>
@@ -80,9 +80,9 @@ pub struct MLE {}
 
 impl ParameterLearning for MLE {
 
-    fn fit(
+    fn fit<T: network::Network>(
         &self,
-        net: Box<&dyn network::Network>,
+        net: &T,
         dataset: &tools::Dataset,
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
@@ -119,9 +119,9 @@ pub struct BayesianApproach {
 }
 
 impl ParameterLearning for BayesianApproach {
-    fn fit(
+    fn fit<T: network::Network>(
         &self,
-        net: Box<&dyn network::Network>,
+        net: &T,
         dataset: &tools::Dataset,
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
