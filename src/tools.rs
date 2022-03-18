@@ -13,8 +13,8 @@ pub struct Dataset {
     pub trajectories: Vec<Trajectory>,
 }
 
-pub fn trajectory_generator(
-    net: Box<&dyn network::Network>,
+pub fn trajectory_generator<T: network::Network>(
+    net: &T,
     n_trajectories: u64,
     t_end: f64,
 ) -> Dataset {

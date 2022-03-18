@@ -41,7 +41,7 @@ fn learn_binary_cim_MLE() {
         }
     }
 
-    let data = trajectory_generator(Box::new(&net), 100, 100.0);
+    let data = trajectory_generator(&net, 100, 100.0);
     let mle = MLE{};
     let (CIM, M, T) = mle.fit(Box::new(&net), &data, 1, None);
     print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);
@@ -82,7 +82,7 @@ fn learn_ternary_cim_MLE() {
         }
     }
 
-    let data = trajectory_generator(Box::new(&net), 100, 200.0);
+    let data = trajectory_generator(&net, 100, 200.0);
     let mle = MLE{};
     let (CIM, M, T) = mle.fit(Box::new(&net), &data, 1, None);
     print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);
@@ -123,7 +123,7 @@ fn learn_ternary_cim_MLE_no_parents() {
         }
     }
 
-    let data = trajectory_generator(Box::new(&net), 100, 200.0);
+    let data = trajectory_generator(&net, 100, 200.0);
     let mle = MLE{};
     let (CIM, M, T) = mle.fit(Box::new(&net), &data, 0, None);
     print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);

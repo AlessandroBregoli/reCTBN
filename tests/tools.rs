@@ -36,7 +36,7 @@ fn run_sampling() {
         }
     }
 
-    let data = trajectory_generator(Box::new(&net), 4, 1.0);
+    let data = trajectory_generator(&net, 4, 1.0);
 
     assert_eq!(4, data.trajectories.len());
     assert_relative_eq!(1.0, data.trajectories[0].time[data.trajectories[0].time.len()-1]);
