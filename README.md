@@ -4,11 +4,11 @@
 
 </div>
 
-## App
+## Library
 
 > **Note:** At the moment it's in pre-alpha state.
 
-A Continuous Time Bayesian Networks Liberary written in Rust. 🦀
+A Continuous Time Bayesian Networks Library written in Rust. 🦀
 
 ### From Source
 
