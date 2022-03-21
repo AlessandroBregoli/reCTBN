@@ -114,8 +114,8 @@ impl ParameterLearning for MLE {
 }
 
 pub struct BayesianApproach {
-    default_alpha: usize,
-    default_tau: f64
+    pub default_alpha: usize,
+    pub default_tau: f64
 }
 
 impl ParameterLearning for BayesianApproach {
