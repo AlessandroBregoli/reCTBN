@@ -10,36 +10,6 @@
 
 A Continuous Time Bayesian Networks Library written in Rust. 🦀
 
-### From Source
-
-**Prerequisites:**
-
-+ `rust`
-
-**Install:**
-
-At the _root_ of the project's folder launch:
-
-```sh
-cargo install --locked --path .
-```
-
-**Uninstall:**
-
-Anywhere in the system launch:
-
-```sh
-cargo uninstall rustyCTBN
-```
-
-**Upgrade:**
-
-At the _root_ of the project's folder launch:
-
-```sh
-cargo install --force --locked --path .
-```
-
 ## Develop
 
 **Prerequisites:**
@@ -59,11 +29,11 @@ That's all! ☕️
 To launch **tests**:
 
 ```sh
-cargo test --locked
+cargo test
 ```
 
 To **lint**:
 
 ```sh
-cargo check --locked
+cargo check
 ```
