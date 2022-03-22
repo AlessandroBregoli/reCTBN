@@ -1,7 +1,7 @@
 ---
 name: 🐞 Bug report
 about: Create a bug report to help us improve this project
-title: ''
+title: '[Bug] '
 labels: 'bug'
 assignees: ''
 
