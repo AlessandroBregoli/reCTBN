@@ -12,6 +12,7 @@ appreciated!
 consider the following when opening an issue:
 
 + Avoid opening duplicate issues by taking a look at the current open issues.
++ Follow [this template](.github/ISSUE_TEMPLATE/bug_report.md).
 + Provide details on the library version, operating system and Rust version you
   are running.
 + Provide the **expected** and the **actual** behavior.
@@ -26,6 +27,7 @@ consider the following when opening an issue:
 
 + Avoid opening duplicate issues by taking a look at the current open and closed
   ones.
++ Follow [this template](.github/ISSUE_TEMPLATE/feature_request.md).
 + The feature must be concrete enough to visualize, broken into parts, easy to
   manage and the task not too heavy.
 + Provide a short description from the point of view the actor(s) who will
@@ -43,7 +45,8 @@ consider the following when opening an issue:
 
 All pull requests are welcome, but please consider the following:
 
-+ **You cannot merge into master**.
++ **You cannot merge into master**, merge in **dev** instead.
++ Follow [this template](.github/pull_request_template.md).
 + Please open an issue first if a relevant one is not already open.
 + Include tests.
 + Include documentation for new features.
@@ -61,3 +64,6 @@ All pull requests are welcome, but please consider the following:
 > + In case an **hotfix** is necessary you can only _branch from master_, apply
 >   the fix (maybe cherry-picking from other branches) and then merge back to
 >   master.
+> + For contributors who have write permissions to master
+>   [here the template](.github/PULL_REQUEST_TEMPLATE/merge_master.md) for the
+>   merge request.
