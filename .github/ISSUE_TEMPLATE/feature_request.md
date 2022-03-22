@@ -18,8 +18,8 @@ As a X, I want to Y, so Z.
 
 ## Checklist
 
-* [ ]  Element 1
-* [ ]  Element 2
+* [ ] Element 1
+* [ ] Element 2
 
 ## (Optional) Extra info
 
