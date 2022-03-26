@@ -12,7 +12,7 @@ fn create_ternary_discrete_time_continous_param() -> DiscreteStatesContinousTime
 
     let cim = array![[[-3.0, 2.0, 1.0], [1.0, -5.0, 4.0], [2.3, 1.7, -4.0]]];
 
-    params.cim = Some(cim);
+    params.set_cim(cim);
     params
 }
 
@@ -85,12 +85,12 @@ fn test_validate_params_cim_not_initialized() {
 fn test_validate_params_wrong_shape() {
     let mut param = utils::generate_discrete_time_continous_param(4);
     let cim = array![[[-3.0, 2.0, 1.0], [1.0, -5.0, 4.0], [2.3, 1.7, -4.0]]];
-    param.cim = Some(cim);
+    let result = param.set_cim(cim);
     assert_eq!(
         Err(ParamsError::InvalidCIM(String::from(
                 "Incompatible shape [1, 3, 3] with domain 4"
             ))),
-        param.validate_params()
+        result
     );
 }
 
@@ -99,12 +99,12 @@ fn test_validate_params_wrong_shape() {
 fn test_validate_params_positive_diag() {
     let mut param = utils::generate_discrete_time_continous_param(3);
     let cim = array![[[2.0, -3.0, 1.0], [1.0, -5.0, 4.0], [2.3, 1.7, -4.0]]];
-    param.cim = Some(cim);
+    let result = param.set_cim(cim);
     assert_eq!(
         Err(ParamsError::InvalidCIM(String::from(
                 "The diagonal of each cim must be non-positive",
             ))),
-        param.validate_params()
+        result
     );
 }
 
@@ -113,11 +113,11 @@ fn test_validate_params_positive_diag() {
 fn test_validate_params_row_not_sum_to_zero() {
     let mut param = utils::generate_discrete_time_continous_param(3);
     let cim = array![[[-3.0, 2.0, 1.0], [1.0, -5.0, 4.0], [2.3, 1.701, -4.0]]];
-    param.cim = Some(cim);
+    let result = param.set_cim(cim);
     assert_eq!(
         Err(ParamsError::InvalidCIM(String::from(
             "The sum of each row must be 0"
             ))),
-        param.validate_params()
+        result
     );
 }

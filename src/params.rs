@@ -69,21 +69,55 @@ pub enum Params {
 ///     - **residence_time**: permanence time in each possible states given a specific
 ///     realization of the parent set
 pub struct DiscreteStatesContinousTimeParams {
-    pub domain: BTreeSet<String>,
-    pub cim: Option<Array3<f64>>,
-    pub transitions: Option<Array3<u64>>,
-    pub residence_time: Option<Array2<f64>>,
+    domain: BTreeSet<String>,
+    cim: Option<Array3<f64>>,
+    transitions: Option<Array3<u64>>,
+    residence_time: Option<Array2<f64>>,
 }
 
 impl DiscreteStatesContinousTimeParams {
     pub fn init(domain: BTreeSet<String>) -> DiscreteStatesContinousTimeParams {
         DiscreteStatesContinousTimeParams {
-            domain: domain,
+            domain,
             cim: Option::None,
             transitions: Option::None,
             residence_time: Option::None,
         }
     }
+
+    pub fn get_cim(&self) -> &Option<Array3<f64>> {
+        &self.cim
+    } 
+
+    pub fn set_cim(&mut self, cim: Array3<f64>) -> Result<(), ParamsError>{
+        self.cim = Some(cim);
+        match self.validate_params() {
+            Ok(()) => Ok(()),
+            Err(e) => {
+                self.cim = None;
+                Err(e)
+            }
+        }
+    }
+
+    pub fn get_transitions(&self) -> &Option<Array3<u64>> {
+        &self.transitions
+    }
+
+
+    pub fn set_transitions(&mut self, transitions: Array3<u64>) {
+        self.transitions = Some(transitions);
+    }
+
+    pub fn get_residence_time(&self) -> &Option<Array2<f64>> {
+        &self.residence_time
+    }
+
+
+    pub fn set_residence_time(&mut self, residence_time: Array2<f64>) {
+        self.residence_time = Some(residence_time);
+    }
+
 }
 
 impl ParamsTrait for DiscreteStatesContinousTimeParams {
@@ -192,10 +226,8 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
         }
 
         // Check if each row sum up to 0
-        let zeros = Array::zeros(domain_size);
-        if cim
-            .axis_iter(Axis(0))
-            .any(|x| !x.sum_axis(Axis(1)).abs_diff_eq(&zeros, f64::MIN_POSITIVE))
+        if cim.sum_axis(Axis(2)).iter()
+            .any(|x| f64::abs(x.clone()) > f64::EPSILON * 3.0)
         {
             return Err(ParamsError::InvalidCIM(String::from(
                 "The sum of each row must be 0",
