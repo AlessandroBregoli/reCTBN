@@ -8,7 +8,7 @@ pub fn generate_discrete_time_continous_node(name: String, cardinality: usize) -
 
 
 pub fn generate_discrete_time_continous_param(cardinality: usize) -> params::DiscreteStatesContinousTimeParams{
-    let mut domain: BTreeSet<String> = (0..cardinality).map(|x| x.to_string()).collect();
+    let domain: BTreeSet<String> = (0..cardinality).map(|x| x.to_string()).collect();
     params::DiscreteStatesContinousTimeParams::init(domain)
 }
 

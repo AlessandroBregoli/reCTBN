@@ -27,16 +27,16 @@ fn learn_binary_cim<T: ParameterLearning> (pl: T) {
 
     match &mut net.get_node_mut(n1).params {
         params::Params::DiscreteStatesContinousTime(param) => {
-            param.cim = Some(arr3(&[[[-3.0, 3.0], [2.0, -2.0]]]));
+            assert_eq!(Ok(()), param.set_cim(arr3(&[[[-3.0, 3.0], [2.0, -2.0]]])));
         }
     }
 
     match &mut net.get_node_mut(n2).params {
         params::Params::DiscreteStatesContinousTime(param) => {
-            param.cim = Some(arr3(&[
+            assert_eq!(Ok(()), param.set_cim(arr3(&[
                 [[-1.0, 1.0], [4.0, -4.0]],
                 [[-6.0, 6.0], [2.0, -2.0]],
-            ]));
+            ])));
         }
     }
 
@@ -77,19 +77,19 @@ fn learn_ternary_cim<T: ParameterLearning> (pl: T) {
 
     match &mut net.get_node_mut(n1).params {
         params::Params::DiscreteStatesContinousTime(param) => {
-            param.cim = Some(arr3(&[[[-3.0, 2.0, 1.0], 
+            assert_eq!(Ok(()), param.set_cim(arr3(&[[[-3.0, 2.0, 1.0], 
                                   [1.5, -2.0, 0.5],
-                                  [0.4, 0.6, -1.0]]]));
+                                  [0.4, 0.6, -1.0]]])));
         }
     }
 
     match &mut net.get_node_mut(n2).params {
         params::Params::DiscreteStatesContinousTime(param) => {
-            param.cim = Some(arr3(&[
+            assert_eq!(Ok(()), param.set_cim(arr3(&[
                 [[-1.0, 0.5, 0.5], [3.0, -4.0, 1.0], [0.9, 0.1, -1.0]],
                 [[-6.0, 2.0, 4.0], [1.5, -2.0, 0.5], [3.0, 1.0, -4.0]],
                 [[-1.0, 0.1, 0.9], [2.0, -2.5, 0.5], [0.9, 0.1, -1.0]],
-            ]));
+            ])));
         }
     }
 
@@ -132,19 +132,19 @@ fn learn_ternary_cim_no_parents<T: ParameterLearning> (pl: T) {
 
     match &mut net.get_node_mut(n1).params {
         params::Params::DiscreteStatesContinousTime(param) => {
-            param.cim = Some(arr3(&[[[-3.0, 2.0, 1.0], 
+            assert_eq!(Ok(()), param.set_cim(arr3(&[[[-3.0, 2.0, 1.0], 
                                   [1.5, -2.0, 0.5],
-                                  [0.4, 0.6, -1.0]]]));
+                                  [0.4, 0.6, -1.0]]])));
         }
     }
 
     match &mut net.get_node_mut(n2).params {
         params::Params::DiscreteStatesContinousTime(param) => {
-            param.cim = Some(arr3(&[
+            assert_eq!(Ok(()), param.set_cim(arr3(&[
                 [[-1.0, 0.5, 0.5], [3.0, -4.0, 1.0], [0.9, 0.1, -1.0]],
                 [[-6.0, 2.0, 4.0], [1.5, -2.0, 0.5], [3.0, 1.0, -4.0]],
                 [[-1.0, 0.1, 0.9], [2.0, -2.5, 0.5], [0.9, 0.1, -1.0]],
-            ]));
+            ])));
         }
     }
 
@@ -192,28 +192,28 @@ fn learn_mixed_discrete_cim<T: ParameterLearning> (pl: T) {
 
     match &mut net.get_node_mut(n1).params {
         params::Params::DiscreteStatesContinousTime(param) => {
-            param.cim = Some(arr3(&[[[-3.0, 2.0, 1.0], 
+            assert_eq!(Ok(()), param.set_cim(arr3(&[[[-3.0, 2.0, 1.0], 
                                   [1.5, -2.0, 0.5],
-                                  [0.4, 0.6, -1.0]]]));
+                                  [0.4, 0.6, -1.0]]])));
         }
     }
 
     match &mut net.get_node_mut(n2).params {
         params::Params::DiscreteStatesContinousTime(param) => {
-            param.cim = Some(arr3(&[
+            assert_eq!(Ok(()), param.set_cim(arr3(&[
                 [[-1.0, 0.5, 0.5], [3.0, -4.0, 1.0], [0.9, 0.1, -1.0]],
                 [[-6.0, 2.0, 4.0], [1.5, -2.0, 0.5], [3.0, 1.0, -4.0]],
                 [[-1.0, 0.1, 0.9], [2.0, -2.5, 0.5], [0.9, 0.1, -1.0]],
-            ]));
+            ])));
         }
     }
 
 
     match &mut net.get_node_mut(n3).params {
         params::Params::DiscreteStatesContinousTime(param) => {
-            param.cim = Some(arr3(&[
+            assert_eq!(Ok(()), param.set_cim(arr3(&[
                 [[-1.0, 0.5, 0.3, 0.2], [0.5, -4.0, 2.5, 1.0], [2.5, 0.5, -4.0, 1.0], [0.7, 0.2, 0.1, -1.0]],
-                [[-6.0, 2.0, 3.0, 1.0], [1.5, -3.0, 0.5, 1.0], [2.0, 1.3, -5.0 , 1.7], [2.5, 0.5, 1.0, -4.0]],
+                [[-6.0, 2.0, 3.0, 1.0], [1.5, -3.0, 0.5, 1.0], [2.0, 1.3, -5.0 ,1.7], [2.5, 0.5, 1.0, -4.0]],
                 [[-1.3, 0.3, 0.1, 0.9], [1.4, -4.0, 0.5, 2.1], [1.0, 1.5, -3.0, 0.5], [0.4, 0.3, 0.1, -0.8]],
 
                 [[-2.0, 1.0, 0.7, 0.3], [1.3, -5.9, 2.7, 1.9], [2.0, 1.5, -4.0, 0.5], [0.2, 0.7, 0.1, -1.0]],
@@ -223,12 +223,12 @@ fn learn_mixed_discrete_cim<T: ParameterLearning> (pl: T) {
                 [[-2.0, 1.0, 0.6, 0.4], [2.6, -7.1, 1.4, 3.1], [5.0, 1.0, -8.0, 2.0], [1.4, 0.4, 0.2, -2.0]],
                 [[-3.0, 1.0, 1.5, 0.5], [3.0, -6.0, 1.0, 2.0], [0.3, 0.5, -1.9, 1.1], [5.0, 1.0, 2.0, -8.0]],
                 [[-2.6, 0.6, 0.2, 1.8], [2.0, -6.0, 3.0, 1.0], [0.1, 0.5, -1.3, 0.7], [0.8, 0.6, 0.2, -1.6]],
-            ]));
+            ])));
         }
     }
 
 
-    let data = trajectory_generator(&net, 300, 200.0);
+    let data = trajectory_generator(&net, 300, 300.0);
     let (CIM, M, T) = pl.fit(&net, &data, 2, None);
     print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);
     assert_eq!(CIM.shape(), [9, 4, 4]);

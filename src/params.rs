@@ -1,16 +1,18 @@
+use enum_dispatch::enum_dispatch;
 use ndarray::prelude::*;
 use rand::Rng;
 use std::collections::{BTreeSet, HashMap};
 use thiserror::Error;
-use enum_dispatch::enum_dispatch;
 
 /// Error types for trait Params
-#[derive(Error, Debug)]
+#[derive(Error, Debug, PartialEq)]
 pub enum ParamsError {
     #[error("Unsupported method")]
     UnsupportedMethod(String),
     #[error("Paramiters not initialized")]
     ParametersNotInitialized(String),
+    #[error("Invalid cim for parameter")]
+    InvalidCIM(String),
 }
 
 /// Allowed type of states
@@ -43,6 +45,9 @@ pub trait ParamsTrait {
 
     /// Index used by discrete node to represents their states as usize.
     fn state_to_index(&self, state: &StateType) -> usize;
+
+    /// Validate parameters against domain
+    fn validate_params(&self) -> Result<(), ParamsError>;
 }
 
 /// The Params enum is the core element for building different types of nodes. The goal is to
@@ -51,7 +56,6 @@ pub trait ParamsTrait {
 pub enum Params {
     DiscreteStatesContinousTime(DiscreteStatesContinousTimeParams),
 }
-
 
 /// DiscreteStatesContinousTime.
 /// This represents the parameters of a classical discrete node for ctbn and it's composed by the
@@ -65,21 +69,65 @@ pub enum Params {
 ///     - **residence_time**: permanence time in each possible states given a specific
 ///     realization of the parent set
 pub struct DiscreteStatesContinousTimeParams {
-    pub domain: BTreeSet<String>,
-    pub cim: Option<Array3<f64>>,
-    pub transitions: Option<Array3<u64>>,
-    pub residence_time: Option<Array2<f64>>,
+    domain: BTreeSet<String>,
+    cim: Option<Array3<f64>>,
+    transitions: Option<Array3<u64>>,
+    residence_time: Option<Array2<f64>>,
 }
 
 impl DiscreteStatesContinousTimeParams {
     pub fn init(domain: BTreeSet<String>) -> DiscreteStatesContinousTimeParams {
         DiscreteStatesContinousTimeParams {
-            domain: domain,
+            domain,
             cim: Option::None,
             transitions: Option::None,
             residence_time: Option::None,
         }
     }
+    
+    ///Getter function for CIM
+    pub fn get_cim(&self) -> &Option<Array3<f64>> {
+        &self.cim
+    } 
+
+    ///Setter function for CIM.\\
+    ///This function check if the cim is valid using the validate_params method. 
+    ///- **Valid cim inserted**: it substitute the CIM in self.cim and return Ok(())
+    ///- **Invalid cim inserted**: it replace the self.cim value with None and it retu  ParamsError
+    pub fn set_cim(&mut self, cim: Array3<f64>) -> Result<(), ParamsError>{
+        self.cim = Some(cim);
+        match self.validate_params() {
+            Ok(()) => Ok(()),
+            Err(e) => {
+                self.cim = None;
+                Err(e)
+            }
+        }
+    }
+
+
+    ///Getter function for transitions
+    pub fn get_transitions(&self) -> &Option<Array3<u64>> {
+        &self.transitions
+    }
+
+
+    ///Setter function for transitions
+    pub fn set_transitions(&mut self, transitions: Array3<u64>) {
+        self.transitions = Some(transitions);
+    }
+
+    ///Getter function for residence_time
+    pub fn get_residence_time(&self) -> &Option<Array2<f64>> {
+        &self.residence_time
+    }
+
+
+    ///Setter function for residence_time
+    pub fn set_residence_time(&mut self, residence_time: Array2<f64>) {
+        self.residence_time = Some(residence_time);
+    }
+
 }
 
 impl ParamsTrait for DiscreteStatesContinousTimeParams {
@@ -157,5 +205,45 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
             StateType::Discrete(val) => val.clone() as usize,
         }
     }
-}
 
+    fn validate_params(&self) -> Result<(), ParamsError> {
+        let domain_size = self.domain.len();
+
+        // Check if the cim is initialized
+        if let None = self.cim {
+            return Err(ParamsError::ParametersNotInitialized(String::from(
+                "CIM not initialized",
+            )));
+        }
+        let cim = self.cim.as_ref().unwrap();
+        // Check if the inner dimensions of the cim are equal to the cardinality of the variable
+        if cim.shape()[1] != domain_size || cim.shape()[2] != domain_size {
+            return Err(ParamsError::InvalidCIM(format!(
+                "Incompatible shape {:?} with domain {:?}",
+                cim.shape(),
+                domain_size
+            )));
+        }
+
+        // Check if the diagonal of each cim is non-positive
+        if cim
+            .axis_iter(Axis(0))
+            .any(|x| x.diag().iter().any(|x| x >= &0.0))
+        {
+            return Err(ParamsError::InvalidCIM(String::from(
+                "The diagonal of each cim must be non-positive",
+            )));
+        }
+
+        // Check if each row sum up to 0
+        if cim.sum_axis(Axis(2)).iter()
+            .any(|x| f64::abs(x.clone()) > f64::EPSILON * 3.0)
+        {
+            return Err(ParamsError::InvalidCIM(String::from(
+                "The sum of each row must be 0",
+            )));
+        }
+
+        return Ok(());
+    }
+}
