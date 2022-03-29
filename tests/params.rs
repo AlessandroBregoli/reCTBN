@@ -70,6 +70,14 @@ fn test_validate_params_valid_cim() {
 }
 
 #[test]
+fn test_validate_params_valid_cim_with_huge_values() {
+    let mut param = utils::generate_discrete_time_continous_param(3);
+    let cim = array![[[-2e10, 1e10, 1e10], [1.5e10, -3e10, 1.5e10], [1e10, 1e10, -2e10]]];
+    let result = param.set_cim(cim);
+    assert_eq!(Ok(()), result);
+}
+
+#[test]
 fn test_validate_params_cim_not_initialized() {
     let param = utils::generate_discrete_time_continous_param(3);
     assert_eq!(
@@ -80,7 +88,6 @@ fn test_validate_params_cim_not_initialized() {
     );
 }
 
-
 #[test]
 fn test_validate_params_wrong_shape() {
     let mut param = utils::generate_discrete_time_continous_param(4);
@@ -88,12 +95,11 @@ fn test_validate_params_wrong_shape() {
     let result = param.set_cim(cim);
     assert_eq!(
         Err(ParamsError::InvalidCIM(String::from(
-                "Incompatible shape [1, 3, 3] with domain 4"
-            ))),
+            "Incompatible shape [1, 3, 3] with domain 4"
+        ))),
         result
     );
 }
-
 
 #[test]
 fn test_validate_params_positive_diag() {
@@ -102,12 +108,11 @@ fn test_validate_params_positive_diag() {
     let result = param.set_cim(cim);
     assert_eq!(
         Err(ParamsError::InvalidCIM(String::from(
-                "The diagonal of each cim must be non-positive",
-            ))),
+            "The diagonal of each cim must be non-positive",
+        ))),
         result
     );
 }
-
 
 #[test]
 fn test_validate_params_row_not_sum_to_zero() {
@@ -117,7 +122,7 @@ fn test_validate_params_row_not_sum_to_zero() {
     assert_eq!(
         Err(ParamsError::InvalidCIM(String::from(
             "The sum of each row must be 0"
-            ))),
+        ))),
         result
     );
 }
