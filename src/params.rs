@@ -90,7 +90,7 @@ impl DiscreteStatesContinousTimeParams {
         &self.cim
     } 
 
-    ///Setter function for CIM
+    ///Setter function for CIM.\\
     ///This function check if the cim is valid using the validate_params method. 
     ///- **Valid cim inserted**: it substitute the CIM in self.cim and return Ok(())
     ///- **Invalid cim inserted**: it replace the self.cim value with None and it retu  ParamsError
@@ -105,20 +105,25 @@ impl DiscreteStatesContinousTimeParams {
         }
     }
 
+
+    ///Getter function for transitions
     pub fn get_transitions(&self) -> &Option<Array3<u64>> {
         &self.transitions
     }
 
 
+    ///Setter function for transitions
     pub fn set_transitions(&mut self, transitions: Array3<u64>) {
         self.transitions = Some(transitions);
     }
 
+    ///Getter function for residence_time
     pub fn get_residence_time(&self) -> &Option<Array2<f64>> {
         &self.residence_time
     }
 
 
+    ///Setter function for residence_time
     pub fn set_residence_time(&mut self, residence_time: Array2<f64>) {
         self.residence_time = Some(residence_time);
     }
