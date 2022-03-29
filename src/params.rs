@@ -84,11 +84,16 @@ impl DiscreteStatesContinousTimeParams {
             residence_time: Option::None,
         }
     }
-
+    
+    ///Getter function for CIM
     pub fn get_cim(&self) -> &Option<Array3<f64>> {
         &self.cim
     } 
 
+    ///Setter function for CIM
+    ///This function check if the cim is valid using the validate_params method. 
+    ///- **Valid cim inserted**: it substitute the CIM in self.cim and return Ok(())
+    ///- **Invalid cim inserted**: it replace the self.cim value with None and it retu  ParamsError
     pub fn set_cim(&mut self, cim: Array3<f64>) -> Result<(), ParamsError>{
         self.cim = Some(cim);
         match self.validate_params() {
