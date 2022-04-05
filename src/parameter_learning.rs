@@ -114,8 +114,8 @@ impl ParameterLearning for MLE {
 }
 
 pub struct BayesianApproach {
-    pub default_alpha: usize,
-    pub default_tau: f64
+    pub alpha: usize,
+    pub tau: f64
 }
 
 impl ParameterLearning for BayesianApproach {
@@ -135,13 +135,15 @@ impl ParameterLearning for BayesianApproach {
         };
         
         let (mut M, mut T) = sufficient_statistics(net, dataset, node.clone(), &parent_set);
-        M.mapv_inplace(|x|{x + self.default_alpha});
-        T.mapv_inplace(|x|{x + self.default_tau});
+
+        let alpha: f64 = self.alpha as f64 / M.shape()[0] as f64;
+        let tau: f64 = self.tau as f64 / M.shape()[0] as f64;
+
         //Compute the CIM as M[i,x,y]/T[i,x]  
         let mut CIM: Array3<f64> = Array::zeros((M.shape()[0], M.shape()[1], M.shape()[2]));
         CIM.axis_iter_mut(Axis(2))
             .zip(M.mapv(|x| x as f64).axis_iter(Axis(2)))
-            .for_each(|(mut C, m)| C.assign(&(&m/&T)));
+            .for_each(|(mut C, m)| C.assign(&(&m.mapv(|y| y + alpha)/&T.mapv(|y| y + tau))));
 
         //Set the diagonal of the inner matrices to the the row sum multiplied by -1
         let tmp_diag_sum: Array2<f64> = CIM.sum_axis(Axis(2)).mapv(|x| x * -1.0);

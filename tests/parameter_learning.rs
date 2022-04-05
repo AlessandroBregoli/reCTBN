@@ -60,8 +60,8 @@ fn learn_binary_cim_MLE() {
 #[test]
 fn learn_binary_cim_BA() {
     let ba = BayesianApproach{
-        default_alpha: 1,
-        default_tau: 1.0};
+        alpha: 1,
+        tau: 1.0};
     learn_binary_cim(ba);
 }
 
@@ -115,8 +115,8 @@ fn learn_ternary_cim_MLE() {
 #[test]
 fn learn_ternary_cim_BA() {
     let ba = BayesianApproach{
-        default_alpha: 1,
-        default_tau: 1.0};
+        alpha: 1,
+        tau: 1.0};
     learn_ternary_cim(ba);
 }
 
@@ -168,8 +168,8 @@ fn learn_ternary_cim_no_parents_MLE() {
 #[test]
 fn learn_ternary_cim_no_parents_BA() {
     let ba = BayesianApproach{
-        default_alpha: 1,
-        default_tau: 1.0};
+        alpha: 1,
+        tau: 1.0};
     learn_ternary_cim_no_parents(ba);
 }
 
@@ -257,7 +257,7 @@ fn learn_mixed_discrete_cim_MLE() {
 #[test]
 fn learn_mixed_discrete_cim_BA() {
     let ba = BayesianApproach{
-        default_alpha: 1,
-        default_tau: 1.0};
+        alpha: 1,
+        tau: 1.0};
     learn_mixed_discrete_cim(ba);
 }
