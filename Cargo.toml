@@ -12,6 +12,7 @@ thiserror = "*"
 rand = "*"
 bimap = "*"
 enum_dispatch = "*"
+statrs = "*"
 
 [dev-dependencies]
 approx = "*"

@@ -8,4 +8,5 @@ pub mod network;
 pub mod ctbn;
 pub mod tools;
 pub mod parameter_learning;
+pub mod structure_learning;
 
