@@ -19,11 +19,13 @@ pub fn trajectory_generator<T: network::Network>(
     net: &T,
     n_trajectories: u64,
     t_end: f64,
-    seed: u64,
+    seed: Option<u64>,
 ) -> Dataset {
     let mut dataset = Dataset {
         trajectories: Vec::new(),
     };
+
+    let seed = seed.unwrap_or_else(rand::random);
 
     let mut rng = ChaCha8Rng::seed_from_u64(seed);
 
