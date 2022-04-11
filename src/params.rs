@@ -36,7 +36,7 @@ pub trait ParamsTrait {
 
     /// Randomly generate a residence time for the given node taking into account the node state
     /// and its parent set.
-    fn get_random_residence_time(&self, state: usize, u: usize) -> Result<f64, ParamsError>;
+    fn get_random_residence_time(&self, state: usize, u: usize, rng: &mut ChaCha8Rng) -> Result<f64, ParamsError>;
 
     /// Randomly generate a possible state for the given node taking into account the node state
     /// and its parent set.
@@ -143,7 +143,7 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
         StateType::Discrete(rng.gen_range(0..(self.domain.len())))
     }
 
-    fn get_random_residence_time(&self, state: usize, u: usize) -> Result<f64, ParamsError> {
+    fn get_random_residence_time(&self, state: usize, u: usize, rng: &mut ChaCha8Rng) -> Result<f64, ParamsError> {
         // Generate a random residence time given the current state of the node and its parent set.
         // The method used is described in:
         // https://en.wikipedia.org/wiki/Exponential_distribution#Generating_exponential_variates

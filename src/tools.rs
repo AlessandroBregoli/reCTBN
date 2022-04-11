@@ -56,6 +56,7 @@ pub fn trajectory_generator<T: network::Network>(
                             .get_random_residence_time(
                                 net.get_node(idx).params.state_to_index(&current_state[idx]),
                                 net.get_param_index_network(idx, &current_state),
+                                &mut rng,
                             )
                             .unwrap()
                             + t,

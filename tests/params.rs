@@ -61,7 +61,9 @@ fn test_random_generation_residence_time() {
     let param = create_ternary_discrete_time_continous_param();
     let mut states = Array1::<f64>::zeros(10000);
 
-    states.mapv_inplace(|_| param.get_random_residence_time(1, 0).unwrap());
+    let mut rng = ChaCha8Rng::seed_from_u64(123456);
+
+    states.mapv_inplace(|_| param.get_random_residence_time(1, 0, &mut rng).unwrap());
 
     assert_relative_eq!(1.0 / 5.0, states.mean().unwrap(), epsilon = 0.01);
 }
