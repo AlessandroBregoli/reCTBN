@@ -42,8 +42,10 @@ fn test_random_generation_state() {
     let param = create_ternary_discrete_time_continous_param();
     let mut states = Array1::<usize>::zeros(10000);
 
+    let mut rng = ChaCha8Rng::seed_from_u64(123456);
+
     states.mapv_inplace(|_| {
-        if let StateType::Discrete(val) = param.get_random_state(1, 0).unwrap() {
+        if let StateType::Discrete(val) = param.get_random_state(1, 0, &mut rng).unwrap() {
             val
         } else {
             panic!()

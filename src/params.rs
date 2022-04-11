@@ -40,7 +40,7 @@ pub trait ParamsTrait {
 
     /// Randomly generate a possible state for the given node taking into account the node state
     /// and its parent set.
-    fn get_random_state(&self, state: usize, u: usize) -> Result<StateType, ParamsError>;
+    fn get_random_state(&self, state: usize, u: usize, rng: &mut ChaCha8Rng) -> Result<StateType, ParamsError>;
 
     /// Used by childern of the node described by this parameters to reserve spaces in their CIMs.
     fn get_reserved_space_as_parent(&self) -> usize;
@@ -160,7 +160,7 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
         }
     }
 
-    fn get_random_state(&self, state: usize, u: usize) -> Result<StateType, ParamsError> {
+    fn get_random_state(&self, state: usize, u: usize, rng: &mut ChaCha8Rng) -> Result<StateType, ParamsError> {
         // Generate a random transition given the current state of the node and its parent set.
         // The method used is described in:
         // https://en.wikipedia.org/wiki/Multinomial_distribution#Sampling_from_a_multinomial_distribution

@@ -84,6 +84,7 @@ pub fn trajectory_generator<T: network::Network>(
                         .params
                         .state_to_index(&current_state[next_node_transition]),
                     net.get_param_index_network(next_node_transition, &current_state),
+                    &mut rng,
                 )
                 .unwrap();
 
