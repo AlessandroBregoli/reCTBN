@@ -12,7 +12,6 @@ thiserror = "*"
 rand = "*"
 bimap = "*"
 enum_dispatch = "*"
-rand_core = "*"
 rand_chacha = "*"
 
 [dev-dependencies]

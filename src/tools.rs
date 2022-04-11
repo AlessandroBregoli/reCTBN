@@ -4,7 +4,7 @@ use crate::params;
 use crate::params::ParamsTrait;
 use ndarray::prelude::*;
 use rand_chacha::ChaCha8Rng;
-use rand_core::SeedableRng;
+use rand_chacha::rand_core::SeedableRng;
 
 pub struct Trajectory {
     pub time: Array1<f64>,
