@@ -1,8 +1,10 @@
 use enum_dispatch::enum_dispatch;
 use ndarray::prelude::*;
 use rand::Rng;
+use rand::rngs::ThreadRng;
 use std::collections::{BTreeSet, HashMap};
 use thiserror::Error;
+use rand_chacha::ChaCha8Rng;
 
 /// Error types for trait Params
 #[derive(Error, Debug, PartialEq)]
@@ -30,7 +32,7 @@ pub trait ParamsTrait {
 
     /// Randomly generate a possible state of the node disregarding the state of the node and it's
     /// parents.
-    fn get_random_state_uniform(&self) -> StateType;
+    fn get_random_state_uniform(&self, rng: &mut ChaCha8Rng) -> StateType;
 
     /// Randomly generate a residence time for the given node taking into account the node state
     /// and its parent set.
@@ -137,8 +139,7 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
         self.residence_time = Option::None;
     }
 
-    fn get_random_state_uniform(&self) -> StateType {
-        let mut rng = rand::thread_rng();
+    fn get_random_state_uniform(&self, rng: &mut ChaCha8Rng) -> StateType {
         StateType::Discrete(rng.gen_range(0..(self.domain.len())))
     }
 

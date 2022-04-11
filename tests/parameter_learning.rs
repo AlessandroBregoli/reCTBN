@@ -40,7 +40,7 @@ fn learn_binary_cim<T: ParameterLearning> (pl: T) {
         }
     }
 
-    let data = trajectory_generator(&net, 100, 100.0);
+    let data = trajectory_generator(&net, 100, 100.0, 1234,);
     let (CIM, M, T) = pl.fit(&net, &data, 1, None);
     print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);
     assert_eq!(CIM.shape(), [2, 2, 2]);
@@ -93,7 +93,7 @@ fn learn_ternary_cim<T: ParameterLearning> (pl: T) {
         }
     }
 
-    let data = trajectory_generator(&net, 100, 200.0);
+    let data = trajectory_generator(&net, 100, 200.0, 1234,);
     let (CIM, M, T) = pl.fit(&net, &data, 1, None);
     print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);
     assert_eq!(CIM.shape(), [3, 3, 3]);
@@ -148,7 +148,7 @@ fn learn_ternary_cim_no_parents<T: ParameterLearning> (pl: T) {
         }
     }
 
-    let data = trajectory_generator(&net, 100, 200.0);
+    let data = trajectory_generator(&net, 100, 200.0, 1234,);
     let (CIM, M, T) = pl.fit(&net, &data, 0, None);
     print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);
     assert_eq!(CIM.shape(), [1, 3, 3]);
@@ -228,7 +228,7 @@ fn learn_mixed_discrete_cim<T: ParameterLearning> (pl: T) {
     }
 
 
-    let data = trajectory_generator(&net, 300, 300.0);
+    let data = trajectory_generator(&net, 300, 300.0, 1234,);
     let (CIM, M, T) = pl.fit(&net, &data, 2, None);
     print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);
     assert_eq!(CIM.shape(), [9, 4, 4]);

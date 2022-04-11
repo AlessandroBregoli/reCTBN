@@ -1,6 +1,8 @@
 use ndarray::prelude::*;
 use rustyCTBN::params::*;
 use std::collections::BTreeSet;
+use rand_chacha::ChaCha8Rng;
+use rand_core::SeedableRng;
 
 mod utils;
 
@@ -21,8 +23,10 @@ fn test_uniform_generation() {
     let param = create_ternary_discrete_time_continous_param();
     let mut states = Array1::<usize>::zeros(10000);
 
+    let mut rng = ChaCha8Rng::seed_from_u64(123456);
+
     states.mapv_inplace(|_| {
-        if let StateType::Discrete(val) = param.get_random_state_uniform() {
+        if let StateType::Discrete(val) = param.get_random_state_uniform(&mut rng) {
             val
         } else {
             panic!()
