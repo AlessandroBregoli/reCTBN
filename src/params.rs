@@ -1,7 +1,6 @@
 use enum_dispatch::enum_dispatch;
 use ndarray::prelude::*;
 use rand::Rng;
-use rand::rngs::ThreadRng;
 use std::collections::{BTreeSet, HashMap};
 use thiserror::Error;
 use rand_chacha::ChaCha8Rng;
@@ -149,7 +148,6 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
         // https://en.wikipedia.org/wiki/Exponential_distribution#Generating_exponential_variates
         match &self.cim {
             Option::Some(cim) => {
-                let mut rng = rand::thread_rng();
                 let lambda = cim[[u, state, state]] * -1.0;
                 let x: f64 = rng.gen_range(0.0..=1.0);
                 Ok(-x.ln() / lambda)
@@ -166,7 +164,6 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
         // https://en.wikipedia.org/wiki/Multinomial_distribution#Sampling_from_a_multinomial_distribution
         match &self.cim {
             Option::Some(cim) => {
-                let mut rng = rand::thread_rng();
                 let lambda = cim[[u, state, state]] * -1.0;
                 let urand: f64 = rng.gen_range(0.0..=1.0);
 
