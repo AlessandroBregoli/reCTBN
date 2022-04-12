@@ -1,6 +1,8 @@
 use ndarray::prelude::*;
 use rustyCTBN::params::*;
 use std::collections::BTreeSet;
+use rand_chacha::ChaCha8Rng;
+use rand_chacha::rand_core::SeedableRng;
 
 mod utils;
 
@@ -21,8 +23,10 @@ fn test_uniform_generation() {
     let param = create_ternary_discrete_time_continous_param();
     let mut states = Array1::<usize>::zeros(10000);
 
+    let mut rng = ChaCha8Rng::seed_from_u64(6347747169756259);
+
     states.mapv_inplace(|_| {
-        if let StateType::Discrete(val) = param.get_random_state_uniform() {
+        if let StateType::Discrete(val) = param.get_random_state_uniform(&mut rng) {
             val
         } else {
             panic!()
@@ -38,8 +42,10 @@ fn test_random_generation_state() {
     let param = create_ternary_discrete_time_continous_param();
     let mut states = Array1::<usize>::zeros(10000);
 
+    let mut rng = ChaCha8Rng::seed_from_u64(6347747169756259);
+
     states.mapv_inplace(|_| {
-        if let StateType::Discrete(val) = param.get_random_state(1, 0).unwrap() {
+        if let StateType::Discrete(val) = param.get_random_state(1, 0, &mut rng).unwrap() {
             val
         } else {
             panic!()
@@ -57,7 +63,9 @@ fn test_random_generation_residence_time() {
     let param = create_ternary_discrete_time_continous_param();
     let mut states = Array1::<f64>::zeros(10000);
 
-    states.mapv_inplace(|_| param.get_random_residence_time(1, 0).unwrap());
+    let mut rng = ChaCha8Rng::seed_from_u64(6347747169756259);
+
+    states.mapv_inplace(|_| param.get_random_residence_time(1, 0, &mut rng).unwrap());
 
     assert_relative_eq!(1.0 / 5.0, states.mean().unwrap(), epsilon = 0.01);
 }
