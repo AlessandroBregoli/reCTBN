@@ -50,6 +50,6 @@ fn simple_bic() {
 
     let ll = BIC::init(1, 1.0);
 
-    assert_abs_diff_eq!(0.04257, ll.call(&net, n1, &BTreeSet::new(), &dataset), epsilon=1e-3);
+    assert_abs_diff_eq!(-0.65058, ll.call(&net, n1, &BTreeSet::new(), &dataset), epsilon=1e-3);
 
 }
