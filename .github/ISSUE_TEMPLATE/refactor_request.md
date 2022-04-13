@@ -2,7 +2,7 @@
 name: ⚙️ Refactor request
 about: Suggest a refactor for this project
 title: '[Refactor] '
-labels: 'enhancement'
+labels: enhancement, refactor
 assignees: ''
 
 ---
