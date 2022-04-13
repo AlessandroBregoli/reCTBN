@@ -92,8 +92,16 @@ fn learn_ternary_net_2_nodes<T: StructureLearningAlgorithm> (sl: T) {
     assert_eq!(BTreeSet::new(), net.get_parent_set(n1));
 }
 
+
 #[test]
-pub fn learn_ternary_net_2_nodes_hill_climbing() {
+pub fn learn_ternary_net_2_nodes_hill_climbing_ll() {
+    let ll = LogLikelihood::init(1, 1.0);
+    let hl = HillClimbing::init(ll);
+    learn_ternary_net_2_nodes(hl);
+}
+
+#[test]
+pub fn learn_ternary_net_2_nodes_hill_climbing_bic() {
     let bic = BIC::init(1, 1.0);
     let hl = HillClimbing::init(bic);
     learn_ternary_net_2_nodes(hl);
