@@ -3,6 +3,8 @@ use crate::node;
 use crate::params;
 use crate::params::ParamsTrait;
 use ndarray::prelude::*;
+use rand_chacha::ChaCha8Rng;
+use rand_chacha::rand_core::SeedableRng;
 
 pub struct Trajectory {
     pub time: Array1<f64>,
@@ -17,10 +19,15 @@ pub fn trajectory_generator<T: network::Network>(
     net: &T,
     n_trajectories: u64,
     t_end: f64,
+    seed: Option<u64>,
 ) -> Dataset {
     let mut dataset = Dataset {
         trajectories: Vec::new(),
     };
+
+    let seed = seed.unwrap_or_else(rand::random);
+
+    let mut rng = ChaCha8Rng::seed_from_u64(seed);
 
     let node_idx: Vec<_> = net.get_node_indices().collect();
     for _ in 0..n_trajectories {
@@ -29,7 +36,7 @@ pub fn trajectory_generator<T: network::Network>(
         let mut events: Vec<Array1<usize>> = Vec::new();
         let mut current_state: Vec<params::StateType> = node_idx
             .iter()
-            .map(|x| net.get_node(*x).params.get_random_state_uniform())
+            .map(|x| net.get_node(*x).params.get_random_state_uniform(&mut rng))
             .collect();
         let mut next_transitions: Vec<Option<f64>> =
             (0..node_idx.len()).map(|_| Option::None).collect();
@@ -51,6 +58,7 @@ pub fn trajectory_generator<T: network::Network>(
                             .get_random_residence_time(
                                 net.get_node(idx).params.state_to_index(&current_state[idx]),
                                 net.get_param_index_network(idx, &current_state),
+                                &mut rng,
                             )
                             .unwrap()
                             + t,
@@ -78,6 +86,7 @@ pub fn trajectory_generator<T: network::Network>(
                         .params
                         .state_to_index(&current_state[next_node_transition]),
                     net.get_param_index_network(next_node_transition, &current_state),
+                    &mut rng,
                 )
                 .unwrap();
 

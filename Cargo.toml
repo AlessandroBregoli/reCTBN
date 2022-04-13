@@ -13,6 +13,7 @@ rand = "*"
 bimap = "*"
 enum_dispatch = "*"
 statrs = "*"
+rand_chacha = "*"
 
 [dev-dependencies]
 approx = "*"

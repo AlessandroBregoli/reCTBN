@@ -3,6 +3,7 @@ use ndarray::prelude::*;
 use rand::Rng;
 use std::collections::{BTreeSet, HashMap};
 use thiserror::Error;
+use rand_chacha::ChaCha8Rng;
 
 /// Error types for trait Params
 #[derive(Error, Debug, PartialEq)]
@@ -30,15 +31,15 @@ pub trait ParamsTrait {
 
     /// Randomly generate a possible state of the node disregarding the state of the node and it's
     /// parents.
-    fn get_random_state_uniform(&self) -> StateType;
+    fn get_random_state_uniform(&self, rng: &mut ChaCha8Rng) -> StateType;
 
     /// Randomly generate a residence time for the given node taking into account the node state
     /// and its parent set.
-    fn get_random_residence_time(&self, state: usize, u: usize) -> Result<f64, ParamsError>;
+    fn get_random_residence_time(&self, state: usize, u: usize, rng: &mut ChaCha8Rng) -> Result<f64, ParamsError>;
 
     /// Randomly generate a possible state for the given node taking into account the node state
     /// and its parent set.
-    fn get_random_state(&self, state: usize, u: usize) -> Result<StateType, ParamsError>;
+    fn get_random_state(&self, state: usize, u: usize, rng: &mut ChaCha8Rng) -> Result<StateType, ParamsError>;
 
     /// Used by childern of the node described by this parameters to reserve spaces in their CIMs.
     fn get_reserved_space_as_parent(&self) -> usize;
@@ -137,18 +138,16 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
         self.residence_time = Option::None;
     }
 
-    fn get_random_state_uniform(&self) -> StateType {
-        let mut rng = rand::thread_rng();
+    fn get_random_state_uniform(&self, rng: &mut ChaCha8Rng) -> StateType {
         StateType::Discrete(rng.gen_range(0..(self.domain.len())))
     }
 
-    fn get_random_residence_time(&self, state: usize, u: usize) -> Result<f64, ParamsError> {
+    fn get_random_residence_time(&self, state: usize, u: usize, rng: &mut ChaCha8Rng) -> Result<f64, ParamsError> {
         // Generate a random residence time given the current state of the node and its parent set.
         // The method used is described in:
         // https://en.wikipedia.org/wiki/Exponential_distribution#Generating_exponential_variates
         match &self.cim {
             Option::Some(cim) => {
-                let mut rng = rand::thread_rng();
                 let lambda = cim[[u, state, state]] * -1.0;
                 let x: f64 = rng.gen_range(0.0..=1.0);
                 Ok(-x.ln() / lambda)
@@ -159,13 +158,12 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
         }
     }
 
-    fn get_random_state(&self, state: usize, u: usize) -> Result<StateType, ParamsError> {
+    fn get_random_state(&self, state: usize, u: usize, rng: &mut ChaCha8Rng) -> Result<StateType, ParamsError> {
         // Generate a random transition given the current state of the node and its parent set.
         // The method used is described in:
         // https://en.wikipedia.org/wiki/Multinomial_distribution#Sampling_from_a_multinomial_distribution
         match &self.cim {
             Option::Some(cim) => {
-                let mut rng = rand::thread_rng();
                 let lambda = cim[[u, state, state]] * -1.0;
                 let urand: f64 = rng.gen_range(0.0..=1.0);
 
