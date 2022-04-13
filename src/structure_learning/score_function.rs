@@ -6,12 +6,6 @@ use ndarray::prelude::*;
 use statrs::function::gamma;
 use std::collections::BTreeSet;
 
-pub trait StructureLearning {
-    fn fit<T>(&self, net: T, dataset: &tools::Dataset) -> T
-    where
-        T: network::Network;
-}
-
 pub trait ScoreFunction {
     fn call<T>(
         &self,
