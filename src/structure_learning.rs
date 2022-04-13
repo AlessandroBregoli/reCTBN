@@ -13,7 +13,7 @@ pub trait StructureLearning {
 }
 
 pub trait ScoreFunction {
-    fn compute_score<T>(
+    fn call<T>(
         &self,
         net: &T,
         node: usize,
@@ -36,16 +36,14 @@ impl LogLikelihood {
         }
         LogLikelihood { alpha, tau }
     }
-}
 
-impl ScoreFunction for LogLikelihood {
     fn compute_score<T>(
         &self,
         net: &T,
         node: usize,
         parent_set: &BTreeSet<usize>,
         dataset: &tools::Dataset,
-    ) -> f64
+    ) -> (f64, Array3<usize>)
     where
         T: network::Network,
     {
@@ -75,8 +73,55 @@ impl ScoreFunction for LogLikelihood {
                               + y.iter().map(|z| 
                                              gamma::ln_gamma(alpha + *z as f64) 
                                              - gamma::ln_gamma(alpha)).sum::<f64>()).sum::<f64>()).sum();
-                log_ll_theta + log_ll_q
+                (log_ll_theta + log_ll_q, M)
             }
         }
+    }
+
+
+
+}
+
+impl ScoreFunction for LogLikelihood {
+    fn call<T>(
+        &self,
+        net: &T,
+        node: usize,
+        parent_set: &BTreeSet<usize>,
+        dataset: &tools::Dataset,
+    ) -> f64
+    where
+        T: network::Network,
+    {
+        self.compute_score(net, node, parent_set, dataset).0
+    }
+}
+
+pub struct BIC {
+    ll: LogLikelihood
+}
+
+impl BIC {
+    pub fn init(alpha: usize, tau: f64) -> BIC {
+        BIC {
+            ll: LogLikelihood::init(alpha, tau)
+        }
+    }
+}
+
+impl ScoreFunction for BIC {
+    fn call<T>(
+        &self,
+        net: &T,
+        node: usize,
+        parent_set: &BTreeSet<usize>,
+        dataset: &tools::Dataset,
+    ) -> f64
+    where
+        T: network::Network {
+        let (ll, M) = self.ll.compute_score(net, node, parent_set, dataset);
+        let n_parameters = M.shape()[0] * M.shape()[1] * (M.shape()[2] - 1);
+        let sample_size = M.sum();
+        ll - f64::ln(sample_size as f64) / 2.0 * n_parameters as f64
     }
 }

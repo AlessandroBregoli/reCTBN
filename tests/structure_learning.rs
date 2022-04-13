@@ -29,9 +29,27 @@ fn simple_log_likelihood() {
 
     let ll = LogLikelihood::init(1, 1.0);
 
-    assert_abs_diff_eq!(0.04257, ll.compute_score(&net, n1, &BTreeSet::new(), &dataset), epsilon=1e-3);
+    assert_abs_diff_eq!(0.04257, ll.call(&net, n1, &BTreeSet::new(), &dataset), epsilon=1e-3);
 
-    
+}
 
+
+#[test]
+fn simple_bic() {
+    let mut net = CtbnNetwork::init();
+    let n1 = net
+        .add_node(generate_discrete_time_continous_node(String::from("n1"),2))
+        .unwrap();
+
+    let trj = Trajectory{
+        time: arr1(&[0.0,0.1,0.3]),
+        events: arr2(&[[0],[1],[1]])};
+
+    let dataset = Dataset{
+        trajectories: vec![trj]};
+
+    let ll = BIC::init(1, 1.0);
+
+    assert_abs_diff_eq!(0.04257, ll.call(&net, n1, &BTreeSet::new(), &dataset), epsilon=1e-3);
 
 }
