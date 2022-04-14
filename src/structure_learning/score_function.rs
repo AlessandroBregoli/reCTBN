@@ -116,7 +116,7 @@ impl ScoreFunction for BIC {
         let (ll, M) = self.ll.compute_score(net, node, parent_set, dataset);
         let n_parameters = M.shape()[0] * M.shape()[1] * (M.shape()[2] - 1);
         //TODO: Optimize this
-        let sample_size: usize = dataset.trajectories.iter().map(|x| x.time.len() -1).sum();
+        let sample_size: usize = dataset.get_trajectories().iter().map(|x| x.get_time().len() - 1).sum();
         ll - f64::ln(sample_size as f64) / 2.0 * n_parameters as f64
     }
 }

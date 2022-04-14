@@ -17,18 +17,17 @@ use rustyCTBN::params;
 extern crate approx;
 
 #[test]
-fn simple_log_likelihood() {
+fn simple_score_test() {
     let mut net = CtbnNetwork::init();
     let n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"),2))
         .unwrap();
 
-    let trj = Trajectory{
-        time: arr1(&[0.0,0.1,0.3]),
-        events: arr2(&[[0],[1],[1]])};
+    let trj = Trajectory::init(
+        arr1(&[0.0,0.1,0.3]),
+        arr2(&[[0],[1],[1]]));
 
-    let dataset = Dataset{
-        trajectories: vec![trj]};
+    let dataset = Dataset::init(vec![trj]);
 
     let ll = LogLikelihood::init(1, 1.0);
 
@@ -44,16 +43,14 @@ fn simple_bic() {
         .add_node(generate_discrete_time_continous_node(String::from("n1"),2))
         .unwrap();
 
-    let trj = Trajectory{
-        time: arr1(&[0.0,0.1,0.3]),
-        events: arr2(&[[0],[1],[1]])};
+    let trj = Trajectory::init(
+        arr1(&[0.0,0.1,0.3]),
+        arr2(&[[0],[1],[1]]));
 
-    let dataset = Dataset{
-        trajectories: vec![trj]};
+    let dataset = Dataset::init(vec![trj]);
+    let bic = BIC::init(1, 1.0);
 
-    let ll = BIC::init(1, 1.0);
-
-    assert_abs_diff_eq!(-0.65058, ll.call(&net, n1, &BTreeSet::new(), &dataset), epsilon=1e-3);
+    assert_abs_diff_eq!(-0.65058, bic.call(&net, n1, &BTreeSet::new(), &dataset), epsilon=1e-3);
 
 }
 

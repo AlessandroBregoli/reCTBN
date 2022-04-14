@@ -57,12 +57,12 @@ pub fn sufficient_statistics<T:network::Network>(
     let mut T: Array2<f64> = Array::zeros((parentset_domain.iter().product(), node_domain));
 
     //Compute the sufficient statistics
-    for trj in dataset.trajectories.iter() {
-        for idx in 0..(trj.time.len() - 1) {
-            let t1 = trj.time[idx];
-            let t2 = trj.time[idx + 1];
-            let ev1 = trj.events.row(idx);
-            let ev2 = trj.events.row(idx + 1);
+    for trj in dataset.get_trajectories().iter() {
+        for idx in 0..(trj.get_time().len() - 1) {
+            let t1 = trj.get_time()[idx];
+            let t2 = trj.get_time()[idx + 1];
+            let ev1 = trj.get_events().row(idx);
+            let ev2 = trj.get_events().row(idx + 1);
             let idx1 = vector_to_idx.dot(&ev1);
 
             T[[idx1, ev1[node]]] += t2 - t1;

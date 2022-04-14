@@ -38,8 +38,8 @@ fn run_sampling() {
 
     let data = trajectory_generator(&net, 4, 1.0, Some(6347747169756259),);
 
-    assert_eq!(4, data.trajectories.len());
-    assert_relative_eq!(1.0, data.trajectories[0].time[data.trajectories[0].time.len()-1]);
+    assert_eq!(4, data.get_trajectories().len());
+    assert_relative_eq!(1.0, data.get_trajectories()[0].get_time()[data.get_trajectories()[0].get_time().len()-1]);
 }
 
 
