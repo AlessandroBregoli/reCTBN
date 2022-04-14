@@ -19,7 +19,7 @@ impl<S: ScoreFunction> HillClimbing<S> {
 }
 
 impl<S: ScoreFunction> StructureLearningAlgorithm for HillClimbing<S> {
-    fn call<T>(&self, net: T, dataset: &tools::Dataset) -> T
+    fn fit<T>(&self, net: T, dataset: &tools::Dataset) -> T
     where
         T: network::Network,
     {
