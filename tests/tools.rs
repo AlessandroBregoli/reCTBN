@@ -5,7 +5,7 @@ use rustyCTBN::ctbn::*;
 use rustyCTBN::node;
 use rustyCTBN::params;
 use std::collections::BTreeSet;
-use ndarray::arr3;
+use ndarray::{arr1, arr2, arr3};
 
 
 
@@ -38,8 +38,30 @@ fn run_sampling() {
 
     let data = trajectory_generator(&net, 4, 1.0, Some(6347747169756259),);
 
-    assert_eq!(4, data.trajectories.len());
-    assert_relative_eq!(1.0, data.trajectories[0].time[data.trajectories[0].time.len()-1]);
+    assert_eq!(4, data.get_trajectories().len());
+    assert_relative_eq!(1.0, data.get_trajectories()[0].get_time()[data.get_trajectories()[0].get_time().len()-1]);
 }
 
 
+#[test]
+#[should_panic]
+    fn trajectory_wrong_shape() {
+    let time = arr1(&[0.0, 0.2]);
+    let events = arr2(&[[0,3]]);
+    Trajectory::init(time, events);
+}
+
+
+#[test]
+#[should_panic]
+fn dataset_wrong_shape() {
+    let time = arr1(&[0.0, 0.2]);
+    let events = arr2(&[[0,3], [1,2]]);
+    let t1 = Trajectory::init(time, events);
+
+
+    let time = arr1(&[0.0, 0.2]);
+    let events = arr2(&[[0,3,3], [1,2,3]]);
+    let t2 = Trajectory::init(time, events);
+    Dataset::init(vec![t1, t2]);
+}
