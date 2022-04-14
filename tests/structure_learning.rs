@@ -105,8 +105,7 @@ pub fn learn_ternary_net_2_nodes_hill_climbing_bic() {
 }
 
 
-
-fn learn_mixed_discrete_net_3_nodes<T: StructureLearningAlgorithm> (sl: T) {
+fn get_mixed_discrete_net_3_nodes_with_data() -> (CtbnNetwork, Dataset) {
     let mut net = CtbnNetwork::init();
     let n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"),3))
@@ -161,11 +160,15 @@ fn learn_mixed_discrete_net_3_nodes<T: StructureLearningAlgorithm> (sl: T) {
 
 
     let data = trajectory_generator(&net, 300, 30.0, Some(6347747169756259),);
-    let net = sl.fit_transform(net, &data);
+    return (net, data);
+}
 
-    assert_eq!(BTreeSet::new(), net.get_parent_set(n1));
-    assert_eq!(BTreeSet::from_iter(vec![n1]), net.get_parent_set(n2));
-    assert_eq!(BTreeSet::from_iter(vec![n1, n2]), net.get_parent_set(n3));
+fn learn_mixed_discrete_net_3_nodes<T: StructureLearningAlgorithm> (sl: T) {
+    let (net, data) = get_mixed_discrete_net_3_nodes_with_data();
+    let net = sl.fit_transform(net, &data);
+    assert_eq!(BTreeSet::new(), net.get_parent_set(0));
+    assert_eq!(BTreeSet::from_iter(vec![0]), net.get_parent_set(1));
+    assert_eq!(BTreeSet::from_iter(vec![0, 1]), net.get_parent_set(2));
 }
 
 
@@ -181,4 +184,29 @@ pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic() {
     let bic = BIC::init(1, 1.0);
     let hl = HillClimbing::init(bic, None);
     learn_mixed_discrete_net_3_nodes(hl);
+}
+
+
+
+fn learn_mixed_discrete_net_3_nodes_1_parent_constraint<T: StructureLearningAlgorithm> (sl: T) {
+    let (net, data) = get_mixed_discrete_net_3_nodes_with_data();
+    let net = sl.fit_transform(net, &data);
+    assert_eq!(BTreeSet::new(), net.get_parent_set(0));
+    assert_eq!(BTreeSet::from_iter(vec![0]), net.get_parent_set(1));
+    assert_eq!(BTreeSet::from_iter(vec![0]), net.get_parent_set(2));
+}
+
+
+#[test]
+pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_ll_1_parent_constraint() {
+    let ll = LogLikelihood::init(1, 1.0);
+    let hl = HillClimbing::init(ll, Some(1));
+    learn_mixed_discrete_net_3_nodes_1_parent_constraint(hl);
+}
+
+#[test]
+pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic_1_parent_constraint() {
+    let bic = BIC::init(1, 1.0);
+    let hl = HillClimbing::init(bic, Some(1));
+    learn_mixed_discrete_net_3_nodes_1_parent_constraint(hl);
 }
