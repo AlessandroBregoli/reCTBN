@@ -25,6 +25,8 @@ pub struct LogLikelihood {
 
 impl LogLikelihood {
     pub fn init(alpha: usize, tau: f64) -> LogLikelihood {
+
+        //Tau must be >=0.0
         if tau < 0.0 {
             panic!("tau must be >=0.0");
         }
@@ -40,14 +42,21 @@ impl LogLikelihood {
     ) -> (f64, Array3<usize>)
     where
         T: network::Network,
-    {
+    {   
+        //Identify the type of node used
         match &net.get_node(node).params {
-            params::Params::DiscreteStatesContinousTime(params) => {
+            params::Params::DiscreteStatesContinousTime(_params) => {
+                //Compute the sufficient statistics M (number of transistions) and T (residence
+                //time)
                 let (M, T) =
                     parameter_learning::sufficient_statistics(net, dataset, node, parent_set);
-                let alpha = self.alpha as f64 / M.shape()[0] as f64;
-                let tau = self.tau / M.shape()[0] as f64;
 
+                //Scale alpha accordingly to the size of the parent set
+                let alpha = self.alpha as f64 / M.shape()[0] as f64;
+                //Scale tau accordingly to the size of the parent set
+                let tau = self.tau / M.shape()[0] as f64;
+                
+                //Compute the log likelihood for q
                 let log_ll_q:f64 = M
                     .sum_axis(Axis(2))
                     .iter()
@@ -59,7 +68,8 @@ impl LogLikelihood {
                             - (alpha + *m as f64 + 1.0) * f64::ln(tau + t)
                     })
                     .sum();
-
+                
+                //Compute the log likelihood for theta
                 let log_ll_theta: f64 = M.outer_iter()
                     .map(|x| x.outer_iter()
                          .map(|y| gamma::ln_gamma(alpha) 
@@ -113,10 +123,14 @@ impl ScoreFunction for BIC {
     ) -> f64
     where
         T: network::Network {
+        //Compute the log-likelihood
         let (ll, M) = self.ll.compute_score(net, node, parent_set, dataset);
+        //Compute the number of parameters
         let n_parameters = M.shape()[0] * M.shape()[1] * (M.shape()[2] - 1);
         //TODO: Optimize this
+        //Compute the sample size
         let sample_size: usize = dataset.get_trajectories().iter().map(|x| x.get_time().len() - 1).sum();
+        //Compute BIC
         ll - f64::ln(sample_size as f64) / 2.0 * n_parameters as f64
     }
 }
