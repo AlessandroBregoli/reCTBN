@@ -6,11 +6,12 @@ use std::collections::BTreeSet;
 
 pub struct HillClimbing<S: ScoreFunction> {
     score_function: S,
+    max_parent_set: Option<usize>
 }
 
 impl<S: ScoreFunction> HillClimbing<S> {
-    pub fn init(score_function: S) -> HillClimbing<S> {
-        HillClimbing { score_function }
+    pub fn init(score_function: S, max_parent_set: Option<usize>) -> HillClimbing<S> {
+        HillClimbing { score_function, max_parent_set }
     }
 }
 
@@ -20,6 +21,7 @@ impl<S: ScoreFunction> StructureLearningAlgorithm for HillClimbing<S> {
         T: network::Network,
     {
         let mut net = net;
+        let max_parent_set = self.max_parent_set.unwrap_or(net.get_number_of_nodes());
         net.initialize_adj_matrix();
         for node in net.get_node_indices() {
             let mut parent_set: BTreeSet<usize> = BTreeSet::new();
@@ -32,7 +34,7 @@ impl<S: ScoreFunction> StructureLearningAlgorithm for HillClimbing<S> {
                         continue;
                     }
                     let is_removed = parent_set.remove(&parent);
-                    if !is_removed {
+                    if !is_removed && parent_set.len() < max_parent_set {
                         parent_set.insert(parent);
                     }
 

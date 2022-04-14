@@ -96,14 +96,14 @@ fn learn_ternary_net_2_nodes<T: StructureLearningAlgorithm> (sl: T) {
 #[test]
 pub fn learn_ternary_net_2_nodes_hill_climbing_ll() {
     let ll = LogLikelihood::init(1, 1.0);
-    let hl = HillClimbing::init(ll);
+    let hl = HillClimbing::init(ll, None);
     learn_ternary_net_2_nodes(hl);
 }
 
 #[test]
 pub fn learn_ternary_net_2_nodes_hill_climbing_bic() {
     let bic = BIC::init(1, 1.0);
-    let hl = HillClimbing::init(bic);
+    let hl = HillClimbing::init(bic, None);
     learn_ternary_net_2_nodes(hl);
 }
 
@@ -175,13 +175,13 @@ fn learn_mixed_discrete_net_3_nodes<T: StructureLearningAlgorithm> (sl: T) {
 #[test]
 pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_ll() {
     let ll = LogLikelihood::init(1, 1.0);
-    let hl = HillClimbing::init(ll);
+    let hl = HillClimbing::init(ll, None);
     learn_mixed_discrete_net_3_nodes(hl);
 }
 
 #[test]
 pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic() {
     let bic = BIC::init(1, 1.0);
-    let hl = HillClimbing::init(bic);
+    let hl = HillClimbing::init(bic, None);
     learn_mixed_discrete_net_3_nodes(hl);
 }
