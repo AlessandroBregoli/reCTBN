@@ -1,11 +1,7 @@
-use crate::params;
 use crate::structure_learning::score_function::ScoreFunction;
 use crate::structure_learning::StructureLearningAlgorithm;
 use crate::tools;
-use crate::{network, parameter_learning};
-use ndarray::prelude::*;
-use rand::prelude::*;
-use rand_chacha::ChaCha8Rng;
+use crate::network;
 use std::collections::BTreeSet;
 
 pub struct HillClimbing<S: ScoreFunction> {
@@ -19,7 +15,7 @@ impl<S: ScoreFunction> HillClimbing<S> {
 }
 
 impl<S: ScoreFunction> StructureLearningAlgorithm for HillClimbing<S> {
-    fn fit<T>(&self, net: T, dataset: &tools::Dataset) -> T
+    fn fit_transform<T>(&self, net: T, dataset: &tools::Dataset) -> T
     where
         T: network::Network,
     {

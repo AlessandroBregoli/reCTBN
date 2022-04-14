@@ -87,7 +87,7 @@ fn learn_ternary_net_2_nodes<T: StructureLearningAlgorithm> (sl: T) {
 
     let data = trajectory_generator(&net, 100, 20.0, Some(6347747169756259),);
 
-    let net = sl.fit(net, &data);
+    let net = sl.fit_transform(net, &data);
     assert_eq!(BTreeSet::from_iter(vec![n1]), net.get_parent_set(n2));
     assert_eq!(BTreeSet::new(), net.get_parent_set(n1));
 }
@@ -164,7 +164,7 @@ fn learn_mixed_discrete_net_3_nodes<T: StructureLearningAlgorithm> (sl: T) {
 
 
     let data = trajectory_generator(&net, 300, 30.0, Some(6347747169756259),);
-    let net = sl.fit(net, &data);
+    let net = sl.fit_transform(net, &data);
 
     assert_eq!(BTreeSet::new(), net.get_parent_set(n1));
     assert_eq!(BTreeSet::from_iter(vec![n1]), net.get_parent_set(n2));
