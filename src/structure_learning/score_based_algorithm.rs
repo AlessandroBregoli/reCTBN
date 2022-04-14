@@ -20,6 +20,10 @@ impl<S: ScoreFunction> StructureLearningAlgorithm for HillClimbing<S> {
     where
         T: network::Network,
     {
+        if net.get_number_of_nodes() != dataset.get_trajectories()[0].get_events().shape()[1] {
+            panic!("Dataset and Network must have the same number of variables.")
+        }
+
         let mut net = net;
         let max_parent_set = self.max_parent_set.unwrap_or(net.get_number_of_nodes());
         net.initialize_adj_matrix();
