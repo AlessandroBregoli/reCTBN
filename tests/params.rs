@@ -1,21 +1,26 @@
 use ndarray::prelude::*;
-use reCTBN::params::*;
-use std::collections::BTreeSet;
-use rand_chacha::ChaCha8Rng;
-use rand_chacha::rand_core::SeedableRng;
+use rand_chacha::{rand_core::SeedableRng, ChaCha8Rng};
+use reCTBN::params::{ParamsTrait, *};
 
 mod utils;
 
 #[macro_use]
 extern crate approx;
 
+
 fn create_ternary_discrete_time_continous_param() -> DiscreteStatesContinousTimeParams {
-    let mut params = utils::generate_discrete_time_continous_param(3);
+    let mut params = utils::generate_discrete_time_continous_params("A".to_string(), 3);
 
     let cim = array![[[-3.0, 2.0, 1.0], [1.0, -5.0, 4.0], [2.3, 1.7, -4.0]]];
 
     params.set_cim(cim);
     params
+}
+
+#[test]
+fn test_get_label() {
+    let param = create_ternary_discrete_time_continous_param();
+    assert_eq!(&String::from("A"), param.get_label())
 }
 
 #[test]
@@ -79,15 +84,19 @@ fn test_validate_params_valid_cim() {
 
 #[test]
 fn test_validate_params_valid_cim_with_huge_values() {
-    let mut param = utils::generate_discrete_time_continous_param(3);
-    let cim = array![[[-2e10, 1e10, 1e10], [1.5e10, -3e10, 1.5e10], [1e10, 1e10, -2e10]]];
+    let mut param = utils::generate_discrete_time_continous_params("A".to_string(), 3);
+    let cim = array![[
+        [-2e10, 1e10, 1e10],
+        [1.5e10, -3e10, 1.5e10],
+        [1e10, 1e10, -2e10]
+    ]];
     let result = param.set_cim(cim);
     assert_eq!(Ok(()), result);
 }
 
 #[test]
 fn test_validate_params_cim_not_initialized() {
-    let param = utils::generate_discrete_time_continous_param(3);
+    let param = utils::generate_discrete_time_continous_params("A".to_string(), 3);
     assert_eq!(
         Err(ParamsError::ParametersNotInitialized(String::from(
             "CIM not initialized",
@@ -98,7 +107,7 @@ fn test_validate_params_cim_not_initialized() {
 
 #[test]
 fn test_validate_params_wrong_shape() {
-    let mut param = utils::generate_discrete_time_continous_param(4);
+    let mut param = utils::generate_discrete_time_continous_params("A".to_string(), 4);
     let cim = array![[[-3.0, 2.0, 1.0], [1.0, -5.0, 4.0], [2.3, 1.7, -4.0]]];
     let result = param.set_cim(cim);
     assert_eq!(
@@ -111,7 +120,7 @@ fn test_validate_params_wrong_shape() {
 
 #[test]
 fn test_validate_params_positive_diag() {
-    let mut param = utils::generate_discrete_time_continous_param(3);
+    let mut param = utils::generate_discrete_time_continous_params("A".to_string(), 3);
     let cim = array![[[2.0, -3.0, 1.0], [1.0, -5.0, 4.0], [2.3, 1.7, -4.0]]];
     let result = param.set_cim(cim);
     assert_eq!(
@@ -124,7 +133,7 @@ fn test_validate_params_positive_diag() {
 
 #[test]
 fn test_validate_params_row_not_sum_to_zero() {
-    let mut param = utils::generate_discrete_time_continous_param(3);
+    let mut param = utils::generate_discrete_time_continous_params("A".to_string(), 3);
     let cim = array![[[-3.0, 2.0, 1.0], [1.0, -5.0, 4.0], [2.3, 1.701, -4.0]]];
     let result = param.set_cim(cim);
     assert_eq!(

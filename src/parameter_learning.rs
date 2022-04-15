@@ -24,7 +24,6 @@ pub fn sufficient_statistics<T:network::Network>(
     //Get the number of values assumable by the node
     let node_domain = net
         .get_node(node.clone())
-        .params
         .get_reserved_space_as_parent();
 
     //Get the number of values assumable by each parent of the node
@@ -32,7 +31,6 @@ pub fn sufficient_statistics<T:network::Network>(
         .iter()
         .map(|x| {
             net.get_node(x.clone())
-                .params
                 .get_reserved_space_as_parent()
         })
         .collect();

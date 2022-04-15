@@ -49,6 +49,9 @@ pub trait ParamsTrait {
 
     /// Validate parameters against domain
     fn validate_params(&self) -> Result<(), ParamsError>;
+    
+    /// Return a reference to the associated label
+    fn get_label(&self) -> &String;
 }
 
 /// The Params enum is the core element for building different types of nodes. The goal is to
@@ -70,6 +73,7 @@ pub enum Params {
 ///     - **residence_time**: permanence time in each possible states given a specific
 ///     realization of the parent set
 pub struct DiscreteStatesContinousTimeParams {
+    label: String,
     domain: BTreeSet<String>,
     cim: Option<Array3<f64>>,
     transitions: Option<Array3<u64>>,
@@ -77,8 +81,9 @@ pub struct DiscreteStatesContinousTimeParams {
 }
 
 impl DiscreteStatesContinousTimeParams {
-    pub fn new(domain: BTreeSet<String>) -> DiscreteStatesContinousTimeParams {
+    pub fn new(label: String, domain: BTreeSet<String>) -> DiscreteStatesContinousTimeParams {
         DiscreteStatesContinousTimeParams {
+            label,
             domain,
             cim: Option::None,
             transitions: Option::None,
@@ -244,4 +249,9 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
 
         return Ok(());
     }
+
+    fn get_label(&self) ->  &String {
+        &self.label
+    }
+
 }
