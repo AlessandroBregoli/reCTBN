@@ -24,7 +24,7 @@ pub struct LogLikelihood {
 }
 
 impl LogLikelihood {
-    pub fn init(alpha: usize, tau: f64) -> LogLikelihood {
+    pub fn new(alpha: usize, tau: f64) -> LogLikelihood {
 
         //Tau must be >=0.0
         if tau < 0.0 {
@@ -106,9 +106,9 @@ pub struct BIC {
 }
 
 impl BIC {
-    pub fn init(alpha: usize, tau: f64) -> BIC {
+    pub fn new(alpha: usize, tau: f64) -> BIC {
         BIC {
-            ll: LogLikelihood::init(alpha, tau)
+            ll: LogLikelihood::new(alpha, tau)
         }
     }
 }

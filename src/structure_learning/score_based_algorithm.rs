@@ -10,7 +10,7 @@ pub struct HillClimbing<S: ScoreFunction> {
 }
 
 impl<S: ScoreFunction> HillClimbing<S> {
-    pub fn init(score_function: S, max_parent_set: Option<usize>) -> HillClimbing<S> {
+    pub fn new(score_function: S, max_parent_set: Option<usize>) -> HillClimbing<S> {
         HillClimbing {
             score_function,
             max_parent_set,

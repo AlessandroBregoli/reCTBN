@@ -77,7 +77,7 @@ pub struct DiscreteStatesContinousTimeParams {
 }
 
 impl DiscreteStatesContinousTimeParams {
-    pub fn init(domain: BTreeSet<String>) -> DiscreteStatesContinousTimeParams {
+    pub fn new(domain: BTreeSet<String>) -> DiscreteStatesContinousTimeParams {
         DiscreteStatesContinousTimeParams {
             domain,
             cim: Option::None,

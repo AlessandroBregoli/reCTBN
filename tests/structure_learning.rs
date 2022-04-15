@@ -18,18 +18,18 @@ extern crate approx;
 
 #[test]
 fn simple_score_test() {
-    let mut net = CtbnNetwork::init();
+    let mut net = CtbnNetwork::new();
     let n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"),2))
         .unwrap();
 
-    let trj = Trajectory::init(
+    let trj = Trajectory::new(
         arr1(&[0.0,0.1,0.3]),
         arr2(&[[0],[1],[1]]));
 
-    let dataset = Dataset::init(vec![trj]);
+    let dataset = Dataset::new(vec![trj]);
 
-    let ll = LogLikelihood::init(1, 1.0);
+    let ll = LogLikelihood::new(1, 1.0);
 
     assert_abs_diff_eq!(0.04257, ll.call(&net, n1, &BTreeSet::new(), &dataset), epsilon=1e-3);
 
@@ -38,17 +38,17 @@ fn simple_score_test() {
 
 #[test]
 fn simple_bic() {
-    let mut net = CtbnNetwork::init();
+    let mut net = CtbnNetwork::new();
     let n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"),2))
         .unwrap();
 
-    let trj = Trajectory::init(
+    let trj = Trajectory::new(
         arr1(&[0.0,0.1,0.3]),
         arr2(&[[0],[1],[1]]));
 
-    let dataset = Dataset::init(vec![trj]);
-    let bic = BIC::init(1, 1.0);
+    let dataset = Dataset::new(vec![trj]);
+    let bic = BIC::new(1, 1.0);
 
     assert_abs_diff_eq!(-0.65058, bic.call(&net, n1, &BTreeSet::new(), &dataset), epsilon=1e-3);
 
@@ -57,7 +57,7 @@ fn simple_bic() {
 
 
 fn check_compatibility_between_dataset_and_network<T: StructureLearningAlgorithm> (sl: T) {
-    let mut net = CtbnNetwork::init();
+    let mut net = CtbnNetwork::new();
     let n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"),3))
         .unwrap();
@@ -86,7 +86,7 @@ fn check_compatibility_between_dataset_and_network<T: StructureLearningAlgorithm
 
     let data = trajectory_generator(&net, 100, 20.0, Some(6347747169756259),);
 
-    let mut net = CtbnNetwork::init();
+    let mut net = CtbnNetwork::new();
     let _n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"),3))
         .unwrap();
@@ -97,13 +97,13 @@ fn check_compatibility_between_dataset_and_network<T: StructureLearningAlgorithm
 #[test]
 #[should_panic]
 pub fn check_compatibility_between_dataset_and_network_hill_climbing() {
-    let ll = LogLikelihood::init(1, 1.0);
-    let hl = HillClimbing::init(ll, None);
+    let ll = LogLikelihood::new(1, 1.0);
+    let hl = HillClimbing::new(ll, None);
     check_compatibility_between_dataset_and_network(hl);
 }
 
 fn learn_ternary_net_2_nodes<T: StructureLearningAlgorithm> (sl: T) {
-    let mut net = CtbnNetwork::init();
+    let mut net = CtbnNetwork::new();
     let n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"),3))
         .unwrap();
@@ -140,21 +140,21 @@ fn learn_ternary_net_2_nodes<T: StructureLearningAlgorithm> (sl: T) {
 
 #[test]
 pub fn learn_ternary_net_2_nodes_hill_climbing_ll() {
-    let ll = LogLikelihood::init(1, 1.0);
-    let hl = HillClimbing::init(ll, None);
+    let ll = LogLikelihood::new(1, 1.0);
+    let hl = HillClimbing::new(ll, None);
     learn_ternary_net_2_nodes(hl);
 }
 
 #[test]
 pub fn learn_ternary_net_2_nodes_hill_climbing_bic() {
-    let bic = BIC::init(1, 1.0);
-    let hl = HillClimbing::init(bic, None);
+    let bic = BIC::new(1, 1.0);
+    let hl = HillClimbing::new(bic, None);
     learn_ternary_net_2_nodes(hl);
 }
 
 
 fn get_mixed_discrete_net_3_nodes_with_data() -> (CtbnNetwork, Dataset) {
-    let mut net = CtbnNetwork::init();
+    let mut net = CtbnNetwork::new();
     let n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"),3))
         .unwrap();
@@ -222,15 +222,15 @@ fn learn_mixed_discrete_net_3_nodes<T: StructureLearningAlgorithm> (sl: T) {
 
 #[test]
 pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_ll() {
-    let ll = LogLikelihood::init(1, 1.0);
-    let hl = HillClimbing::init(ll, None);
+    let ll = LogLikelihood::new(1, 1.0);
+    let hl = HillClimbing::new(ll, None);
     learn_mixed_discrete_net_3_nodes(hl);
 }
 
 #[test]
 pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic() {
-    let bic = BIC::init(1, 1.0);
-    let hl = HillClimbing::init(bic, None);
+    let bic = BIC::new(1, 1.0);
+    let hl = HillClimbing::new(bic, None);
     learn_mixed_discrete_net_3_nodes(hl);
 }
 
@@ -247,14 +247,14 @@ fn learn_mixed_discrete_net_3_nodes_1_parent_constraint<T: StructureLearningAlgo
 
 #[test]
 pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_ll_1_parent_constraint() {
-    let ll = LogLikelihood::init(1, 1.0);
-    let hl = HillClimbing::init(ll, Some(1));
+    let ll = LogLikelihood::new(1, 1.0);
+    let hl = HillClimbing::new(ll, Some(1));
     learn_mixed_discrete_net_3_nodes_1_parent_constraint(hl);
 }
 
 #[test]
 pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic_1_parent_constraint() {
-    let bic = BIC::init(1, 1.0);
-    let hl = HillClimbing::init(bic, Some(1));
+    let bic = BIC::new(1, 1.0);
+    let hl = HillClimbing::new(bic, Some(1));
     learn_mixed_discrete_net_3_nodes_1_parent_constraint(hl);
 }

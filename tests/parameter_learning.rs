@@ -16,7 +16,7 @@ extern crate approx;
 
 
 fn learn_binary_cim<T: ParameterLearning> (pl: T) {
-    let mut net = CtbnNetwork::init();
+    let mut net = CtbnNetwork::new();
     let n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"),2))
         .unwrap();
@@ -66,7 +66,7 @@ fn learn_binary_cim_BA() {
 }
 
 fn learn_ternary_cim<T: ParameterLearning> (pl: T) {
-    let mut net = CtbnNetwork::init();
+    let mut net = CtbnNetwork::new();
     let n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"),3))
         .unwrap();
@@ -121,7 +121,7 @@ fn learn_ternary_cim_BA() {
 }
 
 fn learn_ternary_cim_no_parents<T: ParameterLearning> (pl: T) {
-    let mut net = CtbnNetwork::init();
+    let mut net = CtbnNetwork::new();
     let n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"),3))
         .unwrap();
@@ -175,7 +175,7 @@ fn learn_ternary_cim_no_parents_BA() {
 
 
 fn learn_mixed_discrete_cim<T: ParameterLearning> (pl: T) {
-    let mut net = CtbnNetwork::init();
+    let mut net = CtbnNetwork::new();
     let n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"),3))
         .unwrap();
