@@ -44,7 +44,7 @@ impl LogLikelihood {
         T: network::Network,
     {   
         //Identify the type of node used
-        match &net.get_node(node).params {
+        match &net.get_node(node){
             params::Params::DiscreteStatesContinousTime(_params) => {
                 //Compute the sufficient statistics M (number of transistions) and T (residence
                 //time)

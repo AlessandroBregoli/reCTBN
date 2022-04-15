@@ -1,5 +1,4 @@
 use crate::network;
-use crate::node;
 use crate::params;
 use crate::params::ParamsTrait;
 use ndarray::prelude::*;
@@ -80,7 +79,7 @@ pub fn trajectory_generator<T: network::Network>(
         //Configuration of the process variables at time t initialized with an uniform
         //distribution.
         let mut current_state: Vec<params::StateType> = net.get_node_indices()
-            .map(|x| net.get_node(x).params.get_random_state_uniform(&mut rng))
+            .map(|x| net.get_node(x).get_random_state_uniform(&mut rng))
             .collect();
         //History of all the configurations of the process variables. 
         let mut events: Vec<Array1<usize>> = Vec::new();
@@ -106,9 +105,8 @@ pub fn trajectory_generator<T: network::Network>(
                 if let None = val {
                     *val = Some(
                         net.get_node(idx)
-                            .params
                             .get_random_residence_time(
-                                net.get_node(idx).params.state_to_index(&current_state[idx]),
+                                net.get_node(idx).state_to_index(&current_state[idx]),
                                 net.get_param_index_network(idx, &current_state),
                                 &mut rng,
                             )
@@ -137,10 +135,8 @@ pub fn trajectory_generator<T: network::Network>(
             //Compute the new state of the transitioning variable.
             current_state[next_node_transition] = net
                 .get_node(next_node_transition)
-                .params
                 .get_random_state(
                     net.get_node(next_node_transition)
-                        .params
                         .state_to_index(&current_state[next_node_transition]),
                     net.get_param_index_network(next_node_transition, &current_state),
                     &mut rng,

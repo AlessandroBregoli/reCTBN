@@ -1,6 +1,5 @@
 use ndarray::prelude::*;
-use crate::node;
-use crate::params::{StateType, ParamsTrait};
+use crate::params::{StateType, Params, ParamsTrait};
 use crate::network;
 use std::collections::BTreeSet;
 
@@ -19,7 +18,6 @@ use std::collections::BTreeSet;
 ///    
 /// use std::collections::BTreeSet;
 /// use reCTBN::network::Network;
-/// use reCTBN::node;
 /// use reCTBN::params;
 /// use reCTBN::ctbn::*;
 ///
@@ -29,16 +27,16 @@ use std::collections::BTreeSet;
 /// domain.insert(String::from("B"));
 ///
 /// //Create the parameters for a discrete node using the domain
-/// let param = params::DiscreteStatesContinousTimeParams::new(domain); 
+/// let param = params::DiscreteStatesContinousTimeParams::new("X1".to_string(), domain); 
 ///
 /// //Create the node using the parameters
-/// let X1 = node::Node::new(params::Params::DiscreteStatesContinousTime(param),String::from("X1"));
+/// let X1 = params::Params::DiscreteStatesContinousTime(param);
 ///
 /// let mut domain = BTreeSet::new();
 /// domain.insert(String::from("A"));
 /// domain.insert(String::from("B"));
-/// let param = params::DiscreteStatesContinousTimeParams::new(domain);
-/// let X2 = node::Node::new(params::Params::DiscreteStatesContinousTime(param), String::from("X2"));
+/// let param = params::DiscreteStatesContinousTimeParams::new("X2".to_string(), domain);
+/// let X2 = params::Params::DiscreteStatesContinousTime(param);
 /// 
 /// //Initialize a ctbn
 /// let mut net = CtbnNetwork::new();
@@ -56,7 +54,7 @@ use std::collections::BTreeSet;
 /// ```
 pub struct CtbnNetwork {
     adj_matrix: Option<Array2<u16>>,
-    nodes: Vec<node::Node>
+    nodes: Vec<Params>
 }
 
 
@@ -75,8 +73,8 @@ impl network::Network for CtbnNetwork {
 
     }
 
-    fn add_node(&mut self, mut n:  node::Node) -> Result<usize, network::NetworkError> {
-        n.params.reset_params();
+    fn add_node(&mut self, mut n:  Params) -> Result<usize, network::NetworkError> {
+        n.reset_params();
         self.adj_matrix = Option::None;
         self.nodes.push(n);
         Ok(self.nodes.len() -1)        
@@ -89,7 +87,7 @@ impl network::Network for CtbnNetwork {
 
         if let Some(network) = &mut self.adj_matrix {
             network[[parent, child]] = 1;
-            self.nodes[child].params.reset_params();
+            self.nodes[child].reset_params();
         }
     }
 
@@ -101,12 +99,12 @@ impl network::Network for CtbnNetwork {
         self.nodes.len()
     }
 
-    fn get_node(&self, node_idx: usize) -> &node::Node{
+    fn get_node(&self, node_idx: usize) -> &Params{
         &self.nodes[node_idx]
     }
 
 
-    fn get_node_mut(&mut self, node_idx: usize) -> &mut node::Node{
+    fn get_node_mut(&mut self, node_idx: usize) -> &mut Params{
         &mut self.nodes[node_idx]
     }
 
@@ -114,8 +112,8 @@ impl network::Network for CtbnNetwork {
     fn get_param_index_network(&self, node: usize, current_state: &Vec<StateType>) -> usize{
         self.adj_matrix.as_ref().unwrap().column(node).iter().enumerate().fold((0, 1), |mut acc, x| {
             if x.1 > &0 {
-                acc.0 += self.nodes[x.0].params.state_to_index(&current_state[x.0]) * acc.1;
-                acc.1 *= self.nodes[x.0].params.get_reserved_space_as_parent();
+                acc.0 += self.nodes[x.0].state_to_index(&current_state[x.0]) * acc.1;
+                acc.1 *= self.nodes[x.0].get_reserved_space_as_parent();
             }
             acc
         }).0
@@ -124,8 +122,8 @@ impl network::Network for CtbnNetwork {
 
     fn get_param_index_from_custom_parent_set(&self, current_state: &Vec<StateType>, parent_set: &BTreeSet<usize>) -> usize {
         parent_set.iter().fold((0, 1), |mut acc, x| {
-            acc.0 += self.nodes[*x].params.state_to_index(&current_state[*x]) * acc.1;
-            acc.1 *= self.nodes[*x].params.get_reserved_space_as_parent();
+            acc.0 += self.nodes[*x].state_to_index(&current_state[*x]) * acc.1;
+            acc.1 *= self.nodes[*x].get_reserved_space_as_parent();
             acc
         }).0
     }
