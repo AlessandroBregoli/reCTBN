@@ -1,5 +1,5 @@
 use ndarray::prelude::*;
-use rustyCTBN::params::*;
+use reCTBN::params::*;
 use std::collections::BTreeSet;
 use rand_chacha::ChaCha8Rng;
 use rand_chacha::rand_core::SeedableRng;

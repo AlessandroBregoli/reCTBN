@@ -1,9 +1,9 @@
 
-use rustyCTBN::tools::*;
-use rustyCTBN::network::Network;
-use rustyCTBN::ctbn::*;
-use rustyCTBN::node;
-use rustyCTBN::params;
+use reCTBN::tools::*;
+use reCTBN::network::Network;
+use reCTBN::ctbn::*;
+use reCTBN::node;
+use reCTBN::params;
 use std::collections::BTreeSet;
 use ndarray::{arr1, arr2, arr3};
 

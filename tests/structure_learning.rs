@@ -2,15 +2,15 @@
 mod utils;
 use utils::*;
 
-use rustyCTBN::ctbn::*;
-use rustyCTBN::network::Network;
-use rustyCTBN::tools::*;
-use rustyCTBN::structure_learning::score_function::*;
-use rustyCTBN::structure_learning::score_based_algorithm::*;
-use rustyCTBN::structure_learning::StructureLearningAlgorithm;
+use reCTBN::ctbn::*;
+use reCTBN::network::Network;
+use reCTBN::tools::*;
+use reCTBN::structure_learning::score_function::*;
+use reCTBN::structure_learning::score_based_algorithm::*;
+use reCTBN::structure_learning::StructureLearningAlgorithm;
 use ndarray::{arr1, arr2, arr3};
 use std::collections::BTreeSet;
-use rustyCTBN::params;
+use reCTBN::params;
 
 
 #[macro_use]
