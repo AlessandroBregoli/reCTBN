@@ -12,7 +12,7 @@ pub struct Trajectory {
 }
 
 impl Trajectory {
-    pub fn init(time: Array1<f64>, events: Array2<usize>) -> Trajectory {
+    pub fn new(time: Array1<f64>, events: Array2<usize>) -> Trajectory {
         //Events and time are two part of the same trajectory. For this reason they must have the
         //same number of sample.
         if time.shape()[0] != events.shape()[0] {
@@ -35,7 +35,7 @@ pub struct Dataset {
 }
 
 impl Dataset {
-    pub fn init(trajectories: Vec<Trajectory>) -> Dataset {
+    pub fn new(trajectories: Vec<Trajectory>) -> Dataset {
 
         //All the trajectories in the same dataset must represent the same process. For this reason
         //each trajectory must represent the same number of variables.
@@ -178,7 +178,7 @@ pub fn trajectory_generator<T: network::Network>(
         time.push(t_end.clone());
         
         //Add the sampled trajectory to trajectories.
-        trajectories.push(Trajectory::init(
+        trajectories.push(Trajectory::new(
             Array::from_vec(time),
             Array2::from_shape_vec(
                 (events.len(), current_state.len()),
@@ -188,5 +188,5 @@ pub fn trajectory_generator<T: network::Network>(
         ));
     }
     //Return a dataset object with the sampled trajectories.
-    Dataset::init(trajectories)
+    Dataset::new(trajectories)
 }

@@ -16,7 +16,7 @@ mod utils;
 
 #[test]
 fn run_sampling() {
-    let mut net = CtbnNetwork::init();
+    let mut net = CtbnNetwork::new();
     let n1 = net.add_node(utils::generate_discrete_time_continous_node(String::from("n1"),2)).unwrap();
     let n2 = net.add_node(utils::generate_discrete_time_continous_node(String::from("n2"),2)).unwrap();
     net.add_edge(n1, n2);
@@ -48,7 +48,7 @@ fn run_sampling() {
     fn trajectory_wrong_shape() {
     let time = arr1(&[0.0, 0.2]);
     let events = arr2(&[[0,3]]);
-    Trajectory::init(time, events);
+    Trajectory::new(time, events);
 }
 
 
@@ -57,11 +57,11 @@ fn run_sampling() {
 fn dataset_wrong_shape() {
     let time = arr1(&[0.0, 0.2]);
     let events = arr2(&[[0,3], [1,2]]);
-    let t1 = Trajectory::init(time, events);
+    let t1 = Trajectory::new(time, events);
 
 
     let time = arr1(&[0.0, 0.2]);
     let events = arr2(&[[0,3,3], [1,2,3]]);
-    let t2 = Trajectory::init(time, events);
-    Dataset::init(vec![t1, t2]);
+    let t2 = Trajectory::new(time, events);
+    Dataset::new(vec![t1, t2]);
 }

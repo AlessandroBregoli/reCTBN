@@ -7,7 +7,7 @@ pub struct Node {
 }
 
 impl Node {
-    pub fn init(params: Params, label: String) -> Node {
+    pub fn new(params: Params, label: String) -> Node {
         Node{
             params: params,
             label:label
