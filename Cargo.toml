@@ -1,5 +1,5 @@
 [package]
-name = "rustyCTBN"
+name = "reCTBN"
 version = "0.1.0"
 edition = "2021"
 

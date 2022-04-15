@@ -1,12 +1,12 @@
 mod utils;
 use utils::*;
 
-use rustyCTBN::parameter_learning::*;
-use rustyCTBN::ctbn::*;
-use rustyCTBN::network::Network;
-use rustyCTBN::node;
-use rustyCTBN::params;
-use rustyCTBN::tools::*;
+use reCTBN::parameter_learning::*;
+use reCTBN::ctbn::*;
+use reCTBN::network::Network;
+use reCTBN::node;
+use reCTBN::params;
+use reCTBN::tools::*;
 use ndarray::arr3;
 use std::collections::BTreeSet;
 

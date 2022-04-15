@@ -1,10 +1,10 @@
 mod utils;
 use utils::generate_discrete_time_continous_node;
-use rustyCTBN::network::Network;
-use rustyCTBN::node;
-use rustyCTBN::params;
+use reCTBN::network::Network;
+use reCTBN::node;
+use reCTBN::params;
 use std::collections::BTreeSet;
-use rustyCTBN::ctbn::*;
+use reCTBN::ctbn::*;
 
 #[test]
 fn define_simpe_ctbn() {

@@ -18,10 +18,10 @@ use std::collections::BTreeSet;
 ///```
 ///    
 /// use std::collections::BTreeSet;
-/// use rustyCTBN::network::Network;
-/// use rustyCTBN::node;
-/// use rustyCTBN::params;
-/// use rustyCTBN::ctbn::*;
+/// use reCTBN::network::Network;
+/// use reCTBN::node;
+/// use reCTBN::params;
+/// use reCTBN::ctbn::*;
 ///
 /// //Create the domain for a discrete node
 /// let mut domain = BTreeSet::new(); 

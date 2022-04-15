@@ -1,5 +1,5 @@
-use rustyCTBN::params;
-use rustyCTBN::node;
+use reCTBN::params;
+use reCTBN::node;
 use std::collections::BTreeSet;
 
 pub fn generate_discrete_time_continous_node(name: String, cardinality: usize) -> node::Node {
