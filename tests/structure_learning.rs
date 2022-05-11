@@ -7,6 +7,7 @@ use reCTBN::network::Network;
 use reCTBN::params;
 use reCTBN::structure_learning::score_function::*;
 use reCTBN::structure_learning::{score_based_algorithm::*, StructureLearningAlgorithm};
+use reCTBN::structure_learning::hypothesis_test::*;
 use reCTBN::tools::*;
 use std::collections::BTreeSet;
 
@@ -314,4 +315,26 @@ pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic_1_parent_constraint() 
     let bic = BIC::new(1, 1.0);
     let hl = HillClimbing::new(bic, Some(1));
     learn_mixed_discrete_net_3_nodes_1_parent_constraint(hl);
+}
+
+#[test]
+pub fn chi_square_compare_matrices () {
+    let i: usize = 1;
+    let M1 = arr3(&[
+       [[ 1,  2,  3],
+        [ 4,  5,  6]],
+       [[ 22,  12,  90],
+        [3, 20, 40]],
+        [[ 1,  2,  3],
+        [ 4,  5,  6]],
+       [[ 7,  8,  9],
+        [10, 11, 12]]
+    ]);
+    let j: usize = 1;
+    let M2 = arr3(&[[[ 1,  2,  3],     // -- 2 rows  \_
+        [ 4,  5,  6]],
+       [[ 7,  8,  9],
+        [10, 11, 12]]]);
+    let chi_sq = ChiSquare {alpha: 0.5};
+    chi_sq.compare_matrices( i, &M1, j, &M2);
 }
