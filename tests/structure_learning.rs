@@ -321,20 +321,70 @@ pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic_1_parent_constraint() 
 pub fn chi_square_compare_matrices () {
     let i: usize = 1;
     let M1 = arr3(&[
-       [[ 1,  2,  3],
-        [ 4,  5,  6]],
-       [[ 22,  12,  90],
-        [3, 20, 40]],
-        [[ 1,  2,  3],
-        [ 4,  5,  6]],
-       [[ 7,  8,  9],
-        [10, 11, 12]]
+       [[ 0,  2,  3],
+        [ 4,  0,  6],
+        [ 7,  8,  0]],
+       [[0, 12,  90],
+        [ 3, 0,  40],
+        [ 6, 40,  0]],
+       [[ 0,  2,  3],
+        [ 4,  0,  6],
+        [ 44, 66, 0]]
     ]);
-    let j: usize = 1;
-    let M2 = arr3(&[[[ 1,  2,  3],     // -- 2 rows  \_
-        [ 4,  5,  6]],
-       [[ 7,  8,  9],
-        [10, 11, 12]]]);
-    let chi_sq = ChiSquare {alpha: 0.5};
-    chi_sq.compare_matrices( i, &M1, j, &M2);
+    let j: usize = 0;
+    let M2 = arr3(&[
+       [[ 0,  200,  300],
+        [ 400,  0,  600],
+        [  700, 800,  0]]
+    ]);
+    let chi_sq = ChiSquare::new(0.1);
+    assert!(!chi_sq.compare_matrices( i, &M1, j, &M2));
+}
+
+#[test]
+pub fn chi_square_compare_matrices_2 () {
+    let i: usize = 1;
+    let M1 = arr3(&[
+       [[ 0,  2,  3],
+        [ 4,  0,  6],
+        [ 7,  8,  0]],
+       [[0, 20,  30],
+        [ 40, 0,  60],
+        [ 70, 80,  0]],
+       [[ 0,  2,  3],
+        [ 4,  0,  6],
+        [ 44, 66, 0]]
+    ]);
+    let j: usize = 0;
+    let M2 = arr3(&[
+       [[ 0,  200,  300],
+        [ 400,  0,  600],
+        [  700, 800,  0]]
+    ]);
+    let chi_sq = ChiSquare::new(0.1);
+    assert!(chi_sq.compare_matrices( i, &M1, j, &M2));
+}
+
+#[test]
+pub fn chi_square_compare_matrices_3 () {
+    let i: usize = 1;
+    let M1 = arr3(&[
+       [[ 0,  2,  3],
+        [ 4,  0,  6],
+        [ 7,  8,  0]],
+       [[0, 21,  31],
+        [ 41, 0,  59],
+        [ 71, 79,  0]],
+       [[ 0,  2,  3],
+        [ 4,  0,  6],
+        [ 44, 66, 0]]
+    ]);
+    let j: usize = 0;
+    let M2 = arr3(&[
+       [[ 0,  200,  300],
+        [ 400,  0,  600],
+        [  700, 800,  0]]
+    ]);
+    let chi_sq = ChiSquare::new(0.1);
+    assert!(chi_sq.compare_matrices( i, &M1, j, &M2));
 }
