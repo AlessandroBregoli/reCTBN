@@ -153,3 +153,20 @@ impl ParameterLearning for BayesianApproach {
         return (CIM, M, T);
     }
 }
+
+
+pub struct Cache<P: ParameterLearning> {
+    parameter_learning: P,
+    dataset: tools::Dataset,
+}
+
+impl<P: ParameterLearning> Cache<P> {
+    pub fn fit<T:network::Network>(
+        &mut self,
+        net: &T,
+        node: usize,
+        parent_set: Option<BTreeSet<usize>>,
+    ) -> (Array3<f64>, Array3<usize>, Array2<f64>) {
+        self.parameter_learning.fit(net, &self.dataset, node, parent_set)
+    }
+}
