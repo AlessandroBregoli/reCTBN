@@ -12,7 +12,7 @@ pub trait ParameterLearning{
         dataset: &tools::Dataset,
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
-    ) -> (Array3<f64>, Array3<usize>, Array2<f64>);
+    ) -> Params;
 }
 
 pub fn sufficient_statistics<T:network::Network>(
@@ -84,8 +84,7 @@ impl ParameterLearning for MLE {
         dataset: &tools::Dataset,
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
-    ) -> (Array3<f64>, Array3<usize>, Array2<f64>) {
-        //TODO: make this function general. Now it works only on ContinousTimeDiscreteState nodes
+    ) -> Params {
 
         //Use parent_set from parameter if present. Otherwise use parent_set from network.
         let parent_set = match parent_set {
@@ -107,7 +106,21 @@ impl ParameterLearning for MLE {
             .for_each(|(mut C, diag)| {
                 C.diag_mut().assign(&diag);
             });
-        return (CIM, M, T);
+        
+
+
+        let mut n: Params = net.get_node(node).clone();
+
+        match n {
+            Params::DiscreteStatesContinousTime(ref mut dsct) => {
+                dsct.set_cim_unchecked(CIM);
+                dsct.set_transitions(M);
+                dsct.set_residence_time(T);
+
+
+            }
+        };
+        return n;
     }
 }
 
@@ -123,7 +136,7 @@ impl ParameterLearning for BayesianApproach {
         dataset: &tools::Dataset,
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
-    ) -> (Array3<f64>, Array3<usize>, Array2<f64>) {
+    ) -> Params {
         //TODO: make this function general. Now it works only on ContinousTimeDiscreteState nodes
 
         //Use parent_set from parameter if present. Otherwise use parent_set from network.
@@ -150,7 +163,21 @@ impl ParameterLearning for BayesianApproach {
             .for_each(|(mut C, diag)| {
                 C.diag_mut().assign(&diag);
             });
-        return (CIM, M, T);
+
+
+
+        let mut n: Params = net.get_node(node).clone();
+
+        match n {
+            Params::DiscreteStatesContinousTime(ref mut dsct) => {
+                dsct.set_cim_unchecked(CIM);
+                dsct.set_transitions(M);
+                dsct.set_residence_time(T);
+
+
+            }
+        };
+        return n;
     }
 }
 
@@ -166,7 +193,7 @@ impl<P: ParameterLearning> Cache<P> {
         net: &T,
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
-    ) -> (Array3<f64>, Array3<usize>, Array2<f64>) {
+    ) -> Params {
         self.parameter_learning.fit(net, &self.dataset, node, parent_set)
     }
 }

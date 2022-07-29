@@ -40,10 +40,11 @@ fn learn_binary_cim<T: ParameterLearning>(pl: T) {
     }
 
     let data = trajectory_generator(&net, 100, 100.0, Some(6347747169756259));
-    let (CIM, M, T) = pl.fit(&net, &data, 1, None);
-    print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);
-    assert_eq!(CIM.shape(), [2, 2, 2]);
-    assert!(CIM.abs_diff_eq(
+    let p = match pl.fit(&net, &data, 1, None) {
+        params::Params::DiscreteStatesContinousTime(p) => p
+    };
+    assert_eq!(p.get_cim().as_ref().unwrap().shape(), [2, 2, 2]);
+    assert!(p.get_cim().as_ref().unwrap().abs_diff_eq(
         &arr3(&[[[-1.0, 1.0], [4.0, -4.0]], [[-6.0, 6.0], [2.0, -2.0]],]),
         0.1
     ));
@@ -98,10 +99,11 @@ fn learn_ternary_cim<T: ParameterLearning>(pl: T) {
     }
 
     let data = trajectory_generator(&net, 100, 200.0, Some(6347747169756259));
-    let (CIM, M, T) = pl.fit(&net, &data, 1, None);
-    print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);
-    assert_eq!(CIM.shape(), [3, 3, 3]);
-    assert!(CIM.abs_diff_eq(
+    let p = match pl.fit(&net, &data, 1, None){
+        params::Params::DiscreteStatesContinousTime(p) => p
+    };
+    assert_eq!(p.get_cim().as_ref().unwrap().shape(), [3, 3, 3]);
+    assert!(p.get_cim().as_ref().unwrap().abs_diff_eq(
         &arr3(&[
             [[-1.0, 0.5, 0.5], [3.0, -4.0, 1.0], [0.9, 0.1, -1.0]],
             [[-6.0, 2.0, 4.0], [1.5, -2.0, 0.5], [3.0, 1.0, -4.0]],
@@ -160,10 +162,11 @@ fn learn_ternary_cim_no_parents<T: ParameterLearning>(pl: T) {
     }
 
     let data = trajectory_generator(&net, 100, 200.0, Some(6347747169756259));
-    let (CIM, M, T) = pl.fit(&net, &data, 0, None);
-    print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);
-    assert_eq!(CIM.shape(), [1, 3, 3]);
-    assert!(CIM.abs_diff_eq(
+    let p = match pl.fit(&net, &data, 0, None){
+        params::Params::DiscreteStatesContinousTime(p) => p
+    };
+    assert_eq!(p.get_cim().as_ref().unwrap().shape(), [1, 3, 3]);
+    assert!(p.get_cim().as_ref().unwrap().abs_diff_eq(
         &arr3(&[[[-3.0, 2.0, 1.0], [1.5, -2.0, 0.5], [0.4, 0.6, -1.0]]]),
         0.1
     ));
@@ -288,10 +291,11 @@ fn learn_mixed_discrete_cim<T: ParameterLearning>(pl: T) {
     }
 
     let data = trajectory_generator(&net, 300, 300.0, Some(6347747169756259));
-    let (CIM, M, T) = pl.fit(&net, &data, 2, None);
-    print!("CIM: {:?}\nM: {:?}\nT: {:?}\n", CIM, M, T);
-    assert_eq!(CIM.shape(), [9, 4, 4]);
-    assert!(CIM.abs_diff_eq(
+    let p = match pl.fit(&net, &data, 2, None){
+        params::Params::DiscreteStatesContinousTime(p) => p
+    };
+    assert_eq!(p.get_cim().as_ref().unwrap().shape(), [9, 4, 4]);
+    assert!(p.get_cim().as_ref().unwrap().abs_diff_eq(
         &arr3(&[
             [
                 [-1.0, 0.5, 0.3, 0.2],

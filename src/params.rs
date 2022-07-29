@@ -55,7 +55,8 @@ pub trait ParamsTrait {
 }
 
 /// The Params enum is the core element for building different types of nodes. The goal is to
-/// define all the supported type of parameters.
+/// define all the supported type of Parameters
+#[derive(Clone)]
 #[enum_dispatch]
 pub enum Params {
     DiscreteStatesContinousTime(DiscreteStatesContinousTimeParams),
@@ -72,11 +73,12 @@ pub enum Params {
 ///     realization of the parent set
 ///     - **residence_time**: permanence time in each possible states given a specific
 ///     realization of the parent set
+#[derive(Clone)]
 pub struct DiscreteStatesContinousTimeParams {
     label: String,
     domain: BTreeSet<String>,
     cim: Option<Array3<f64>>,
-    transitions: Option<Array3<u64>>,
+    transitions: Option<Array3<usize>>,
     residence_time: Option<Array2<f64>>,
 }
 
@@ -112,14 +114,19 @@ impl DiscreteStatesContinousTimeParams {
     }
 
 
+    ///Unchecked version of the setter function for CIM.
+    pub fn set_cim_unchecked(&mut self, cim: Array3<f64>) {
+        self.cim = Some(cim);
+    }
+
     ///Getter function for transitions
-    pub fn get_transitions(&self) -> &Option<Array3<u64>> {
+    pub fn get_transitions(&self) -> &Option<Array3<usize>> {
         &self.transitions
     }
 
 
     ///Setter function for transitions
-    pub fn set_transitions(&mut self, transitions: Array3<u64>) {
+    pub fn set_transitions(&mut self, transitions: Array3<usize>) {
         self.transitions = Some(transitions);
     }
 
