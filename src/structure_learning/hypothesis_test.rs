@@ -1,4 +1,3 @@
-use ndarray::Array2;
 use ndarray::Array3;
 use ndarray::Axis;
 use statrs::distribution::{ChiSquared, ContinuousCDF};

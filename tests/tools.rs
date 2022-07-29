@@ -3,7 +3,6 @@ use reCTBN::ctbn::*;
 use reCTBN::network::Network;
 use reCTBN::params;
 use reCTBN::tools::*;
-use std::collections::BTreeSet;
 
 #[macro_use]
 extern crate approx;
@@ -12,6 +11,7 @@ mod utils;
 
 #[test]
 fn run_sampling() {
+    #![allow(unused_must_use)]
     let mut net = CtbnNetwork::new();
     let n1 = net
         .add_node(utils::generate_discrete_time_continous_node(

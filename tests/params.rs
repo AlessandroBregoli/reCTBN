@@ -7,8 +7,8 @@ mod utils;
 #[macro_use]
 extern crate approx;
 
-
 fn create_ternary_discrete_time_continous_param() -> DiscreteStatesContinousTimeParams {
+    #![allow(unused_must_use)]
     let mut params = utils::generate_discrete_time_continous_params("A".to_string(), 3);
 
     let cim = array![[[-3.0, 2.0, 1.0], [1.0, -5.0, 4.0], [2.3, 1.7, -4.0]]];
@@ -25,6 +25,7 @@ fn test_get_label() {
 
 #[test]
 fn test_uniform_generation() {
+    #![allow(irrefutable_let_patterns)]
     let param = create_ternary_discrete_time_continous_param();
     let mut states = Array1::<usize>::zeros(10000);
 
@@ -44,6 +45,7 @@ fn test_uniform_generation() {
 
 #[test]
 fn test_random_generation_state() {
+    #![allow(irrefutable_let_patterns)]
     let param = create_ternary_discrete_time_continous_param();
     let mut states = Array1::<usize>::zeros(10000);
 

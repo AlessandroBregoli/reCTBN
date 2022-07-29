@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 mod utils;
 use utils::*;
 
@@ -95,7 +97,7 @@ fn check_compatibility_between_dataset_and_network<T: StructureLearningAlgorithm
     let _n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"), 3))
         .unwrap();
-    let net = sl.fit_transform(net, &data);
+    let _net = sl.fit_transform(net, &data);
 }
 
 #[test]

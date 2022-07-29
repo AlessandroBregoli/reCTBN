@@ -1,7 +1,7 @@
 use enum_dispatch::enum_dispatch;
 use ndarray::prelude::*;
 use rand::Rng;
-use std::collections::{BTreeSet, HashMap};
+use std::collections::{BTreeSet};
 use thiserror::Error;
 use rand_chacha::ChaCha8Rng;
 
