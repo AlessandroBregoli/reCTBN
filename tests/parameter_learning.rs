@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 mod utils;
 use utils::*;
 
@@ -6,9 +8,7 @@ use reCTBN::ctbn::*;
 use reCTBN::network::Network;
 use reCTBN::parameter_learning::*;
 use reCTBN::{params, tools::*};
-use std::collections::BTreeSet;
 
-#[macro_use]
 extern crate approx;
 
 fn learn_binary_cim<T: ParameterLearning>(pl: T) {
