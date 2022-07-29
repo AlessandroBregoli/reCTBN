@@ -2,7 +2,6 @@ use crate::network;
 use crate::params::*;
 use crate::tools;
 use ndarray::prelude::*;
-use ndarray::{concatenate, Slice};
 use std::collections::BTreeSet;
 
 pub trait ParameterLearning{
@@ -137,15 +136,13 @@ impl ParameterLearning for BayesianApproach {
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
     ) -> Params {
-        //TODO: make this function general. Now it works only on ContinousTimeDiscreteState nodes
-
         //Use parent_set from parameter if present. Otherwise use parent_set from network.
         let parent_set = match parent_set {
             Some(p) => p,
             None => net.get_parent_set(node),
         };
         
-        let (mut M, mut T) = sufficient_statistics(net, dataset, node.clone(), &parent_set);
+        let (M, T) = sufficient_statistics(net, dataset, node.clone(), &parent_set);
 
         let alpha: f64 = self.alpha as f64 / M.shape()[0] as f64;
         let tau: f64 = self.tau as f64 / M.shape()[0] as f64;

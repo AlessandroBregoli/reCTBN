@@ -1,5 +1,5 @@
+#![allow(non_snake_case)]
 #[cfg(test)]
-#[macro_use]
 extern crate approx;
 
 pub mod params;
