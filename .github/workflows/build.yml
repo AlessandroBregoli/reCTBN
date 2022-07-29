@@ -26,7 +26,7 @@ jobs:
       uses: actions-rs/clippy-check@v1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        args: --all-features
+        args: --all-targets -- -D warnings -A clippy::all -W clippy::correctness
     - name: Tests (test)
       uses: actions-rs/cargo@v1
       with:

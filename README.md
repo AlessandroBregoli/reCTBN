@@ -37,8 +37,14 @@ To launch **tests**:
 cargo test
 ```
 
-To **lint**:
+To **lint** with `cargo check`:
 
 ```sh
-cargo check
+cargo check --all-targets
+```
+
+Or with `clippy`:
+
+```sh
+cargo clippy --all-targets -- -A clippy::all -W clippy::correctness
 ```
