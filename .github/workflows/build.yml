@@ -21,12 +21,17 @@ jobs:
       with:
         profile: minimal
         toolchain: stable
-        components: clippy
+        components: clippy, fmt
     - name: Linting (clippy)
       uses: actions-rs/clippy-check@v1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         args: --all-targets -- -D warnings -A clippy::all -W clippy::correctness
+    - name: Formatting (rustfmt)
+      uses: actions-rs/cargo@v1
+      with:
+        command: fmt
+        args: --all -- --check --verbose
     - name: Tests (test)
       uses: actions-rs/cargo@v1
       with:

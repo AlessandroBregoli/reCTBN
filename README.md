@@ -48,3 +48,11 @@ Or with `clippy`:
 ```sh
 cargo clippy --all-targets -- -A clippy::all -W clippy::correctness
 ```
+
+To check the **formatting**:
+
+> **NOTE:** remove `--check` to apply the changes to the file(s).
+
+```sh
+cargo fmt --all -- --check
+```
