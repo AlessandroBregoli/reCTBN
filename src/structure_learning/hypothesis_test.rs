@@ -1,11 +1,10 @@
-use ndarray::Array3;
-use ndarray::Axis;
+use std::collections::BTreeSet;
+
+use ndarray::{Array3, Axis};
 use statrs::distribution::{ChiSquared, ContinuousCDF};
 
-use crate::network;
-use crate::parameter_learning;
 use crate::params::*;
-use std::collections::BTreeSet;
+use crate::{network, parameter_learning};
 
 pub trait HypothesisTest {
     fn call<T, P>(
@@ -110,15 +109,15 @@ impl HypothesisTest for ChiSquare {
         // Prendo dalla cache l'apprendimento dei parametri, che sarebbe una CIM
         // di dimensione nxn
         //  (CIM, M, T)
-        let P_small = match cache.fit(net, child_node, Some(separation_set.clone())){
-            Params::DiscreteStatesContinousTime(node) => node
+        let P_small = match cache.fit(net, child_node, Some(separation_set.clone())) {
+            Params::DiscreteStatesContinousTime(node) => node,
         };
         //
         let mut extended_separation_set = separation_set.clone();
         extended_separation_set.insert(parent_node);
 
-        let P_big = match cache.fit(net, child_node, Some(extended_separation_set.clone())){
-            Params::DiscreteStatesContinousTime(node) => node
+        let P_big = match cache.fit(net, child_node, Some(extended_separation_set.clone())) {
+            Params::DiscreteStatesContinousTime(node) => node,
         };
         // Commentare qui
         let partial_cardinality_product: usize = extended_separation_set
@@ -132,7 +131,12 @@ impl HypothesisTest for ChiSquare {
                     / (partial_cardinality_product
                         * net.get_node(parent_node).get_reserved_space_as_parent()))
                     * partial_cardinality_product;
-            if !self.compare_matrices(idx_M_small, P_small.get_transitions().as_ref().unwrap(), idx_M_big, P_big.get_transitions().as_ref().unwrap()) {
+            if !self.compare_matrices(
+                idx_M_small,
+                P_small.get_transitions().as_ref().unwrap(),
+                idx_M_big,
+                P_big.get_transitions().as_ref().unwrap(),
+            ) {
                 return false;
             }
         }

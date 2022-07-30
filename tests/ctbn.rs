@@ -1,8 +1,9 @@
 mod utils;
+use std::collections::BTreeSet;
+
 use reCTBN::ctbn::*;
 use reCTBN::network::Network;
 use reCTBN::params::{self, ParamsTrait};
-use std::collections::BTreeSet;
 use utils::generate_discrete_time_continous_node;
 
 #[test]

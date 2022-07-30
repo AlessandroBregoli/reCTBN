@@ -1,8 +1,8 @@
-use crate::network;
+use std::collections::BTreeSet;
+
 use crate::structure_learning::score_function::ScoreFunction;
 use crate::structure_learning::StructureLearningAlgorithm;
-use crate::tools;
-use std::collections::BTreeSet;
+use crate::{network, tools};
 
 pub struct HillClimbing<S: ScoreFunction> {
     score_function: S,

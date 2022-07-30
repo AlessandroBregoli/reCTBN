@@ -1,9 +1,9 @@
-use crate::network;
-use crate::params;
-use crate::params::ParamsTrait;
 use ndarray::prelude::*;
 use rand_chacha::rand_core::SeedableRng;
 use rand_chacha::ChaCha8Rng;
+
+use crate::params::ParamsTrait;
+use crate::{network, params};
 
 pub struct Trajectory {
     time: Array1<f64>,
@@ -19,7 +19,7 @@ impl Trajectory {
         }
         Trajectory { time, events }
     }
-    
+
     pub fn get_time(&self) -> &Array1<f64> {
         &self.time
     }
@@ -35,7 +35,6 @@ pub struct Dataset {
 
 impl Dataset {
     pub fn new(trajectories: Vec<Trajectory>) -> Dataset {
-
         //All the trajectories in the same dataset must represent the same process. For this reason
         //each trajectory must represent the same number of variables.
         if trajectories
@@ -58,18 +57,17 @@ pub fn trajectory_generator<T: network::Network>(
     t_end: f64,
     seed: Option<u64>,
 ) -> Dataset {
-    
     //Tmp growing vector containing generated trajectories.
     let mut trajectories: Vec<Trajectory> = Vec::new();
-    
+
     //Random Generator object
     let mut rng: ChaCha8Rng = match seed {
         //If a seed is present use it to initialize the random generator.
         Some(seed) => SeedableRng::seed_from_u64(seed),
         //Otherwise create a new random generator using the method `from_entropy`
-        None => SeedableRng::from_entropy()
+        None => SeedableRng::from_entropy(),
     };
-    
+
     //Each iteration generate one trajectory
     for _ in 0..n_trajectories {
         //Current time of the sampling process
@@ -78,15 +76,16 @@ pub fn trajectory_generator<T: network::Network>(
         let mut time: Vec<f64> = Vec::new();
         //Configuration of the process variables at time t initialized with an uniform
         //distribution.
-        let mut current_state: Vec<params::StateType> = net.get_node_indices()
+        let mut current_state: Vec<params::StateType> = net
+            .get_node_indices()
             .map(|x| net.get_node(x).get_random_state_uniform(&mut rng))
             .collect();
-        //History of all the configurations of the process variables. 
+        //History of all the configurations of the process variables.
         let mut events: Vec<Array1<usize>> = Vec::new();
         //Vector containing to time to the next transition for each variable.
         let mut next_transitions: Vec<Option<f64>> =
             net.get_node_indices().map(|_| Option::None).collect();
-        
+
         //Add the starting time for the trajectory.
         time.push(t.clone());
         //Add the starting configuration of the trajectory.
@@ -115,7 +114,7 @@ pub fn trajectory_generator<T: network::Network>(
                     );
                 }
             }
-            
+
             //Get the variable with the smallest transition time.
             let next_node_transition = next_transitions
                 .iter()
@@ -131,7 +130,7 @@ pub fn trajectory_generator<T: network::Network>(
             t = next_transitions[next_node_transition].unwrap().clone();
             //Add the transition time to next
             time.push(t.clone());
-            
+
             //Compute the new state of the transitioning variable.
             current_state[next_node_transition] = net
                 .get_node(next_node_transition)
@@ -142,7 +141,7 @@ pub fn trajectory_generator<T: network::Network>(
                     &mut rng,
                 )
                 .unwrap();
-            
+
             //Add the new state to events
             events.push(Array::from_vec(
                 current_state
@@ -160,7 +159,7 @@ pub fn trajectory_generator<T: network::Network>(
                 next_transitions[child] = None
             }
         }
-        
+
         //Add current_state as last state.
         events.push(
             current_state
@@ -172,7 +171,7 @@ pub fn trajectory_generator<T: network::Network>(
         );
         //Add t_end as last time.
         time.push(t_end.clone());
-        
+
         //Add the sampled trajectory to trajectories.
         trajectories.push(Trajectory::new(
             Array::from_vec(time),
