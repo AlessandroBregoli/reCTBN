@@ -33,4 +33,7 @@ newline_style = "Unix"
 #error_on_unformatted = true
 
 # Files to ignore like third party code which is formatted upstream.
-#ignore = []
+# Ignoring tests is a temporary measure due some issues regarding rank-3 tensors
+ignore = [
+    "tests/"
+]

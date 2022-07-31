@@ -29,15 +29,26 @@ fn run_sampling() {
 
     match &mut net.get_node_mut(n1) {
         params::Params::DiscreteStatesContinousTime(param) => {
-            param.set_cim(arr3(&[[[-3.0, 3.0], [2.0, -2.0]]]));
+            param.set_cim(arr3(&[
+                [
+                    [-3.0, 3.0],
+                    [2.0, -2.0]
+                ],
+            ]));
         }
     }
 
     match &mut net.get_node_mut(n2) {
         params::Params::DiscreteStatesContinousTime(param) => {
             param.set_cim(arr3(&[
-                [[-1.0, 1.0], [4.0, -4.0]],
-                [[-6.0, 6.0], [2.0, -2.0]],
+                [
+                    [-1.0, 1.0],
+                    [4.0, -4.0]
+                ],
+                [
+                    [-6.0, 6.0],
+                    [2.0, -2.0]
+                ],
             ]));
         }
     }
