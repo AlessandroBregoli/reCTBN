@@ -38,8 +38,9 @@ jobs:
     - name: Formatting (rustfmt)
       uses: actions-rs/cargo@v1
       with:
+        toolchain: nightly
         command: fmt
-        args: +nightly --all -- --check --verbose
+        args: --all -- --check --verbose
     - name: Tests (test)
       uses: actions-rs/cargo@v1
       with:
