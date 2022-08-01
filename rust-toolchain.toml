@@ -1,0 +1,7 @@
+# This file defines the Rust toolchain to use when a command is executed.
+# See also https://rust-lang.github.io/rustup/overrides.html
+
+[toolchain]
+channel = "stable"
+components = [ "clippy", "rustfmt" ]
+profile = "minimal"
