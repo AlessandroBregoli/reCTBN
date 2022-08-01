@@ -16,12 +16,20 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Setup (rust)
+    - name: Setup Rust stable (default)
       uses: actions-rs/toolchain@v1
       with:
         profile: minimal
         toolchain: stable
+        default: true
         components: clippy, rustfmt
+    - name: Setup Rust nightly
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: nightly
+        default: false
+        components: rustfmt
     - name: Linting (clippy)
       uses: actions-rs/clippy-check@v1
       with:
@@ -30,6 +38,7 @@ jobs:
     - name: Formatting (rustfmt)
       uses: actions-rs/cargo@v1
       with:
+        toolchain: nightly
         command: fmt
         args: --all -- --check --verbose
     - name: Tests (test)

@@ -1,5 +1,6 @@
 use ndarray::prelude::*;
-use rand_chacha::{rand_core::SeedableRng, ChaCha8Rng};
+use rand_chacha::rand_core::SeedableRng;
+use rand_chacha::ChaCha8Rng;
 use reCTBN::params::{ParamsTrait, *};
 
 mod utils;

@@ -1,11 +1,12 @@
-use crate::network;
-use crate::params::*;
-use crate::tools;
-use ndarray::prelude::*;
 use std::collections::BTreeSet;
 
-pub trait ParameterLearning{
-    fn fit<T:network::Network>(
+use ndarray::prelude::*;
+
+use crate::params::*;
+use crate::{network, tools};
+
+pub trait ParameterLearning {
+    fn fit<T: network::Network>(
         &self,
         net: &T,
         dataset: &tools::Dataset,
@@ -14,24 +15,19 @@ pub trait ParameterLearning{
     ) -> Params;
 }
 
-pub fn sufficient_statistics<T:network::Network>(
+pub fn sufficient_statistics<T: network::Network>(
     net: &T,
     dataset: &tools::Dataset,
     node: usize,
-    parent_set: &BTreeSet<usize>
-    ) -> (Array3<usize>, Array2<f64>) {
+    parent_set: &BTreeSet<usize>,
+) -> (Array3<usize>, Array2<f64>) {
     //Get the number of values assumable by the node
-    let node_domain = net
-        .get_node(node.clone())
-        .get_reserved_space_as_parent();
+    let node_domain = net.get_node(node.clone()).get_reserved_space_as_parent();
 
     //Get the number of values assumable by each parent of the node
     let parentset_domain: Vec<usize> = parent_set
         .iter()
-        .map(|x| {
-            net.get_node(x.clone())
-                .get_reserved_space_as_parent()
-        })
+        .map(|x| net.get_node(x.clone()).get_reserved_space_as_parent())
         .collect();
 
     //Vector used to convert a specific configuration of the parent_set to the corresponding index
@@ -45,7 +41,7 @@ pub fn sufficient_statistics<T:network::Network>(
             vector_to_idx[*idx] = acc;
             acc * x
         });
-    
+
     //Number of transition given a specific configuration of the parent set
     let mut M: Array3<usize> =
         Array::zeros((parentset_domain.iter().product(), node_domain, node_domain));
@@ -70,13 +66,11 @@ pub fn sufficient_statistics<T:network::Network>(
     }
 
     return (M, T);
-
 }
 
 pub struct MLE {}
 
 impl ParameterLearning for MLE {
-
     fn fit<T: network::Network>(
         &self,
         net: &T,
@@ -84,19 +78,18 @@ impl ParameterLearning for MLE {
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
     ) -> Params {
-
         //Use parent_set from parameter if present. Otherwise use parent_set from network.
         let parent_set = match parent_set {
             Some(p) => p,
             None => net.get_parent_set(node),
         };
-        
+
         let (M, T) = sufficient_statistics(net, dataset, node.clone(), &parent_set);
-        //Compute the CIM as M[i,x,y]/T[i,x]  
+        //Compute the CIM as M[i,x,y]/T[i,x]
         let mut CIM: Array3<f64> = Array::zeros((M.shape()[0], M.shape()[1], M.shape()[2]));
         CIM.axis_iter_mut(Axis(2))
             .zip(M.mapv(|x| x as f64).axis_iter(Axis(2)))
-            .for_each(|(mut C, m)| C.assign(&(&m/&T)));
+            .for_each(|(mut C, m)| C.assign(&(&m / &T)));
 
         //Set the diagonal of the inner matrices to the the row sum multiplied by -1
         let tmp_diag_sum: Array2<f64> = CIM.sum_axis(Axis(2)).mapv(|x| x * -1.0);
@@ -105,8 +98,6 @@ impl ParameterLearning for MLE {
             .for_each(|(mut C, diag)| {
                 C.diag_mut().assign(&diag);
             });
-        
-
 
         let mut n: Params = net.get_node(node).clone();
 
@@ -115,8 +106,6 @@ impl ParameterLearning for MLE {
                 dsct.set_cim_unchecked(CIM);
                 dsct.set_transitions(M);
                 dsct.set_residence_time(T);
-
-
             }
         };
         return n;
@@ -125,7 +114,7 @@ impl ParameterLearning for MLE {
 
 pub struct BayesianApproach {
     pub alpha: usize,
-    pub tau: f64
+    pub tau: f64,
 }
 
 impl ParameterLearning for BayesianApproach {
@@ -141,17 +130,17 @@ impl ParameterLearning for BayesianApproach {
             Some(p) => p,
             None => net.get_parent_set(node),
         };
-        
+
         let (M, T) = sufficient_statistics(net, dataset, node.clone(), &parent_set);
 
         let alpha: f64 = self.alpha as f64 / M.shape()[0] as f64;
         let tau: f64 = self.tau as f64 / M.shape()[0] as f64;
 
-        //Compute the CIM as M[i,x,y]/T[i,x]  
+        //Compute the CIM as M[i,x,y]/T[i,x]
         let mut CIM: Array3<f64> = Array::zeros((M.shape()[0], M.shape()[1], M.shape()[2]));
         CIM.axis_iter_mut(Axis(2))
             .zip(M.mapv(|x| x as f64).axis_iter(Axis(2)))
-            .for_each(|(mut C, m)| C.assign(&(&m.mapv(|y| y + alpha)/&T.mapv(|y| y + tau))));
+            .for_each(|(mut C, m)| C.assign(&(&m.mapv(|y| y + alpha) / &T.mapv(|y| y + tau))));
 
         //Set the diagonal of the inner matrices to the the row sum multiplied by -1
         let tmp_diag_sum: Array2<f64> = CIM.sum_axis(Axis(2)).mapv(|x| x * -1.0);
@@ -161,8 +150,6 @@ impl ParameterLearning for BayesianApproach {
                 C.diag_mut().assign(&diag);
             });
 
-
-
         let mut n: Params = net.get_node(node).clone();
 
         match n {
@@ -170,14 +157,11 @@ impl ParameterLearning for BayesianApproach {
                 dsct.set_cim_unchecked(CIM);
                 dsct.set_transitions(M);
                 dsct.set_residence_time(T);
-
-
             }
         };
         return n;
     }
 }
-
 
 pub struct Cache<P: ParameterLearning> {
     parameter_learning: P,
@@ -185,12 +169,13 @@ pub struct Cache<P: ParameterLearning> {
 }
 
 impl<P: ParameterLearning> Cache<P> {
-    pub fn fit<T:network::Network>(
+    pub fn fit<T: network::Network>(
         &mut self,
         net: &T,
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
     ) -> Params {
-        self.parameter_learning.fit(net, &self.dataset, node, parent_set)
+        self.parameter_learning
+            .fit(net, &self.dataset, node, parent_set)
     }
 }

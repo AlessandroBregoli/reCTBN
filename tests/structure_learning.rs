@@ -1,17 +1,18 @@
 #![allow(non_snake_case)]
 
 mod utils;
-use utils::*;
+use std::collections::BTreeSet;
 
 use ndarray::{arr1, arr2, arr3};
 use reCTBN::ctbn::*;
 use reCTBN::network::Network;
 use reCTBN::params;
-use reCTBN::structure_learning::score_function::*;
-use reCTBN::structure_learning::{score_based_algorithm::*, StructureLearningAlgorithm};
 use reCTBN::structure_learning::hypothesis_test::*;
+use reCTBN::structure_learning::score_based_algorithm::*;
+use reCTBN::structure_learning::score_function::*;
+use reCTBN::structure_learning::StructureLearningAlgorithm;
 use reCTBN::tools::*;
-use std::collections::BTreeSet;
+use utils::*;
 
 #[macro_use]
 extern crate approx;
@@ -69,11 +70,13 @@ fn check_compatibility_between_dataset_and_network<T: StructureLearningAlgorithm
         params::Params::DiscreteStatesContinousTime(param) => {
             assert_eq!(
                 Ok(()),
-                param.set_cim(arr3(&[[
-                    [-3.0, 2.0, 1.0],
-                    [1.5, -2.0, 0.5],
-                    [0.4, 0.6, -1.0]
-                ]]))
+                param.set_cim(arr3(&[
+                    [
+                        [-3.0, 2.0, 1.0],
+                        [1.5, -2.0, 0.5],
+                        [0.4, 0.6, -1.0]
+                    ],
+                ]))
             );
         }
     }
@@ -83,9 +86,21 @@ fn check_compatibility_between_dataset_and_network<T: StructureLearningAlgorithm
             assert_eq!(
                 Ok(()),
                 param.set_cim(arr3(&[
-                    [[-1.0, 0.5, 0.5], [3.0, -4.0, 1.0], [0.9, 0.1, -1.0]],
-                    [[-6.0, 2.0, 4.0], [1.5, -2.0, 0.5], [3.0, 1.0, -4.0]],
-                    [[-1.0, 0.1, 0.9], [2.0, -2.5, 0.5], [0.9, 0.1, -1.0]],
+                    [
+                        [-1.0, 0.5, 0.5],
+                        [3.0, -4.0, 1.0],
+                        [0.9, 0.1, -1.0]
+                    ],
+                    [
+                        [-6.0, 2.0, 4.0],
+                        [1.5, -2.0, 0.5],
+                        [3.0, 1.0, -4.0]
+                    ],
+                    [
+                        [-1.0, 0.1, 0.9],
+                        [2.0, -2.5, 0.5],
+                        [0.9, 0.1, -1.0]
+                    ],
                 ]))
             );
         }
@@ -122,11 +137,13 @@ fn learn_ternary_net_2_nodes<T: StructureLearningAlgorithm>(sl: T) {
         params::Params::DiscreteStatesContinousTime(param) => {
             assert_eq!(
                 Ok(()),
-                param.set_cim(arr3(&[[
-                    [-3.0, 2.0, 1.0],
-                    [1.5, -2.0, 0.5],
-                    [0.4, 0.6, -1.0]
-                ]]))
+                param.set_cim(arr3(&[
+                    [
+                        [-3.0, 2.0, 1.0],
+                        [1.5, -2.0, 0.5],
+                        [0.4, 0.6, -1.0]
+                    ],
+                ]))
             );
         }
     }
@@ -136,9 +153,21 @@ fn learn_ternary_net_2_nodes<T: StructureLearningAlgorithm>(sl: T) {
             assert_eq!(
                 Ok(()),
                 param.set_cim(arr3(&[
-                    [[-1.0, 0.5, 0.5], [3.0, -4.0, 1.0], [0.9, 0.1, -1.0]],
-                    [[-6.0, 2.0, 4.0], [1.5, -2.0, 0.5], [3.0, 1.0, -4.0]],
-                    [[-1.0, 0.1, 0.9], [2.0, -2.5, 0.5], [0.9, 0.1, -1.0]],
+                    [
+                        [-1.0, 0.5, 0.5],
+                        [3.0, -4.0, 1.0],
+                        [0.9, 0.1, -1.0]
+                    ],
+                    [
+                        [-6.0, 2.0, 4.0],
+                        [1.5, -2.0, 0.5],
+                        [3.0, 1.0, -4.0]
+                    ],
+                    [
+                        [-1.0, 0.1, 0.9],
+                        [2.0, -2.5, 0.5],
+                        [0.9, 0.1, -1.0]
+                    ],
                 ]))
             );
         }
@@ -185,11 +214,13 @@ fn get_mixed_discrete_net_3_nodes_with_data() -> (CtbnNetwork, Dataset) {
         params::Params::DiscreteStatesContinousTime(param) => {
             assert_eq!(
                 Ok(()),
-                param.set_cim(arr3(&[[
-                    [-3.0, 2.0, 1.0],
-                    [1.5, -2.0, 0.5],
-                    [0.4, 0.6, -1.0]
-                ]]))
+                param.set_cim(arr3(&[
+                    [
+                        [-3.0, 2.0, 1.0],
+                        [1.5, -2.0, 0.5],
+                        [0.4, 0.6, -1.0]
+                    ],
+                ]))
             );
         }
     }
@@ -199,9 +230,21 @@ fn get_mixed_discrete_net_3_nodes_with_data() -> (CtbnNetwork, Dataset) {
             assert_eq!(
                 Ok(()),
                 param.set_cim(arr3(&[
-                    [[-1.0, 0.5, 0.5], [3.0, -4.0, 1.0], [0.9, 0.1, -1.0]],
-                    [[-6.0, 2.0, 4.0], [1.5, -2.0, 0.5], [3.0, 1.0, -4.0]],
-                    [[-1.0, 0.1, 0.9], [2.0, -2.5, 0.5], [0.9, 0.1, -1.0]],
+                    [
+                        [-1.0, 0.5, 0.5],
+                        [3.0, -4.0, 1.0],
+                        [0.9, 0.1, -1.0]
+                    ],
+                    [
+                        [-6.0, 2.0, 4.0],
+                        [1.5, -2.0, 0.5],
+                        [3.0, 1.0, -4.0]
+                    ],
+                    [
+                        [-1.0, 0.1, 0.9],
+                        [2.0, -2.5, 0.5],
+                        [0.9, 0.1, -1.0]
+                    ],
                 ]))
             );
         }
@@ -320,42 +363,56 @@ pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic_1_parent_constraint() 
 }
 
 #[test]
-pub fn chi_square_compare_matrices () {
+pub fn chi_square_compare_matrices() {
     let i: usize = 1;
     let M1 = arr3(&[
-       [[ 0,  2,  3],
-        [ 4,  0,  6],
-        [ 7,  8,  0]],
-       [[0, 12,  90],
-        [ 3, 0,  40],
-        [ 6, 40,  0]],
-       [[ 0,  2,  3],
-        [ 4,  0,  6],
-        [ 44, 66, 0]]
+        [
+            [ 0,  2,  3],
+            [ 4,  0,  6],
+            [ 7,  8,  0]
+        ],
+        [
+            [0, 12,  90],
+            [ 3, 0,  40],
+            [ 6, 40,  0]
+        ],
+        [
+            [ 0,  2,  3],
+            [ 4,  0,  6],
+            [ 44, 66, 0]
+        ],
     ]);
     let j: usize = 0;
     let M2 = arr3(&[
-       [[ 0,  200,  300],
-        [ 400,  0,  600],
-        [  700, 800,  0]]
+        [
+            [ 0,  200,  300],
+            [ 400,  0,  600],
+            [  700, 800,  0]
+        ],
     ]);
     let chi_sq = ChiSquare::new(0.1);
-    assert!(!chi_sq.compare_matrices( i, &M1, j, &M2));
+    assert!(!chi_sq.compare_matrices(i, &M1, j, &M2));
 }
 
 #[test]
-pub fn chi_square_compare_matrices_2 () {
+pub fn chi_square_compare_matrices_2() {
     let i: usize = 1;
     let M1 = arr3(&[
-       [[ 0,  2,  3],
-        [ 4,  0,  6],
-        [ 7,  8,  0]],
-       [[0, 20,  30],
-        [ 40, 0,  60],
-        [ 70, 80,  0]],
-       [[ 0,  2,  3],
-        [ 4,  0,  6],
-        [ 44, 66, 0]]
+        [
+            [ 0,  2,  3],
+            [ 4,  0,  6],
+            [ 7,  8,  0]
+        ],
+        [
+            [0, 20,  30],
+            [ 40, 0,  60],
+            [ 70, 80,  0]
+        ],
+        [
+            [ 0,  2,  3],
+            [ 4,  0,  6],
+            [ 44, 66, 0]
+        ],
     ]);
     let j: usize = 0;
     let M2 = arr3(&[
@@ -364,29 +421,37 @@ pub fn chi_square_compare_matrices_2 () {
         [  700, 800,  0]]
     ]);
     let chi_sq = ChiSquare::new(0.1);
-    assert!(chi_sq.compare_matrices( i, &M1, j, &M2));
+    assert!(chi_sq.compare_matrices(i, &M1, j, &M2));
 }
 
 #[test]
-pub fn chi_square_compare_matrices_3 () {
+pub fn chi_square_compare_matrices_3() {
     let i: usize = 1;
     let M1 = arr3(&[
-       [[ 0,  2,  3],
-        [ 4,  0,  6],
-        [ 7,  8,  0]],
-       [[0, 21,  31],
-        [ 41, 0,  59],
-        [ 71, 79,  0]],
-       [[ 0,  2,  3],
-        [ 4,  0,  6],
-        [ 44, 66, 0]]
+        [
+            [ 0,  2,  3],
+            [ 4,  0,  6],
+            [ 7,  8,  0]
+        ],
+        [
+            [0, 21,  31],
+            [ 41, 0,  59],
+            [ 71, 79,  0]
+        ],
+        [
+            [ 0,  2,  3],
+            [ 4,  0,  6],
+            [ 44, 66, 0]
+        ],
     ]);
     let j: usize = 0;
     let M2 = arr3(&[
-       [[ 0,  200,  300],
-        [ 400,  0,  600],
-        [  700, 800,  0]]
+        [
+            [ 0,  200,  300],
+            [ 400,  0,  600],
+            [  700, 800,  0]
+        ],
     ]);
     let chi_sq = ChiSquare::new(0.1);
-    assert!(chi_sq.compare_matrices( i, &M1, j, &M2));
+    assert!(chi_sq.compare_matrices(i, &M1, j, &M2));
 }

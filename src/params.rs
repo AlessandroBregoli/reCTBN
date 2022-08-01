@@ -1,9 +1,10 @@
+use std::collections::BTreeSet;
+
 use enum_dispatch::enum_dispatch;
 use ndarray::prelude::*;
 use rand::Rng;
-use std::collections::{BTreeSet};
-use thiserror::Error;
 use rand_chacha::ChaCha8Rng;
+use thiserror::Error;
 
 /// Error types for trait Params
 #[derive(Error, Debug, PartialEq)]
@@ -35,11 +36,21 @@ pub trait ParamsTrait {
 
     /// Randomly generate a residence time for the given node taking into account the node state
     /// and its parent set.
-    fn get_random_residence_time(&self, state: usize, u: usize, rng: &mut ChaCha8Rng) -> Result<f64, ParamsError>;
+    fn get_random_residence_time(
+        &self,
+        state: usize,
+        u: usize,
+        rng: &mut ChaCha8Rng,
+    ) -> Result<f64, ParamsError>;
 
     /// Randomly generate a possible state for the given node taking into account the node state
     /// and its parent set.
-    fn get_random_state(&self, state: usize, u: usize, rng: &mut ChaCha8Rng) -> Result<StateType, ParamsError>;
+    fn get_random_state(
+        &self,
+        state: usize,
+        u: usize,
+        rng: &mut ChaCha8Rng,
+    ) -> Result<StateType, ParamsError>;
 
     /// Used by childern of the node described by this parameters to reserve spaces in their CIMs.
     fn get_reserved_space_as_parent(&self) -> usize;
@@ -49,7 +60,7 @@ pub trait ParamsTrait {
 
     /// Validate parameters against domain
     fn validate_params(&self) -> Result<(), ParamsError>;
-    
+
     /// Return a reference to the associated label
     fn get_label(&self) -> &String;
 }
@@ -92,17 +103,17 @@ impl DiscreteStatesContinousTimeParams {
             residence_time: Option::None,
         }
     }
-    
+
     ///Getter function for CIM
     pub fn get_cim(&self) -> &Option<Array3<f64>> {
         &self.cim
-    } 
+    }
 
     ///Setter function for CIM.\\
-    ///This function check if the cim is valid using the validate_params method. 
+    ///This function check if the cim is valid using the validate_params method.
     ///- **Valid cim inserted**: it substitute the CIM in self.cim and return Ok(())
     ///- **Invalid cim inserted**: it replace the self.cim value with None and it retu  ParamsError
-    pub fn set_cim(&mut self, cim: Array3<f64>) -> Result<(), ParamsError>{
+    pub fn set_cim(&mut self, cim: Array3<f64>) -> Result<(), ParamsError> {
         self.cim = Some(cim);
         match self.validate_params() {
             Ok(()) => Ok(()),
@@ -112,7 +123,6 @@ impl DiscreteStatesContinousTimeParams {
             }
         }
     }
-
 
     ///Unchecked version of the setter function for CIM.
     pub fn set_cim_unchecked(&mut self, cim: Array3<f64>) {
@@ -124,7 +134,6 @@ impl DiscreteStatesContinousTimeParams {
         &self.transitions
     }
 
-
     ///Setter function for transitions
     pub fn set_transitions(&mut self, transitions: Array3<usize>) {
         self.transitions = Some(transitions);
@@ -135,12 +144,10 @@ impl DiscreteStatesContinousTimeParams {
         &self.residence_time
     }
 
-
     ///Setter function for residence_time
     pub fn set_residence_time(&mut self, residence_time: Array2<f64>) {
         self.residence_time = Some(residence_time);
     }
-
 }
 
 impl ParamsTrait for DiscreteStatesContinousTimeParams {
@@ -154,7 +161,12 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
         StateType::Discrete(rng.gen_range(0..(self.domain.len())))
     }
 
-    fn get_random_residence_time(&self, state: usize, u: usize, rng: &mut ChaCha8Rng) -> Result<f64, ParamsError> {
+    fn get_random_residence_time(
+        &self,
+        state: usize,
+        u: usize,
+        rng: &mut ChaCha8Rng,
+    ) -> Result<f64, ParamsError> {
         // Generate a random residence time given the current state of the node and its parent set.
         // The method used is described in:
         // https://en.wikipedia.org/wiki/Exponential_distribution#Generating_exponential_variates
@@ -170,7 +182,12 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
         }
     }
 
-    fn get_random_state(&self, state: usize, u: usize, rng: &mut ChaCha8Rng) -> Result<StateType, ParamsError> {
+    fn get_random_state(
+        &self,
+        state: usize,
+        u: usize,
+        rng: &mut ChaCha8Rng,
+    ) -> Result<StateType, ParamsError> {
         // Generate a random transition given the current state of the node and its parent set.
         // The method used is described in:
         // https://en.wikipedia.org/wiki/Multinomial_distribution#Sampling_from_a_multinomial_distribution
@@ -246,7 +263,9 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
         }
 
         // Check if each row sum up to 0
-        if cim.sum_axis(Axis(2)).iter()
+        if cim
+            .sum_axis(Axis(2))
+            .iter()
             .any(|x| f64::abs(x.clone()) > f64::EPSILON * 3.0)
         {
             return Err(ParamsError::InvalidCIM(String::from(
@@ -257,8 +276,7 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
         return Ok(());
     }
 
-    fn get_label(&self) ->  &String {
+    fn get_label(&self) -> &String {
         &self.label
     }
-
 }
