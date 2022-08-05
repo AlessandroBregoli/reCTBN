@@ -6,6 +6,8 @@ use std::collections::BTreeSet;
 use ndarray::{arr1, arr2, arr3};
 use reCTBN::ctbn::*;
 use reCTBN::network::Network;
+use reCTBN::parameter_learning::BayesianApproach;
+use reCTBN::parameter_learning::Cache;
 use reCTBN::params;
 use reCTBN::structure_learning::hypothesis_test::*;
 use reCTBN::structure_learning::score_based_algorithm::*;
@@ -454,4 +456,23 @@ pub fn chi_square_compare_matrices_3() {
     ]);
     let chi_sq = ChiSquare::new(0.1);
     assert!(chi_sq.compare_matrices(i, &M1, j, &M2));
+}
+
+
+#[test]
+pub fn chi_square_call() {
+
+    let (net, data) = get_mixed_discrete_net_3_nodes_with_data();
+    let N3: usize = 2;
+    let N2: usize = 1;
+    let N1: usize = 0;
+    let separation_set = BTreeSet::new();
+    let parameter_learning = BayesianApproach { alpha: 1, tau:1.0 };
+    let mut cache = Cache::new(parameter_learning, data);
+    let chi_sq = ChiSquare::new(0.0001);
+
+    assert!(chi_sq.call(&net, N1, N3, &separation_set, &mut cache));
+    assert!(!chi_sq.call(&net, N3, N1, &separation_set, &mut cache));
+    assert!(!chi_sq.call(&net, N3, N2, &separation_set, &mut cache));
+    assert!(chi_sq.call(&net, N2, N3, &separation_set, &mut cache));
 }
