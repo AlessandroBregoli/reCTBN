@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ndarray = {version="*", features=["approx"]}
+ndarray = {version="*", features=["approx-0_5"]}
 thiserror = "*"
 rand = "*"
 bimap = "*"
@@ -15,4 +15,4 @@ statrs = "*"
 rand_chacha = "*"
 
 [dev-dependencies]
-approx = "*"
+approx = { package = "approx", version = "0.5" }
