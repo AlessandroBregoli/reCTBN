@@ -1,5 +1,5 @@
 use crate::{
-    network::{Network},
+    network::Network,
     params::{self, ParamsTrait},
 };
 use rand::SeedableRng;
@@ -65,31 +65,34 @@ impl<'a, T: Network> Iterator for ForwardSampler<'a, T> {
             }
         }
 
-        let next_node_transition = self.next_transitions
+        let next_node_transition = self
+            .next_transitions
             .iter()
             .enumerate()
             .min_by(|x, y| x.1.unwrap().partial_cmp(&y.1.unwrap()).unwrap())
             .unwrap()
             .0;
-        
+
         self.current_time = self.next_transitions[next_node_transition].unwrap().clone();
-        
-        self.current_state[next_node_transition] = self.net
+
+        self.current_state[next_node_transition] = self
+            .net
             .get_node(next_node_transition)
             .get_random_state(
-                self.net.get_node(next_node_transition)
+                self.net
+                    .get_node(next_node_transition)
                     .state_to_index(&self.current_state[next_node_transition]),
-                self.net.get_param_index_network(next_node_transition, &self.current_state),
+                self.net
+                    .get_param_index_network(next_node_transition, &self.current_state),
                 &mut self.rng,
             )
             .unwrap();
 
         self.next_transitions[next_node_transition] = None;
-        
+
         for child in self.net.get_children_set(next_node_transition) {
             self.next_transitions[child] = None;
         }
-
 
         Some((ret_time, ret_state))
     }

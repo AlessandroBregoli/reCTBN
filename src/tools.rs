@@ -1,6 +1,6 @@
 use ndarray::prelude::*;
 
-use crate::sampling::{Sampler, ForwardSampler};
+use crate::sampling::{ForwardSampler, Sampler};
 use crate::{network, params};
 
 pub struct Trajectory {

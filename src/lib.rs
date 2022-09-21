@@ -6,6 +6,6 @@ pub mod ctbn;
 pub mod network;
 pub mod parameter_learning;
 pub mod params;
+pub mod sampling;
 pub mod structure_learning;
 pub mod tools;
-pub mod sampling;
