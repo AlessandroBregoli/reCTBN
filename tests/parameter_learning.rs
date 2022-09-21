@@ -10,6 +10,7 @@ use reCTBN::tools::*;
 use utils::*;
 
 extern crate approx;
+use crate::approx::AbsDiffEq;
 
 fn learn_binary_cim<T: ParameterLearning>(pl: T) {
     let mut net = CtbnNetwork::new();
