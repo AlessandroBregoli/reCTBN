@@ -5,7 +5,7 @@ use crate::{
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
 
-trait Sampler: Iterator {
+pub trait Sampler: Iterator {
     fn reset(&mut self);
 }
 
@@ -83,6 +83,12 @@ impl<'a, T: Network> Iterator for ForwardSampler<'a, T> {
                 &mut self.rng,
             )
             .unwrap();
+
+        self.next_transitions[next_node_transition] = None;
+        
+        for child in self.net.get_children_set(next_node_transition) {
+            self.next_transitions[child] = None;
+        }
 
 
         Some((ret_time, ret_state))
