@@ -1,8 +1,5 @@
 use ndarray::prelude::*;
-use rand_chacha::rand_core::SeedableRng;
-use rand_chacha::ChaCha8Rng;
 
-use crate::params::ParamsTrait;
 use crate::sampling::{Sampler, ForwardSampler};
 use crate::{network, params};
 

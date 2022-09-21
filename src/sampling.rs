@@ -1,5 +1,5 @@
 use crate::{
-    network::{self, Network},
+    network::{Network},
     params::{self, ParamsTrait},
 };
 use rand::SeedableRng;
@@ -22,7 +22,7 @@ where
 
 impl<'a, T: Network> ForwardSampler<'a, T> {
     pub fn new(net: &'a T, seed: Option<u64>) -> ForwardSampler<'a, T> {
-        let mut rng: ChaCha8Rng = match seed {
+        let rng: ChaCha8Rng = match seed {
             //If a seed is present use it to initialize the random generator.
             Some(seed) => SeedableRng::seed_from_u64(seed),
             //Otherwise create a new random generator using the method `from_entropy`
