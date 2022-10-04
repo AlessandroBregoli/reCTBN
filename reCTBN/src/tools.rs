@@ -3,6 +3,7 @@ use ndarray::prelude::*;
 use crate::sampling::{ForwardSampler, Sampler};
 use crate::{network, params};
 
+#[derive(Clone)]
 pub struct Trajectory {
     time: Array1<f64>,
     events: Array2<usize>,
