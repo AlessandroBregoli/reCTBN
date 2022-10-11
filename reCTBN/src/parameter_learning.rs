@@ -169,6 +169,12 @@ pub struct Cache<P: ParameterLearning> {
 }
 
 impl<P: ParameterLearning> Cache<P> {
+    pub fn new(parameter_learning: P, dataset: tools::Dataset) -> Cache<P> {
+        Cache {
+            parameter_learning,
+            dataset,
+        }
+    }
     pub fn fit<T: network::Network>(
         &mut self,
         net: &T,

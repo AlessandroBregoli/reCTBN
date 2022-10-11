@@ -30,6 +30,8 @@ impl ChiSquare {
     pub fn new(alpha: f64) -> ChiSquare {
         ChiSquare { alpha }
     }
+    // Restituisce true quando le matrici sono molto simili, quindi indipendenti
+    // false quando sono diverse, quindi dipendenti
     pub fn compare_matrices(
         &self,
         i: usize,
@@ -69,6 +71,7 @@ impl ChiSquare {
             let n = K.len();
             K.into_shape((n, 1)).unwrap()
         };
+        println!("K: {:?}", K);
         let L = 1.0 / &K;
         //        =====                   2
         //         \      (K . M  - L . M)
@@ -89,10 +92,13 @@ impl ChiSquare {
         let n = ChiSquared::new((X_2.dim() - 1) as f64).unwrap();
         println!("CHI^2: {:?}", n);
         println!("CHI^2 CDF: {:?}", X_2.mapv(|x| n.cdf(x)));
-        X_2.into_iter().all(|x| n.cdf(x) < (1.0 - self.alpha))
+        let ret = X_2.into_iter().all(|x| n.cdf(x) < (1.0 - self.alpha));
+        println!("test: {:?}", ret);
+        ret
     }
 }
 
+// ritorna false quando sono dipendenti e false quando sono indipendenti
 impl HypothesisTest for ChiSquare {
     fn call<T, P>(
         &self,
