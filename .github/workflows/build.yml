@@ -22,7 +22,7 @@ jobs:
         profile: minimal
         toolchain: stable
         default: true
-        components: clippy, rustfmt
+        components: clippy, rustfmt, rust-docs
     - name: Setup Rust nightly
       uses: actions-rs/toolchain@v1
       with:
@@ -30,6 +30,11 @@ jobs:
         toolchain: nightly
         default: false
         components: rustfmt
+    - name: Docs (doc)
+      uses: actions-rs/cargo@v1
+      with:
+        command: rustdoc
+        args: --package reCTBN -- --default-theme=ayu
     - name: Linting (clippy)
       uses: actions-rs/clippy-check@v1
       with:
