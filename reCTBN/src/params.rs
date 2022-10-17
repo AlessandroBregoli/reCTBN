@@ -23,9 +23,8 @@ pub enum StateType {
     Discrete(usize),
 }
 
-/// Parameters
-/// The Params trait is the core element for building different types of nodes. The goal is to
-/// define the set of method required to describes a generic node.
+/// This is a core element for building different types of nodes; the goal is to define the set of
+/// methods required to describes a generic node.
 #[enum_dispatch(Params)]
 pub trait ParamsTrait {
     fn reset_params(&mut self);
@@ -65,8 +64,8 @@ pub trait ParamsTrait {
     fn get_label(&self) -> &String;
 }
 
-/// The Params enum is the core element for building different types of nodes. The goal is to
-/// define all the supported type of Parameters
+/// Is a core element for building different types of nodes; the goal is to define all the
+/// supported type of Parameters
 #[derive(Clone)]
 #[enum_dispatch]
 pub enum Params {
@@ -76,14 +75,14 @@ pub enum Params {
 /// DiscreteStatesContinousTime.
 /// This represents the parameters of a classical discrete node for ctbn and it's composed by the
 /// following elements:
-/// - **domain**: an ordered and exhaustive set of possible states
-/// - **cim**: Conditional Intensity Matrix
-/// - **Sufficient Statistics**: the sufficient statistics are mainly used during the parameter
-///     learning task and are composed by:
-///     - **transitions**: number of transitions from one state to another given a specific
-///     realization of the parent set
-///     - **residence_time**: permanence time in each possible states given a specific
-///     realization of the parent set
+/// - `label`
+/// - `domain`: an ordered and exhaustive set of possible states.
+/// - `cim`: Conditional Intensity Matrix.
+/// - `transitions`: number of transitions from one state to another given a specific realization
+///   of the parent set; is a sufficient statistics are mainly used during the parameter learning
+///   task.
+/// - `residence_time`: permanence time in each possible state, given a specific realization of the
+///   parent set; is a sufficient statistics are mainly used during the parameter learning task.
 #[derive(Clone)]
 pub struct DiscreteStatesContinousTimeParams {
     label: String,
@@ -104,15 +103,17 @@ impl DiscreteStatesContinousTimeParams {
         }
     }
 
-    ///Getter function for CIM
+    /// Getter function for CIM
     pub fn get_cim(&self) -> &Option<Array3<f64>> {
         &self.cim
     }
 
-    ///Setter function for CIM.\\
-    ///This function check if the cim is valid using the validate_params method.
-    ///- **Valid cim inserted**: it substitute the CIM in self.cim and return Ok(())
-    ///- **Invalid cim inserted**: it replace the self.cim value with None and it retu  ParamsError
+    /// Setter function for CIM.
+    /// 
+    /// This function check if the CIM is valid using the validate_params method:
+    /// - **Valid CIM inserted**: it substitute the CIM in self.cim and return `Ok(())`.
+    /// - **Invalid CIM inserted**: it replace the self.cim value with None and it returns
+    ///   `ParamsError`.
     pub fn set_cim(&mut self, cim: Array3<f64>) -> Result<(), ParamsError> {
         self.cim = Some(cim);
         match self.validate_params() {
@@ -124,27 +125,27 @@ impl DiscreteStatesContinousTimeParams {
         }
     }
 
-    ///Unchecked version of the setter function for CIM.
+    /// Unchecked version of the setter function for CIM.
     pub fn set_cim_unchecked(&mut self, cim: Array3<f64>) {
         self.cim = Some(cim);
     }
 
-    ///Getter function for transitions
+    /// Getter function for transitions.
     pub fn get_transitions(&self) -> &Option<Array3<usize>> {
         &self.transitions
     }
 
-    ///Setter function for transitions
+    /// Setter function for transitions.
     pub fn set_transitions(&mut self, transitions: Array3<usize>) {
         self.transitions = Some(transitions);
     }
 
-    ///Getter function for residence_time
+    /// Getter function for residence_time.
     pub fn get_residence_time(&self) -> &Option<Array2<f64>> {
         &self.residence_time
     }
 
-    ///Setter function for residence_time
+    ///Setter function for residence_time.
     pub fn set_residence_time(&mut self, residence_time: Array2<f64>) {
         self.residence_time = Some(residence_time);
     }
