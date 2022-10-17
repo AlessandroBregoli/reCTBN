@@ -73,14 +73,17 @@ pub enum Params {
 }
 
 /// This represents the parameters of a classical discrete node for ctbn and it's composed by the
-/// following elements:
-/// - `label`
-/// - `domain`: an ordered and exhaustive set of possible states.
-/// - `cim`: Conditional Intensity Matrix.
-/// - `transitions`: number of transitions from one state to another given a specific realization
+/// following elements.
+///
+/// # Arguments
+///
+/// * `label` - node's variable name.
+/// * `domain` - an ordered and exhaustive set of possible states.
+/// * `cim` - Conditional Intensity Matrix.
+/// * `transitions` - number of transitions from one state to another given a specific realization
 ///   of the parent set; is a sufficient statistics are mainly used during the parameter learning
 ///   task.
-/// - `residence_time`: permanence time in each possible state, given a specific realization of the
+/// * `residence_time` - residence time in each possible state, given a specific realization of the
 ///   parent set; is a sufficient statistics are mainly used during the parameter learning task.
 #[derive(Clone)]
 pub struct DiscreteStatesContinousTimeParams {
@@ -109,9 +112,9 @@ impl DiscreteStatesContinousTimeParams {
 
     /// Setter function for CIM.
     ///
-    /// This function check if the CIM is valid using the validate_params method:
-    /// - **Valid CIM inserted**: it substitute the CIM in self.cim and return `Ok(())`.
-    /// - **Invalid CIM inserted**: it replace the self.cim value with None and it returns
+    /// This function checks if the CIM is valid using the [`validate_params`](self::ParamsTrait::validate_params) method:
+    /// * **Valid CIM inserted** - it substitutes the CIM in `self.cim` and returns `Ok(())`.
+    /// * **Invalid CIM inserted** - it replaces the `self.cim` value with `None` and it returns
     ///   `ParamsError`.
     pub fn set_cim(&mut self, cim: Array3<f64>) -> Result<(), ParamsError> {
         self.cim = Some(cim);
@@ -144,7 +147,7 @@ impl DiscreteStatesContinousTimeParams {
         &self.residence_time
     }
 
-    ///Setter function for residence_time.
+    /// Setter function for residence_time.
     pub fn set_residence_time(&mut self, residence_time: Array2<f64>) {
         self.residence_time = Some(residence_time);
     }
