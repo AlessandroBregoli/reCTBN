@@ -72,7 +72,6 @@ pub enum Params {
     DiscreteStatesContinousTime(DiscreteStatesContinousTimeParams),
 }
 
-/// DiscreteStatesContinousTime.
 /// This represents the parameters of a classical discrete node for ctbn and it's composed by the
 /// following elements:
 /// - `label`
@@ -109,7 +108,7 @@ impl DiscreteStatesContinousTimeParams {
     }
 
     /// Setter function for CIM.
-    /// 
+    ///
     /// This function check if the CIM is valid using the validate_params method:
     /// - **Valid CIM inserted**: it substitute the CIM in self.cim and return `Ok(())`.
     /// - **Invalid CIM inserted**: it replace the self.cim value with None and it returns

@@ -56,3 +56,11 @@ To check the **formatting**:
 ```sh
 cargo fmt --all -- --check
 ```
+
+## Documentation
+
+To generate the **documentation**:
+
+```sh
+cargo rustdoc --package reCTBN --open -- --default-theme=ayu
+```
