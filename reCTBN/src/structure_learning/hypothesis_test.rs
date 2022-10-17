@@ -20,6 +20,17 @@ pub trait HypothesisTest {
         P: parameter_learning::ParameterLearning;
 }
 
+/// Does the chi-squared test (χ2 test).
+///
+/// Used to determine if a difference between two sets of data is due to chance, or if it is due to
+/// a relationship (dependence) between the variables.
+///
+/// # Arguments
+///
+/// * `alpha` - is the significance level, the probability to reject a true null hypothesis;
+///   in other words is the risk of concluding that an association between the variables exists
+///   when there is no actual association.
+
 pub struct ChiSquare {
     alpha: f64,
 }
@@ -30,8 +41,21 @@ impl ChiSquare {
     pub fn new(alpha: f64) -> ChiSquare {
         ChiSquare { alpha }
     }
-    // Restituisce true quando le matrici sono molto simili, quindi indipendenti
-    // false quando sono diverse, quindi dipendenti
+
+    /// Compare two matrices extracted from two 3rd-orer tensors.
+    ///
+    /// # Arguments
+    ///
+    /// * `i` - Position of the matrix of `M1` to compare with `M2`.
+    /// * `M1` - 3rd-order tensor 1.
+    /// * `j` - Position of the matrix of `M2` to compare with `M1`.
+    /// * `M2` - 3rd-order tensor 2.
+    ///
+    /// # Returns
+    ///
+    /// * `true` - when the matrices `M1` and `M2` are very similar, then **dependendent**.
+    /// * `false` - when the matrices `M1` and `M2` are too different, then **independent**.
+
     pub fn compare_matrices(
         &self,
         i: usize,
