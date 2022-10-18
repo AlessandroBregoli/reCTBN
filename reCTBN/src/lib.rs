@@ -1,8 +1,4 @@
-//! # reCTBN
-//!
-//! > **Note:** At the moment it's in pre-alpha state. 🧪⚗️💥
-//!
-//! `reCTBN` is a Continuous Time Bayesian Networks Library written in Rust. 🦀
+#![doc = include_str!("../../README.md")]
 
 #![allow(non_snake_case)]
 #[cfg(test)]
