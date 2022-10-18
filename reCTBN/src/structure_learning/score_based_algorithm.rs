@@ -1,3 +1,5 @@
+//! Module containing score based algorithms like Hill Climbing and Tabu Search.
+
 use std::collections::BTreeSet;
 
 use crate::structure_learning::score_function::ScoreFunction;

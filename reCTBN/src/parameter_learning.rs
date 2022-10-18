@@ -1,3 +1,5 @@
+//! Module containing methods used to learn the parameters.
+
 use std::collections::BTreeSet;
 
 use ndarray::prelude::*;

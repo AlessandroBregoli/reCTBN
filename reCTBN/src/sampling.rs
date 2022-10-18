@@ -1,3 +1,5 @@
+//! Module containing methods for the sampling.
+
 use crate::{
     network::Network,
     params::{self, ParamsTrait},

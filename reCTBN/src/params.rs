@@ -1,3 +1,5 @@
+//! Module containing methods to define different types of nodes.
+
 use std::collections::BTreeSet;
 
 use enum_dispatch::enum_dispatch;

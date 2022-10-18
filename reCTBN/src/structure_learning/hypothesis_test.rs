@@ -1,3 +1,5 @@
+//! Module containing an hypothesis test for constraint based algorithms like chi-squared test, F test, etc...
+
 use std::collections::BTreeSet;
 
 use ndarray::{Array3, Axis};

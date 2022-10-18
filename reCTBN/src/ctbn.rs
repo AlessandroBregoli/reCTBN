@@ -1,3 +1,5 @@
+//! Continuous Time Bayesian Network
+
 use std::collections::BTreeSet;
 
 use ndarray::prelude::*;

@@ -1,3 +1,5 @@
+//! Defines methods for dealing with Probabilistic Graphical Models like the CTBNs
+
 use std::collections::BTreeSet;
 
 use thiserror::Error;
@@ -11,7 +13,8 @@ pub enum NetworkError {
     NodeInsertionError(String),
 }
 
-/// It defines the required methods for a structure used as a PGM (such as a CTBN).
+/// It defines the required methods for a structure used as a Probabilistic Graphical Models (such
+/// as a CTBN).
 pub trait Network {
     fn initialize_adj_matrix(&mut self);
     fn add_node(&mut self, n: params::Params) -> Result<usize, NetworkError>;

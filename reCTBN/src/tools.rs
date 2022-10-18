@@ -1,3 +1,5 @@
+//! Contains commonly used methods used across the crate.
+
 use ndarray::prelude::*;
 
 use crate::sampling::{ForwardSampler, Sampler};
