@@ -1,5 +1,4 @@
 #![doc = include_str!("../../README.md")]
-
 #![allow(non_snake_case)]
 #[cfg(test)]
 extern crate approx;
