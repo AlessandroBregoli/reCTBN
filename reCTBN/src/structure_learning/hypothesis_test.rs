@@ -97,7 +97,7 @@ impl ChiSquare {
             let n = K.len();
             K.into_shape((n, 1)).unwrap()
         };
-        println!("K: {:?}", K);
+        //println!("K: {:?}", K);
         let L = 1.0 / &K;
         //        =====                   2
         //         \      (K . M  - L . M)
@@ -108,18 +108,18 @@ impl ChiSquare {
         //     x'ϵVal /X \
         //            \ i/
         let mut X_2 = (&K * &M2 - &L * &M1).mapv(|a| a.powi(2)) / (&M2 + &M1);
-        println!("M1: {:?}", M1);
-        println!("M2: {:?}", M2);
-        println!("L*M1: {:?}", (L * &M1));
-        println!("K*M2: {:?}", (K * &M2));
-        println!("X_2: {:?}", X_2);
+        //println!("M1: {:?}", M1);
+        //println!("M2: {:?}", M2);
+        //println!("L*M1: {:?}", (L * &M1));
+        //println!("K*M2: {:?}", (K * &M2));
+        //println!("X_2: {:?}", X_2);
         X_2.diag_mut().fill(0.0);
         let X_2 = X_2.sum_axis(Axis(1));
         let n = ChiSquared::new((X_2.dim() - 1) as f64).unwrap();
-        println!("CHI^2: {:?}", n);
-        println!("CHI^2 CDF: {:?}", X_2.mapv(|x| n.cdf(x)));
+        //println!("CHI^2: {:?}", n);
+        //println!("CHI^2 CDF: {:?}", X_2.mapv(|x| n.cdf(x)));
         let ret = X_2.into_iter().all(|x| n.cdf(x) < (1.0 - self.alpha));
-        println!("test: {:?}", ret);
+        //println!("test: {:?}", ret);
         ret
     }
 }
