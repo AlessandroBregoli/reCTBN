@@ -55,8 +55,8 @@ impl ChiSquare {
     ///
     /// # Returns
     ///
-    /// * `true` - when the matrices `M1` and `M2` are very similar, then **dependendent**.
-    /// * `false` - when the matrices `M1` and `M2` are too different, then **independent**.
+    /// * `true` - when the matrices `M1` and `M2` are very similar, then **independendent**.
+    /// * `false` - when the matrices `M1` and `M2` are too different, then **dependent**.
 
     pub fn compare_matrices(
         &self,
