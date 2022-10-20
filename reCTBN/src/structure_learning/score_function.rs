@@ -1,3 +1,5 @@
+//! Module for score based algorithms containing score functions algorithms like Log Likelihood, BIC, etc...
+
 use std::collections::BTreeSet;
 
 use ndarray::prelude::*;

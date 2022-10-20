@@ -1,3 +1,5 @@
+//! Learn the structure of the network.
+
 pub mod constraint_based_algorithm;
 pub mod hypothesis_test;
 pub mod score_based_algorithm;

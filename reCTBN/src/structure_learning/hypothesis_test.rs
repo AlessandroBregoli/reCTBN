@@ -1,3 +1,5 @@
+//! Module for constraint based algorithms containing hypothesis test algorithms like chi-squared test, F test, etc...
+
 use std::collections::BTreeSet;
 
 use ndarray::{Array3, Axis};
@@ -20,6 +22,17 @@ pub trait HypothesisTest {
         P: parameter_learning::ParameterLearning;
 }
 
+/// Does the chi-squared test (χ2 test).
+///
+/// Used to determine if a difference between two sets of data is due to chance, or if it is due to
+/// a relationship (dependence) between the variables.
+///
+/// # Arguments
+///
+/// * `alpha` - is the significance level, the probability to reject a true null hypothesis;
+///   in other words is the risk of concluding that an association between the variables exists
+///   when there is no actual association.
+
 pub struct ChiSquare {
     alpha: f64,
 }
@@ -30,8 +43,21 @@ impl ChiSquare {
     pub fn new(alpha: f64) -> ChiSquare {
         ChiSquare { alpha }
     }
-    // Restituisce true quando le matrici sono molto simili, quindi indipendenti
-    // false quando sono diverse, quindi dipendenti
+
+    /// Compare two matrices extracted from two 3rd-orer tensors.
+    ///
+    /// # Arguments
+    ///
+    /// * `i` - Position of the matrix of `M1` to compare with `M2`.
+    /// * `M1` - 3rd-order tensor 1.
+    /// * `j` - Position of the matrix of `M2` to compare with `M1`.
+    /// * `M2` - 3rd-order tensor 2.
+    ///
+    /// # Returns
+    ///
+    /// * `true` - when the matrices `M1` and `M2` are very similar, then **independendent**.
+    /// * `false` - when the matrices `M1` and `M2` are too different, then **dependent**.
+
     pub fn compare_matrices(
         &self,
         i: usize,
@@ -71,7 +97,7 @@ impl ChiSquare {
             let n = K.len();
             K.into_shape((n, 1)).unwrap()
         };
-        println!("K: {:?}", K);
+        //println!("K: {:?}", K);
         let L = 1.0 / &K;
         //        =====                   2
         //         \      (K . M  - L . M)
@@ -82,18 +108,18 @@ impl ChiSquare {
         //     x'ϵVal /X \
         //            \ i/
         let mut X_2 = (&K * &M2 - &L * &M1).mapv(|a| a.powi(2)) / (&M2 + &M1);
-        println!("M1: {:?}", M1);
-        println!("M2: {:?}", M2);
-        println!("L*M1: {:?}", (L * &M1));
-        println!("K*M2: {:?}", (K * &M2));
-        println!("X_2: {:?}", X_2);
+        //println!("M1: {:?}", M1);
+        //println!("M2: {:?}", M2);
+        //println!("L*M1: {:?}", (L * &M1));
+        //println!("K*M2: {:?}", (K * &M2));
+        //println!("X_2: {:?}", X_2);
         X_2.diag_mut().fill(0.0);
         let X_2 = X_2.sum_axis(Axis(1));
         let n = ChiSquared::new((X_2.dim() - 1) as f64).unwrap();
-        println!("CHI^2: {:?}", n);
-        println!("CHI^2 CDF: {:?}", X_2.mapv(|x| n.cdf(x)));
+        //println!("CHI^2: {:?}", n);
+        //println!("CHI^2 CDF: {:?}", X_2.mapv(|x| n.cdf(x)));
         let ret = X_2.into_iter().all(|x| n.cdf(x) < (1.0 - self.alpha));
-        println!("test: {:?}", ret);
+        //println!("test: {:?}", ret);
         ret
     }
 }
