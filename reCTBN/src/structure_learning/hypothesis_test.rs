@@ -89,7 +89,38 @@ impl HypothesisTest for F {
         T: network::Network,
         P: parameter_learning::ParameterLearning,
     {
-        true
+        let P_small = match cache.fit(net, child_node, Some(separation_set.clone())) {
+            Params::DiscreteStatesContinousTime(node) => node,
+        };
+        let mut extended_separation_set = separation_set.clone();
+        extended_separation_set.insert(parent_node);
+
+        let P_big = match cache.fit(net, child_node, Some(extended_separation_set.clone())) {
+            Params::DiscreteStatesContinousTime(node) => node,
+        };
+        let partial_cardinality_product: usize = extended_separation_set
+            .iter()
+            .take_while(|x| **x != parent_node)
+            .map(|x| net.get_node(*x).get_reserved_space_as_parent())
+            .product();
+        for idx_M_big in 0..P_big.get_transitions().as_ref().unwrap().shape()[0] {
+            let idx_M_small: usize = idx_M_big % partial_cardinality_product
+                + (idx_M_big
+                    / (partial_cardinality_product
+                        * net.get_node(parent_node).get_reserved_space_as_parent()))
+                    * partial_cardinality_product;
+            if !self.compare_matrices(
+                idx_M_small,
+                P_small.get_transitions().as_ref().unwrap(),
+                P_small.get_cim().as_ref().unwrap(),
+                idx_M_big,
+                P_big.get_transitions().as_ref().unwrap(),
+                P_big.get_cim().as_ref().unwrap(),
+            ) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
