@@ -2,8 +2,8 @@
 
 mod utils;
 use ndarray::arr3;
-use reCTBN::ctbn::*;
-use reCTBN::network::Network;
+use reCTBN::process::ctbn::*;
+use reCTBN::process::NetworkProcess;
 use reCTBN::parameter_learning::*;
 use reCTBN::params;
 use reCTBN::tools::*;

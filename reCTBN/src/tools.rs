@@ -3,7 +3,7 @@
 use ndarray::prelude::*;
 
 use crate::sampling::{ForwardSampler, Sampler};
-use crate::{network, params};
+use crate::{process, params};
 
 pub struct Trajectory {
     time: Array1<f64>,
@@ -51,7 +51,7 @@ impl Dataset {
     }
 }
 
-pub fn trajectory_generator<T: network::Network>(
+pub fn trajectory_generator<T: process::NetworkProcess>(
     net: &T,
     n_trajectories: u64,
     t_end: f64,

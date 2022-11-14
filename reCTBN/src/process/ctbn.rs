@@ -4,7 +4,7 @@ use std::collections::BTreeSet;
 
 use ndarray::prelude::*;
 
-use crate::network;
+use crate::process;
 use crate::params::{Params, ParamsTrait, StateType};
 
 /// It represents both the structure and the parameters of a CTBN.
@@ -20,9 +20,9 @@ use crate::params::{Params, ParamsTrait, StateType};
 ///
 /// ```rust
 /// use std::collections::BTreeSet;
-/// use reCTBN::network::Network;
+/// use reCTBN::process::NetworkProcess;
 /// use reCTBN::params;
-/// use reCTBN::ctbn::*;
+/// use reCTBN::process::ctbn::*;
 ///
 /// //Create the domain for a discrete node
 /// let mut domain = BTreeSet::new();
@@ -69,7 +69,7 @@ impl CtbnNetwork {
     }
 }
 
-impl network::Network for CtbnNetwork {
+impl process::NetworkProcess for CtbnNetwork {
     /// Initialize an Adjacency matrix.
     fn initialize_adj_matrix(&mut self) {
         self.adj_matrix = Some(Array2::<u16>::zeros(
@@ -78,7 +78,7 @@ impl network::Network for CtbnNetwork {
     }
 
     /// Add a new node.
-    fn add_node(&mut self, mut n: Params) -> Result<usize, network::NetworkError> {
+    fn add_node(&mut self, mut n: Params) -> Result<usize, process::NetworkError> {
         n.reset_params();
         self.adj_matrix = Option::None;
         self.nodes.push(n);

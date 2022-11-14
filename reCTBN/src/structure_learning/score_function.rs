@@ -5,7 +5,7 @@ use std::collections::BTreeSet;
 use ndarray::prelude::*;
 use statrs::function::gamma;
 
-use crate::{network, parameter_learning, params, tools};
+use crate::{process, parameter_learning, params, tools};
 
 pub trait ScoreFunction {
     fn call<T>(
@@ -16,7 +16,7 @@ pub trait ScoreFunction {
         dataset: &tools::Dataset,
     ) -> f64
     where
-        T: network::Network;
+        T: process::NetworkProcess;
 }
 
 pub struct LogLikelihood {
@@ -41,7 +41,7 @@ impl LogLikelihood {
         dataset: &tools::Dataset,
     ) -> (f64, Array3<usize>)
     where
-        T: network::Network,
+        T: process::NetworkProcess,
     {
         //Identify the type of node used
         match &net.get_node(node) {
@@ -100,7 +100,7 @@ impl ScoreFunction for LogLikelihood {
         dataset: &tools::Dataset,
     ) -> f64
     where
-        T: network::Network,
+        T: process::NetworkProcess,
     {
         self.compute_score(net, node, parent_set, dataset).0
     }
@@ -127,7 +127,7 @@ impl ScoreFunction for BIC {
         dataset: &tools::Dataset,
     ) -> f64
     where
-        T: network::Network,
+        T: process::NetworkProcess,
     {
         //Compute the log-likelihood
         let (ll, M) = self.ll.compute_score(net, node, parent_set, dataset);
