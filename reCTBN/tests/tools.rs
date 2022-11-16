@@ -1,6 +1,6 @@
 use ndarray::{arr1, arr2, arr3};
-use reCTBN::ctbn::*;
-use reCTBN::network::Network;
+use reCTBN::process::ctbn::*;
+use reCTBN::process::NetworkProcess;
 use reCTBN::params;
 use reCTBN::tools::*;
 

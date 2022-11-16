@@ -5,10 +5,10 @@ use std::collections::BTreeSet;
 use ndarray::prelude::*;
 
 use crate::params::*;
-use crate::{network, tools};
+use crate::{process, tools};
 
 pub trait ParameterLearning {
-    fn fit<T: network::Network>(
+    fn fit<T: process::NetworkProcess>(
         &self,
         net: &T,
         dataset: &tools::Dataset,
@@ -17,7 +17,7 @@ pub trait ParameterLearning {
     ) -> Params;
 }
 
-pub fn sufficient_statistics<T: network::Network>(
+pub fn sufficient_statistics<T: process::NetworkProcess>(
     net: &T,
     dataset: &tools::Dataset,
     node: usize,
@@ -73,7 +73,7 @@ pub fn sufficient_statistics<T: network::Network>(
 pub struct MLE {}
 
 impl ParameterLearning for MLE {
-    fn fit<T: network::Network>(
+    fn fit<T: process::NetworkProcess>(
         &self,
         net: &T,
         dataset: &tools::Dataset,
@@ -120,7 +120,7 @@ pub struct BayesianApproach {
 }
 
 impl ParameterLearning for BayesianApproach {
-    fn fit<T: network::Network>(
+    fn fit<T: process::NetworkProcess>(
         &self,
         net: &T,
         dataset: &tools::Dataset,
@@ -177,7 +177,7 @@ impl<P: ParameterLearning> Cache<P> {
             dataset,
         }
     }
-    pub fn fit<T: network::Network>(
+    pub fn fit<T: process::NetworkProcess>(
         &mut self,
         net: &T,
         node: usize,

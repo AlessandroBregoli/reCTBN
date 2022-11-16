@@ -4,7 +4,7 @@ use std::collections::BTreeSet;
 
 use crate::structure_learning::score_function::ScoreFunction;
 use crate::structure_learning::StructureLearningAlgorithm;
-use crate::{network, tools};
+use crate::{process, tools};
 
 pub struct HillClimbing<S: ScoreFunction> {
     score_function: S,
@@ -23,7 +23,7 @@ impl<S: ScoreFunction> HillClimbing<S> {
 impl<S: ScoreFunction> StructureLearningAlgorithm for HillClimbing<S> {
     fn fit_transform<T>(&self, net: T, dataset: &tools::Dataset) -> T
     where
-        T: network::Network,
+        T: process::NetworkProcess,
     {
         //Check the coherence between dataset and network
         if net.get_number_of_nodes() != dataset.get_trajectories()[0].get_events().shape()[1] {

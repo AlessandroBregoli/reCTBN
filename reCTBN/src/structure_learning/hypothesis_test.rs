@@ -6,7 +6,7 @@ use ndarray::{Array3, Axis};
 use statrs::distribution::{ChiSquared, ContinuousCDF};
 
 use crate::params::*;
-use crate::{network, parameter_learning};
+use crate::{parameter_learning, process};
 
 pub trait HypothesisTest {
     fn call<T, P>(
@@ -18,7 +18,7 @@ pub trait HypothesisTest {
         cache: &mut parameter_learning::Cache<P>,
     ) -> bool
     where
-        T: network::Network,
+        T: process::NetworkProcess,
         P: parameter_learning::ParameterLearning;
 }
 
@@ -135,7 +135,7 @@ impl HypothesisTest for ChiSquare {
         cache: &mut parameter_learning::Cache<P>,
     ) -> bool
     where
-        T: network::Network,
+        T: process::NetworkProcess,
         P: parameter_learning::ParameterLearning,
     {
         // Prendo dalla cache l'apprendimento dei parametri, che sarebbe una CIM
