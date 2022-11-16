@@ -108,7 +108,7 @@ fn check_compatibility_between_dataset_and_network<T: StructureLearningAlgorithm
         }
     }
 
-    let data = trajectory_generator(&net, 100, 20.0, Some(6347747169756259));
+    let data = trajectory_generator(&net, 100, 30.0, Some(6347747169756259));
 
     let mut net = CtbnNetwork::new();
     let _n1 = net
@@ -466,7 +466,7 @@ pub fn chi_square_call() {
     let N3: usize = 2;
     let N2: usize = 1;
     let N1: usize = 0;
-    let separation_set = BTreeSet::new();
+    let mut separation_set = BTreeSet::new();
     let parameter_learning = BayesianApproach { alpha: 1, tau:1.0 };
     let mut cache = Cache::new(parameter_learning, data);
     let chi_sq = ChiSquare::new(0.0001);
@@ -474,5 +474,6 @@ pub fn chi_square_call() {
     assert!(chi_sq.call(&net, N1, N3, &separation_set, &mut cache));
     assert!(!chi_sq.call(&net, N3, N1, &separation_set, &mut cache));
     assert!(!chi_sq.call(&net, N3, N2, &separation_set, &mut cache));
+    separation_set.insert(N1);
     assert!(chi_sq.call(&net, N2, N3, &separation_set, &mut cache));
 }
