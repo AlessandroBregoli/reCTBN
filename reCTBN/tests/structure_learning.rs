@@ -477,3 +477,23 @@ pub fn chi_square_call() {
     separation_set.insert(N1);
     assert!(chi_sq.call(&net, N2, N3, &separation_set, &mut cache));
 }
+
+#[test]
+pub fn f_call() {
+
+    let (net, data) = get_mixed_discrete_net_3_nodes_with_data();
+    let N3: usize = 2;
+    let N2: usize = 1;
+    let N1: usize = 0;
+    let mut separation_set = BTreeSet::new();
+    let parameter_learning = BayesianApproach { alpha: 1, tau:1.0 };
+    let mut cache = Cache::new(parameter_learning, data);
+    let f = F::new(0.000001);
+
+
+    assert!(f.call(&net, N1, N3, &separation_set, &mut cache));
+    assert!(!f.call(&net, N3, N1, &separation_set, &mut cache));
+    assert!(!f.call(&net, N3, N2, &separation_set, &mut cache));
+    separation_set.insert(N1);
+    assert!(f.call(&net, N2, N3, &separation_set, &mut cache));
+}
