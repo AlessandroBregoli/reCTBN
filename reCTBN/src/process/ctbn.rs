@@ -70,7 +70,12 @@ impl CtbnNetwork {
             nodes: Vec::new(),
         }
     }
-
+    
+    ///Transform the **CTBN** into a **CTMP**
+    ///
+    /// # Return
+    ///
+    /// * The equivalent *CtmpProcess* computed from the current CtbnNetwork
     pub fn amalgamation(&self) -> CtmpProcess {
         for v in self.nodes.iter() {
             match v {
@@ -123,8 +128,7 @@ impl CtbnNetwork {
             BTreeSet::from_iter((0..state_space).map(|x| x.to_string())),
         );
         
-        println!("state space: {} - #nodes: {}\n{:?}", &state_space, self.nodes.len(), &amalgamated_cim);
-
+        println!("{:?}", amalgamated_cim);
         amalgamated_param.set_cim(amalgamated_cim).unwrap();
 
         let mut ctmp = CtmpProcess::new();
