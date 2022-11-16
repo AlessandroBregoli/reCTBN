@@ -1,7 +1,10 @@
 mod utils;
 use std::collections::BTreeSet;
+use std::f64::EPSILON;
 
-use reCTBN::process::ctbn::*;
+use approx::AbsDiffEq;
+use ndarray::arr3;
+use reCTBN::process::{ctbn::*, ctmp::*};
 use reCTBN::process::NetworkProcess;
 use reCTBN::params::{self, ParamsTrait};
 use utils::generate_discrete_time_continous_node;
@@ -128,4 +131,35 @@ fn compute_index_from_custom_parent_set() {
         &BTreeSet::from([1, 2]),
     );
     assert_eq!(2, idx);
+}
+
+#[test]
+fn simple_amalgamation() {
+    let mut net = CtbnNetwork::new();
+    let n1 = net
+        .add_node(generate_discrete_time_continous_node(String::from("n1"), 2))
+        .unwrap();
+
+    net.initialize_adj_matrix();
+
+    match &mut net.get_node_mut(n1) {
+        params::Params::DiscreteStatesContinousTime(param) => {
+            assert_eq!(Ok(()), param.set_cim(arr3(&[[[-3.0, 3.0], [2.0, -2.0]]])));
+        }
+    }
+
+    let ctmp = net.amalgamation();
+    let p_ctbn = if let params::Params::DiscreteStatesContinousTime(p) = &net.get_node(0){
+        p.get_cim().as_ref().unwrap()
+    } else {
+        unreachable!();
+    };
+    let p_ctmp = if let params::Params::DiscreteStatesContinousTime(p) = &ctmp.get_node(0) {
+        p.get_cim().as_ref().unwrap()
+    } else {
+        unreachable!();
+    };
+
+
+    assert!(p_ctmp.abs_diff_eq(p_ctbn, std::f64::EPSILON));
 }

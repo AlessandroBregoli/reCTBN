@@ -4,8 +4,11 @@ use std::collections::BTreeSet;
 
 use ndarray::prelude::*;
 
+use crate::params::{DiscreteStatesContinousTimeParams, Params, ParamsTrait, StateType};
 use crate::process;
-use crate::params::{Params, ParamsTrait, StateType};
+
+use super::ctmp::CtmpProcess;
+use super::NetworkProcess;
 
 /// It represents both the structure and the parameters of a CTBN.
 ///
@@ -66,6 +69,79 @@ impl CtbnNetwork {
             adj_matrix: None,
             nodes: Vec::new(),
         }
+    }
+
+    pub fn amalgamation(&self) -> CtmpProcess {
+        for v in self.nodes.iter() {
+            match v {
+                Params::DiscreteStatesContinousTime(_) => {}
+                _ => panic!("Unsupported node"),
+            }
+        }
+
+        let variables_domain =
+            Array1::from_iter(self.nodes.iter().map(|x| x.get_reserved_space_as_parent()));
+
+        let state_space = variables_domain.product();
+        let variables_set = BTreeSet::from_iter(self.get_node_indices());
+        let mut amalgamated_cim: Array3<f64> = Array::zeros((1, state_space, state_space));
+
+        for idx_current_state in 0..state_space {
+            let current_state = CtbnNetwork::idx_to_state(&variables_domain, idx_current_state);
+            let current_state_statetype: Vec<StateType> = current_state
+                .iter()
+                .map(|x| StateType::Discrete(*x))
+                .collect();
+            for idx_node in 0..self.nodes.len() {
+                let p = match self.get_node(idx_node) {
+                    Params::DiscreteStatesContinousTime(p) => p,
+                };
+                for next_node_state in 0..variables_domain[idx_node] {
+                    let mut next_state = current_state.clone();
+                    next_state[idx_node] = next_node_state;
+
+                    let next_state_statetype: Vec<StateType> = next_state
+                        .iter()
+                        .map(|x| StateType::Discrete(*x))
+                        .collect();
+                    let idx_next_state = self.get_param_index_from_custom_parent_set(
+                        &next_state_statetype,
+                        &variables_set,
+                    );
+                    amalgamated_cim[[0, idx_current_state, idx_next_state]] +=
+                        p.get_cim().as_ref().unwrap()[[
+                            self.get_param_index_network(idx_node, &current_state_statetype),
+                            current_state[idx_node],
+                            next_node_state,
+                        ]];
+                }
+            }
+        }
+
+        let mut amalgamated_param = DiscreteStatesContinousTimeParams::new(
+            "ctmp".to_string(),
+            BTreeSet::from_iter((0..state_space).map(|x| x.to_string())),
+        );
+        
+        println!("state space: {} - #nodes: {}\n{:?}", &state_space, self.nodes.len(), &amalgamated_cim);
+
+        amalgamated_param.set_cim(amalgamated_cim).unwrap();
+
+        let mut ctmp = CtmpProcess::new();
+
+        ctmp.add_node(Params::DiscreteStatesContinousTime(amalgamated_param)).unwrap();
+        return ctmp;
+    }
+
+    pub fn idx_to_state(variables_domain: &Array1<usize>, state: usize) -> Array1<usize> {
+        let mut state = state;
+        let mut array_state = Array1::zeros(variables_domain.shape()[0]);
+        for (idx, var) in variables_domain.indexed_iter() {
+            array_state[idx] = state % var;
+            state = state / var;
+        }
+
+        return array_state;
     }
 }
 
