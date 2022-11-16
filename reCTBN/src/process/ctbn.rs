@@ -70,7 +70,7 @@ impl CtbnNetwork {
             nodes: Vec::new(),
         }
     }
-    
+
     ///Transform the **CTBN** into a **CTMP**
     ///
     /// # Return
@@ -105,10 +105,8 @@ impl CtbnNetwork {
                     let mut next_state = current_state.clone();
                     next_state[idx_node] = next_node_state;
 
-                    let next_state_statetype: Vec<StateType> = next_state
-                        .iter()
-                        .map(|x| StateType::Discrete(*x))
-                        .collect();
+                    let next_state_statetype: Vec<StateType> =
+                        next_state.iter().map(|x| StateType::Discrete(*x)).collect();
                     let idx_next_state = self.get_param_index_from_custom_parent_set(
                         &next_state_statetype,
                         &variables_set,
@@ -127,13 +125,14 @@ impl CtbnNetwork {
             "ctmp".to_string(),
             BTreeSet::from_iter((0..state_space).map(|x| x.to_string())),
         );
-        
+
         println!("{:?}", amalgamated_cim);
         amalgamated_param.set_cim(amalgamated_cim).unwrap();
 
         let mut ctmp = CtmpProcess::new();
 
-        ctmp.add_node(Params::DiscreteStatesContinousTime(amalgamated_param)).unwrap();
+        ctmp.add_node(Params::DiscreteStatesContinousTime(amalgamated_param))
+            .unwrap();
         return ctmp;
     }
 

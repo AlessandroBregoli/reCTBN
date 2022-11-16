@@ -3,7 +3,7 @@
 use ndarray::prelude::*;
 
 use crate::sampling::{ForwardSampler, Sampler};
-use crate::{process, params};
+use crate::{params, process};
 
 pub struct Trajectory {
     time: Array1<f64>,

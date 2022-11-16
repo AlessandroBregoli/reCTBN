@@ -6,7 +6,7 @@ use ndarray::{Array3, Axis};
 use statrs::distribution::{ChiSquared, ContinuousCDF};
 
 use crate::params::*;
-use crate::{process, parameter_learning};
+use crate::{parameter_learning, process};
 
 pub trait HypothesisTest {
     fn call<T, P>(

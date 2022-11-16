@@ -5,7 +5,7 @@ use std::collections::BTreeSet;
 use ndarray::prelude::*;
 use statrs::function::gamma;
 
-use crate::{process, parameter_learning, params, tools};
+use crate::{parameter_learning, params, process, tools};
 
 pub trait ScoreFunction {
     fn call<T>(

@@ -1,12 +1,12 @@
 mod utils;
 use std::collections::BTreeSet;
-use std::f64::EPSILON;
+
 
 use approx::AbsDiffEq;
 use ndarray::arr3;
 use reCTBN::params::{self, ParamsTrait};
 use reCTBN::process::NetworkProcess;
-use reCTBN::process::{ctbn::*, ctmp::*};
+use reCTBN::process::{ctbn::*};
 use utils::generate_discrete_time_continous_node;
 
 #[test]

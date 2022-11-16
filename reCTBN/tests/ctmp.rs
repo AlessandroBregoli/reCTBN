@@ -45,7 +45,7 @@ fn add_edge_to_ctmp() {
     let _n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"), 2))
         .unwrap();
-    let n2 = net.add_node(generate_discrete_time_continous_node(String::from("n1"), 2));
+    let _n2 = net.add_node(generate_discrete_time_continous_node(String::from("n1"), 2));
 
     net.add_edge(0, 1)
 }
@@ -64,7 +64,7 @@ fn childen_and_parents() {
 #[test]
 #[should_panic]
 fn get_childen_panic() {
-    let mut net = CtmpProcess::new();
+    let net = CtmpProcess::new();
     net.get_children_set(0);
 }
 
@@ -81,7 +81,7 @@ fn get_childen_panic2() {
 #[test]
 #[should_panic]
 fn get_parent_panic() {
-    let mut net = CtmpProcess::new();
+    let net = CtmpProcess::new();
     net.get_parent_set(0);
 }
 

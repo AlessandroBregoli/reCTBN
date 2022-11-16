@@ -1,8 +1,8 @@
 //! Module containing methods for the sampling.
 
 use crate::{
-    process::NetworkProcess,
     params::{self, ParamsTrait},
+    process::NetworkProcess,
 };
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;

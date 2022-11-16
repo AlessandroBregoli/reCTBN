@@ -1,11 +1,14 @@
 use std::collections::BTreeSet;
 
-use crate::{process, params::{Params, StateType}};
+use crate::{
+    params::{Params, StateType},
+    process,
+};
 
 use super::NetworkProcess;
 
 pub struct CtmpProcess {
-    param: Option<Params>
+    param: Option<Params>,
 }
 
 impl CtmpProcess {
@@ -24,26 +27,28 @@ impl NetworkProcess for CtmpProcess {
             None => {
                 self.param = Some(n);
                 Ok(0)
-            },
-            Some(_) => Err(process::NetworkError::NodeInsertionError("CtmpProcess has only one node".to_string()))
+            }
+            Some(_) => Err(process::NetworkError::NodeInsertionError(
+                "CtmpProcess has only one node".to_string(),
+            )),
         }
     }
 
-    fn add_edge(&mut self, parent: usize, child: usize) {
+    fn add_edge(&mut self, _parent: usize, _child: usize) {
         unimplemented!("CtmpProcess has only one node")
     }
 
     fn get_node_indices(&self) -> std::ops::Range<usize> {
         match self.param {
             None => 0..0,
-            Some(_) => 0..1
+            Some(_) => 0..1,
         }
     }
 
     fn get_number_of_nodes(&self) -> usize {
         match self.param {
             None => 0,
-            Some(_) => 1
+            Some(_) => 1,
         }
     }
 
@@ -63,11 +68,14 @@ impl NetworkProcess for CtmpProcess {
         }
     }
 
-    fn get_param_index_network(&self, node: usize, current_state: &Vec<crate::params::StateType>)
-        -> usize {
+    fn get_param_index_network(
+        &self,
+        node: usize,
+        current_state: &Vec<crate::params::StateType>,
+    ) -> usize {
         if node == 0 {
             match current_state[0] {
-                StateType::Discrete(x) => x
+                StateType::Discrete(x) => x,
             }
         } else {
             unimplemented!("CtmpProcess has only one node")
@@ -76,31 +84,35 @@ impl NetworkProcess for CtmpProcess {
 
     fn get_param_index_from_custom_parent_set(
         &self,
-        current_state: &Vec<crate::params::StateType>,
-        parent_set: &std::collections::BTreeSet<usize>,
+        _current_state: &Vec<crate::params::StateType>,
+        _parent_set: &std::collections::BTreeSet<usize>,
     ) -> usize {
         unimplemented!("CtmpProcess has only one node")
     }
 
     fn get_parent_set(&self, node: usize) -> std::collections::BTreeSet<usize> {
         match self.param {
-            Some(_) => if node == 0 {
-                BTreeSet::new()
-            } else {
-                unimplemented!("CtmpProcess has only one node")
-            },
-            None => panic!("Uninitialized CtmpProcess")
+            Some(_) => {
+                if node == 0 {
+                    BTreeSet::new()
+                } else {
+                    unimplemented!("CtmpProcess has only one node")
+                }
+            }
+            None => panic!("Uninitialized CtmpProcess"),
         }
     }
 
     fn get_children_set(&self, node: usize) -> std::collections::BTreeSet<usize> {
         match self.param {
-            Some(_) => if node == 0 {
-                BTreeSet::new()
-            } else {
-                unimplemented!("CtmpProcess has only one node")
-            },
-            None => panic!("Uninitialized CtmpProcess")
+            Some(_) => {
+                if node == 0 {
+                    BTreeSet::new()
+                } else {
+                    unimplemented!("CtmpProcess has only one node")
+                }
+            }
+            None => panic!("Uninitialized CtmpProcess"),
         }
     }
 }
