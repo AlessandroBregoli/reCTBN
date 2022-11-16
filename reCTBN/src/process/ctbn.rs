@@ -77,12 +77,6 @@ impl CtbnNetwork {
     ///
     /// * The equivalent *CtmpProcess* computed from the current CtbnNetwork
     pub fn amalgamation(&self) -> CtmpProcess {
-        for v in self.nodes.iter() {
-            match v {
-                Params::DiscreteStatesContinousTime(_) => {}
-                _ => panic!("Unsupported node"),
-            }
-        }
 
         let variables_domain =
             Array1::from_iter(self.nodes.iter().map(|x| x.get_reserved_space_as_parent()));

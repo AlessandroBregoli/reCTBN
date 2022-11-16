@@ -149,16 +149,10 @@ fn simple_amalgamation() {
     }
 
     let ctmp = net.amalgamation();
-    let p_ctbn = if let params::Params::DiscreteStatesContinousTime(p) = &net.get_node(0) {
-        p.get_cim().as_ref().unwrap()
-    } else {
-        unreachable!();
-    };
-    let p_ctmp = if let params::Params::DiscreteStatesContinousTime(p) = &ctmp.get_node(0) {
-        p.get_cim().as_ref().unwrap()
-    } else {
-        unreachable!();
-    };
+    let params::Params::DiscreteStatesContinousTime(p_ctbn) = &net.get_node(0);
+    let p_ctbn = p_ctbn.get_cim().as_ref().unwrap();
+    let params::Params::DiscreteStatesContinousTime(p_ctmp) = &ctmp.get_node(0);
+    let p_ctmp = p_ctmp.get_cim().as_ref().unwrap();
 
     assert!(p_ctmp.abs_diff_eq(p_ctbn, std::f64::EPSILON));
 }
@@ -211,11 +205,10 @@ fn chain_amalgamation() {
 
     let ctmp = net.amalgamation();
 
-    let p_ctmp = if let params::Params::DiscreteStatesContinousTime(p) = &ctmp.get_node(0) {
-        p.get_cim().as_ref().unwrap()
-    } else {
-        unreachable!();
-    };
+
+
+    let params::Params::DiscreteStatesContinousTime(p_ctmp) = &ctmp.get_node(0);
+    let p_ctmp = p_ctmp.get_cim().as_ref().unwrap();
 
     let p_ctmp_handmade = arr3(&[[
         [
@@ -308,11 +301,9 @@ fn chainfork_amalgamation() {
 
     let ctmp = net.amalgamation();
 
-    let p_ctmp = if let params::Params::DiscreteStatesContinousTime(p) = &ctmp.get_node(0) {
-        p.get_cim().as_ref().unwrap()
-    } else {
-        unreachable!();
-    };
+    let params::Params::DiscreteStatesContinousTime(p_ctmp) = &ctmp.get_node(0); 
+
+    let p_ctmp = p_ctmp.get_cim().as_ref().unwrap();
 
     let p_ctmp_handmade = arr3(&[[
         [
