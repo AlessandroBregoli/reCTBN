@@ -77,7 +77,6 @@ impl CtbnNetwork {
     ///
     /// * The equivalent *CtmpProcess* computed from the current CtbnNetwork
     pub fn amalgamation(&self) -> CtmpProcess {
-
         let variables_domain =
             Array1::from_iter(self.nodes.iter().map(|x| x.get_reserved_space_as_parent()));
 
