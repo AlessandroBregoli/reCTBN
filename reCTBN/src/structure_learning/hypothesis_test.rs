@@ -65,9 +65,10 @@ impl F {
         let q2 = cim_2.diag();
         for idx in 0..r1.shape()[0] {
             let s = q2[idx] / q1[idx];
-            let F = FisherSnedecor::new(r1[idx], r2[idx]);
-            let lim_sx = F.as_ref().expect("REASON").cdf(self.alpha / 2.0);
-            let lim_dx = F.as_ref().expect("REASON").cdf(1.0 - (self.alpha / 2.0));
+            let F = FisherSnedecor::new(r1[idx], r2[idx]).unwrap();
+            let s = F.cdf(s);
+            let lim_sx = self.alpha / 2.0;
+            let lim_dx = 1.0 - (self.alpha / 2.0);
             if s < lim_sx || s > lim_dx {
                 return false;
             }
