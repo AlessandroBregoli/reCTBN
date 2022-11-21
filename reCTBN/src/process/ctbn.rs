@@ -119,7 +119,6 @@ impl CtbnNetwork {
             BTreeSet::from_iter((0..state_space).map(|x| x.to_string())),
         );
 
-        println!("{:?}", amalgamated_cim);
         amalgamated_param.set_cim(amalgamated_cim).unwrap();
 
         let mut ctmp = CtmpProcess::new();

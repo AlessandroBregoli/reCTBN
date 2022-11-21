@@ -9,3 +9,4 @@ pub mod process;
 pub mod sampling;
 pub mod structure_learning;
 pub mod tools;
+pub mod reward_function;

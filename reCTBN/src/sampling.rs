@@ -7,6 +7,7 @@ use crate::{
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
 
+#[derive(Clone)]
 pub struct Sample {
     pub t: f64,
     pub state: Vec<params::StateType>
