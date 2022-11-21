@@ -7,9 +7,16 @@ use crate::{
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
 
-pub trait Sampler: Iterator {
+pub struct Sample {
+    pub t: f64,
+    pub state: Vec<params::StateType>
+}
+
+pub trait Sampler: Iterator<Item = Sample> {
     fn reset(&mut self);
 }
+
+
 
 pub struct ForwardSampler<'a, T>
 where
@@ -43,7 +50,7 @@ impl<'a, T: NetworkProcess> ForwardSampler<'a, T> {
 }
 
 impl<'a, T: NetworkProcess> Iterator for ForwardSampler<'a, T> {
-    type Item = (f64, Vec<params::StateType>);
+    type Item = Sample;
 
     fn next(&mut self) -> Option<Self::Item> {
         let ret_time = self.current_time.clone();
@@ -96,7 +103,7 @@ impl<'a, T: NetworkProcess> Iterator for ForwardSampler<'a, T> {
             self.next_transitions[child] = None;
         }
 
-        Some((ret_time, ret_state))
+        Some(Sample{t: ret_time, state: ret_state})
     }
 }
 
