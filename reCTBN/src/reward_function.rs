@@ -2,7 +2,7 @@
 
 use crate::{
     params::{self, ParamsTrait},
-    process, sampling,
+    process,
 };
 use ndarray;
 
@@ -27,13 +27,13 @@ pub trait RewardFunction {
     ///
     /// # Arguments
     ///
-    /// * `current_state`: the current state of the network represented as a `sampling::Sample`
+    /// * `current_state`: the current state of the network represented as a `process::NetworkProcessState`
     /// * `previous_state`: an optional argument representing the previous state of the network
 
     fn call(
         &self,
-        current_state: sampling::Sample,
-        previous_state: Option<sampling::Sample>,
+        current_state: process::NetworkProcessState,
+        previous_state: Option<process::NetworkProcessState>,
     ) -> Reward;
 
     /// Initialize the RewardFunction internal accordingly to the structure of a NetworkProcess
@@ -80,11 +80,10 @@ impl FactoredRewardFunction {
 impl RewardFunction for FactoredRewardFunction {
     fn call(
         &self,
-        current_state: sampling::Sample,
-        previous_state: Option<sampling::Sample>,
+        current_state: process::NetworkProcessState,
+        previous_state: Option<process::NetworkProcessState>,
     ) -> Reward {
         let instantaneous_reward: f64 = current_state
-            .state
             .iter()
             .enumerate()
             .map(|(idx, x)| {
@@ -96,9 +95,8 @@ impl RewardFunction for FactoredRewardFunction {
             .sum();
         if let Some(previous_state) = previous_state {
             let transition_reward = previous_state
-                .state
                 .iter()
-                .zip(current_state.state.iter())
+                .zip(current_state.iter())
                 .enumerate()
                 .find_map(|(idx, (p, c))| -> Option<f64> {
                     let p = match p {

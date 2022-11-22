@@ -2,7 +2,7 @@ mod utils;
 
 use ndarray::*;
 use utils::generate_discrete_time_continous_node;
-use reCTBN::{process::{NetworkProcess, ctbn::*}, reward_function::*, params};
+use reCTBN::{process::{NetworkProcess, ctbn::*, NetworkProcessState}, reward_function::*, params};
 
 
 #[test]
@@ -16,8 +16,8 @@ fn simple_factored_reward_function_binary_node() {
     rf.get_transition_reward_mut(n1).assign(&arr2(&[[12.0, 1.0],[2.0,12.0]]));
     rf.get_instantaneous_reward_mut(n1).assign(&arr1(&[3.0,5.0]));
     
-    let s0 = reCTBN::sampling::Sample { t: 0.0, state:  vec![params::StateType::Discrete(0)]};
-    let s1 = reCTBN::sampling::Sample { t: 0.0, state:  vec![params::StateType::Discrete(1)]};
+    let s0: NetworkProcessState = vec![params::StateType::Discrete(0)];
+    let s1: NetworkProcessState =  vec![params::StateType::Discrete(1)];
     assert_eq!(rf.call(s0.clone(), None), Reward{transition_reward: 0.0, instantaneous_reward: 3.0});
     assert_eq!(rf.call(s1.clone(), None), Reward{transition_reward: 0.0, instantaneous_reward: 5.0});
 
@@ -41,9 +41,9 @@ fn simple_factored_reward_function_ternary_node() {
     rf.get_transition_reward_mut(n1).assign(&arr2(&[[0.0, 1.0, 3.0],[2.0,0.0, 4.0], [5.0, 6.0, 0.0]]));
     rf.get_instantaneous_reward_mut(n1).assign(&arr1(&[3.0,5.0, 9.0]));
     
-    let s0 = reCTBN::sampling::Sample { t: 0.0, state:  vec![params::StateType::Discrete(0)]};
-    let s1 = reCTBN::sampling::Sample { t: 0.0, state:  vec![params::StateType::Discrete(1)]};
-    let s2 = reCTBN::sampling::Sample { t: 0.0, state:  vec![params::StateType::Discrete(2)]};
+    let s0: NetworkProcessState = vec![params::StateType::Discrete(0)];
+    let s1: NetworkProcessState = vec![params::StateType::Discrete(1)];
+    let s2: NetworkProcessState = vec![params::StateType::Discrete(2)];
 
 
     assert_eq!(rf.call(s0.clone(), Some(s1.clone())), Reward{transition_reward: 2.0, instantaneous_reward: 3.0});
@@ -78,14 +78,14 @@ fn factored_reward_function_two_nodes() {
     rf.get_transition_reward_mut(n2).assign(&arr2(&[[12.0, 1.0],[2.0,12.0]]));
     rf.get_instantaneous_reward_mut(n2).assign(&arr1(&[3.0,5.0]));
     
-    let s00 = reCTBN::sampling::Sample { t: 0.0, state:  vec![params::StateType::Discrete(0), params::StateType::Discrete(0)]};
-    let s01 = reCTBN::sampling::Sample { t: 0.0, state:  vec![params::StateType::Discrete(1), params::StateType::Discrete(0)]};
-    let s02 = reCTBN::sampling::Sample { t: 0.0, state:  vec![params::StateType::Discrete(2), params::StateType::Discrete(0)]};
+    let s00: NetworkProcessState = vec![params::StateType::Discrete(0), params::StateType::Discrete(0)];
+    let s01: NetworkProcessState = vec![params::StateType::Discrete(1), params::StateType::Discrete(0)];
+    let s02: NetworkProcessState = vec![params::StateType::Discrete(2), params::StateType::Discrete(0)];
 
 
-    let s10 = reCTBN::sampling::Sample { t: 0.0, state:  vec![params::StateType::Discrete(0), params::StateType::Discrete(1)]};
-    let s11 = reCTBN::sampling::Sample { t: 0.0, state:  vec![params::StateType::Discrete(1), params::StateType::Discrete(1)]};
-    let s12 = reCTBN::sampling::Sample { t: 0.0, state:  vec![params::StateType::Discrete(2), params::StateType::Discrete(1)]};
+    let s10: NetworkProcessState = vec![params::StateType::Discrete(0), params::StateType::Discrete(1)];
+    let s11: NetworkProcessState = vec![params::StateType::Discrete(1), params::StateType::Discrete(1)];
+    let s12: NetworkProcessState = vec![params::StateType::Discrete(2), params::StateType::Discrete(1)];
 
     assert_eq!(rf.call(s00.clone(), Some(s01.clone())), Reward{transition_reward: 2.0, instantaneous_reward: 6.0});
     assert_eq!(rf.call(s00.clone(), Some(s02.clone())), Reward{transition_reward: 5.0, instantaneous_reward: 6.0});

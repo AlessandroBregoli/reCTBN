@@ -1,8 +1,8 @@
 //! Module containing methods for the sampling.
 
 use crate::{
-    params::{self, ParamsTrait},
-    process::NetworkProcess,
+    params::ParamsTrait,
+    process::{NetworkProcess, NetworkProcessState},
 };
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
@@ -10,7 +10,7 @@ use rand_chacha::ChaCha8Rng;
 #[derive(Clone)]
 pub struct Sample {
     pub t: f64,
-    pub state: Vec<params::StateType>,
+    pub state: NetworkProcessState,
 }
 
 pub trait Sampler: Iterator<Item = Sample> {
@@ -24,7 +24,7 @@ where
     net: &'a T,
     rng: ChaCha8Rng,
     current_time: f64,
-    current_state: Vec<params::StateType>,
+    current_state: NetworkProcessState,
     next_transitions: Vec<Option<f64>>,
 }
 

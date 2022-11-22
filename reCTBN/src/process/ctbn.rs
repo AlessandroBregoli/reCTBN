@@ -8,7 +8,7 @@ use crate::params::{DiscreteStatesContinousTimeParams, Params, ParamsTrait, Stat
 use crate::process;
 
 use super::ctmp::CtmpProcess;
-use super::NetworkProcess;
+use super::{NetworkProcess, NetworkProcessState};
 
 /// It represents both the structure and the parameters of a CTBN.
 ///
@@ -86,7 +86,7 @@ impl CtbnNetwork {
 
         for idx_current_state in 0..state_space {
             let current_state = CtbnNetwork::idx_to_state(&variables_domain, idx_current_state);
-            let current_state_statetype: Vec<StateType> = current_state
+            let current_state_statetype: NetworkProcessState = current_state
                 .iter()
                 .map(|x| StateType::Discrete(*x))
                 .collect();
@@ -98,7 +98,7 @@ impl CtbnNetwork {
                     let mut next_state = current_state.clone();
                     next_state[idx_node] = next_node_state;
 
-                    let next_state_statetype: Vec<StateType> =
+                    let next_state_statetype: NetworkProcessState =
                         next_state.iter().map(|x| StateType::Discrete(*x)).collect();
                     let idx_next_state = self.get_param_index_from_custom_parent_set(
                         &next_state_statetype,
@@ -185,7 +185,7 @@ impl process::NetworkProcess for CtbnNetwork {
         &mut self.nodes[node_idx]
     }
 
-    fn get_param_index_network(&self, node: usize, current_state: &Vec<StateType>) -> usize {
+    fn get_param_index_network(&self, node: usize, current_state: &NetworkProcessState) -> usize {
         self.adj_matrix
             .as_ref()
             .unwrap()
@@ -204,7 +204,7 @@ impl process::NetworkProcess for CtbnNetwork {
 
     fn get_param_index_from_custom_parent_set(
         &self,
-        current_state: &Vec<StateType>,
+        current_state: &NetworkProcessState,
         parent_set: &BTreeSet<usize>,
     ) -> usize {
         parent_set

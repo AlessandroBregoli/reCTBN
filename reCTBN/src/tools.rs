@@ -69,7 +69,7 @@ pub fn trajectory_generator<T: process::NetworkProcess>(
         let mut time: Vec<f64> = Vec::new();
         //Configuration of the process variables at time t initialized with an uniform
         //distribution.
-        let mut events: Vec<Vec<params::StateType>> = Vec::new();
+        let mut events: Vec<process::NetworkProcessState> = Vec::new();
 
         //Current Time and Current State
         let mut sample = sampler.next().unwrap();
