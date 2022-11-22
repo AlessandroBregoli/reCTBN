@@ -10,14 +10,12 @@ use rand_chacha::ChaCha8Rng;
 #[derive(Clone)]
 pub struct Sample {
     pub t: f64,
-    pub state: Vec<params::StateType>
+    pub state: Vec<params::StateType>,
 }
 
 pub trait Sampler: Iterator<Item = Sample> {
     fn reset(&mut self);
 }
-
-
 
 pub struct ForwardSampler<'a, T>
 where
@@ -104,7 +102,10 @@ impl<'a, T: NetworkProcess> Iterator for ForwardSampler<'a, T> {
             self.next_transitions[child] = None;
         }
 
-        Some(Sample{t: ret_time, state: ret_state})
+        Some(Sample {
+            t: ret_time,
+            state: ret_state,
+        })
     }
 }
 
