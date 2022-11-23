@@ -16,6 +16,9 @@ pub enum NetworkError {
     NodeInsertionError(String),
 }
 
+/// This type is used to represent a specific realization of a generic NetworkProcess
+pub type NetworkProcessState = Vec<params::StateType>;
+
 /// It defines the required methods for a structure used as a Probabilistic Graphical Models (such
 /// as a CTBN).
 pub trait NetworkProcess {
@@ -71,8 +74,7 @@ pub trait NetworkProcess {
     /// # Return
     ///
     /// * Index of the `node` relative to the network.
-    fn get_param_index_network(&self, node: usize, current_state: &Vec<params::StateType>)
-        -> usize;
+    fn get_param_index_network(&self, node: usize, current_state: &NetworkProcessState) -> usize;
 
     /// Compute the index that must be used to access the parameters of a `node`, given a specific
     /// configuration of the network and a generic `parent_set`.

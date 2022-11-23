@@ -5,7 +5,7 @@ use crate::{
     process,
 };
 
-use super::NetworkProcess;
+use super::{NetworkProcess, NetworkProcessState};
 
 pub struct CtmpProcess {
     param: Option<Params>,
@@ -68,11 +68,7 @@ impl NetworkProcess for CtmpProcess {
         }
     }
 
-    fn get_param_index_network(
-        &self,
-        node: usize,
-        current_state: &Vec<crate::params::StateType>,
-    ) -> usize {
+    fn get_param_index_network(&self, node: usize, current_state: &NetworkProcessState) -> usize {
         if node == 0 {
             match current_state[0] {
                 StateType::Discrete(x) => x,
@@ -84,8 +80,8 @@ impl NetworkProcess for CtmpProcess {
 
     fn get_param_index_from_custom_parent_set(
         &self,
-        _current_state: &Vec<crate::params::StateType>,
-        _parent_set: &std::collections::BTreeSet<usize>,
+        _current_state: &NetworkProcessState,
+        _parent_set: &BTreeSet<usize>,
     ) -> usize {
         unimplemented!("CtmpProcess has only one node")
     }
