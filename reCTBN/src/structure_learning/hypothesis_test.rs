@@ -87,7 +87,7 @@ impl HypothesisTest for F {
         cache: &mut parameter_learning::Cache<P>,
     ) -> bool
     where
-        T: network::Network,
+        T: process::NetworkProcess,
         P: parameter_learning::ParameterLearning,
     {
         let P_small = match cache.fit(net, child_node, Some(separation_set.clone())) {
