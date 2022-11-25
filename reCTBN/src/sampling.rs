@@ -1,28 +1,34 @@
 //! Module containing methods for the sampling.
 
 use crate::{
-    network::Network,
-    params::{self, ParamsTrait},
+    params::ParamsTrait,
+    process::{NetworkProcess, NetworkProcessState},
 };
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
 
-pub trait Sampler: Iterator {
+#[derive(Clone)]
+pub struct Sample {
+    pub t: f64,
+    pub state: NetworkProcessState,
+}
+
+pub trait Sampler: Iterator<Item = Sample> {
     fn reset(&mut self);
 }
 
 pub struct ForwardSampler<'a, T>
 where
-    T: Network,
+    T: NetworkProcess,
 {
     net: &'a T,
     rng: ChaCha8Rng,
     current_time: f64,
-    current_state: Vec<params::StateType>,
+    current_state: NetworkProcessState,
     next_transitions: Vec<Option<f64>>,
 }
 
-impl<'a, T: Network> ForwardSampler<'a, T> {
+impl<'a, T: NetworkProcess> ForwardSampler<'a, T> {
     pub fn new(net: &'a T, seed: Option<u64>) -> ForwardSampler<'a, T> {
         let rng: ChaCha8Rng = match seed {
             //If a seed is present use it to initialize the random generator.
@@ -42,8 +48,8 @@ impl<'a, T: Network> ForwardSampler<'a, T> {
     }
 }
 
-impl<'a, T: Network> Iterator for ForwardSampler<'a, T> {
-    type Item = (f64, Vec<params::StateType>);
+impl<'a, T: NetworkProcess> Iterator for ForwardSampler<'a, T> {
+    type Item = Sample;
 
     fn next(&mut self) -> Option<Self::Item> {
         let ret_time = self.current_time.clone();
@@ -96,11 +102,14 @@ impl<'a, T: Network> Iterator for ForwardSampler<'a, T> {
             self.next_transitions[child] = None;
         }
 
-        Some((ret_time, ret_state))
+        Some(Sample {
+            t: ret_time,
+            state: ret_state,
+        })
     }
 }
 
-impl<'a, T: Network> Sampler for ForwardSampler<'a, T> {
+impl<'a, T: NetworkProcess> Sampler for ForwardSampler<'a, T> {
     fn reset(&mut self) {
         self.current_time = 0.0;
         self.current_state = self

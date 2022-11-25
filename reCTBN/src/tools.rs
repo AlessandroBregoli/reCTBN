@@ -3,7 +3,7 @@
 use ndarray::prelude::*;
 
 use crate::sampling::{ForwardSampler, Sampler};
-use crate::{network, params};
+use crate::{params, process};
 
 pub struct Trajectory {
     time: Array1<f64>,
@@ -51,7 +51,7 @@ impl Dataset {
     }
 }
 
-pub fn trajectory_generator<T: network::Network>(
+pub fn trajectory_generator<T: process::NetworkProcess>(
     net: &T,
     n_trajectories: u64,
     t_end: f64,
@@ -69,18 +69,18 @@ pub fn trajectory_generator<T: network::Network>(
         let mut time: Vec<f64> = Vec::new();
         //Configuration of the process variables at time t initialized with an uniform
         //distribution.
-        let mut events: Vec<Vec<params::StateType>> = Vec::new();
+        let mut events: Vec<process::NetworkProcessState> = Vec::new();
 
         //Current Time and Current State
-        let (mut t, mut current_state) = sampler.next().unwrap();
+        let mut sample = sampler.next().unwrap();
         //Generate new samples until ending time is reached.
-        while t < t_end {
-            time.push(t);
-            events.push(current_state);
-            (t, current_state) = sampler.next().unwrap();
+        while sample.t < t_end {
+            time.push(sample.t);
+            events.push(sample.state);
+            sample = sampler.next().unwrap();
         }
 
-        current_state = events.last().unwrap().clone();
+        let current_state = events.last().unwrap().clone();
         events.push(current_state);
 
         //Add t_end as last time.
