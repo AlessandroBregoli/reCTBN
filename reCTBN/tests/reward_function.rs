@@ -2,7 +2,7 @@ mod utils;
 
 use ndarray::*;
 use utils::generate_discrete_time_continous_node;
-use reCTBN::{process::{NetworkProcess, ctbn::*, NetworkProcessState}, reward_function::*, params};
+use reCTBN::{process::{NetworkProcess, ctbn::*, NetworkProcessState}, reward::{*, reward_function::*}, params};
 
 
 #[test]
