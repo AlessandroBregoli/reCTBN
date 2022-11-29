@@ -61,8 +61,7 @@ pub fn trajectory_generator<T: process::NetworkProcess>(
     let mut trajectories: Vec<Trajectory> = Vec::new();
 
     //Random Generator object
-
-    let mut sampler = ForwardSampler::new(net, seed);
+    let mut sampler = ForwardSampler::new(net, seed, None);
     //Each iteration generate one trajectory
     for _ in 0..n_trajectories {
         //History of all the moments in which something changed

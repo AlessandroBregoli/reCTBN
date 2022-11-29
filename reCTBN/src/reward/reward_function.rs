@@ -44,8 +44,8 @@ impl FactoredRewardFunction {
 impl RewardFunction for FactoredRewardFunction {
     fn call(
         &self,
-        current_state: process::NetworkProcessState,
-        previous_state: Option<process::NetworkProcessState>,
+        current_state: &process::NetworkProcessState,
+        previous_state: Option<&process::NetworkProcessState>,
     ) -> Reward {
         let instantaneous_reward: f64 = current_state
             .iter()

@@ -1,6 +1,8 @@
 pub mod reward_function;
+pub mod reward_evaluation;
 
 use crate::process;
+use ndarray;
 
 /// Instantiation of reward function and instantaneous reward
 ///
@@ -28,8 +30,8 @@ pub trait RewardFunction {
 
     fn call(
         &self,
-        current_state: process::NetworkProcessState,
-        previous_state: Option<process::NetworkProcessState>,
+        current_state: &process::NetworkProcessState,
+        previous_state: Option<&process::NetworkProcessState>,
     ) -> Reward;
 
     /// Initialize the RewardFunction internal accordingly to the structure of a NetworkProcess
@@ -38,4 +40,18 @@ pub trait RewardFunction {
     ///
     /// * `p`: any structure that implements the trait `process::NetworkProcess`
     fn initialize_from_network_process<T: process::NetworkProcess>(p: &T) -> Self;
+}
+
+pub trait RewardEvaluation {
+    fn call<N: process::NetworkProcess, R: RewardFunction>(
+        &self,
+        network_process: &N,
+        reward_function: &R,
+    ) -> ndarray::Array1<f64>;
+    fn call_state<N: process::NetworkProcess, R: RewardFunction>(
+        &self,
+        network_process: &N,
+        reward_function: &R,
+        state: &process::NetworkProcessState,
+    ) -> f64;
 }
