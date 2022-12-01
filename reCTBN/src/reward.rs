@@ -1,6 +1,8 @@
 pub mod reward_function;
 pub mod reward_evaluation;
 
+use std::collections::HashMap;
+
 use crate::process;
 use ndarray;
 
@@ -43,12 +45,13 @@ pub trait RewardFunction {
 }
 
 pub trait RewardEvaluation {
-    fn call<N: process::NetworkProcess, R: RewardFunction>(
+    fn evaluate_state_space<N: process::NetworkProcess, R: RewardFunction>(
         &self,
         network_process: &N,
         reward_function: &R,
-    ) -> ndarray::Array1<f64>;
-    fn call_state<N: process::NetworkProcess, R: RewardFunction>(
+    ) -> HashMap<process::NetworkProcessState, f64>;
+
+    fn evaluate_state<N: process::NetworkProcess, R: RewardFunction>(
         &self,
         network_process: &N,
         reward_function: &R,

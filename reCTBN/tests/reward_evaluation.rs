@@ -34,8 +34,13 @@ fn simple_factored_reward_function_binary_node_MC() {
     let s1: NetworkProcessState = vec![params::StateType::Discrete(1)];
 
     let mc = MonteCarloDiscountedRward::new(100, 10.0, 1.0, Some(215));
-    assert_abs_diff_eq!(3.0, mc.call_state(&net, &rf, &s0), epsilon = 1e-2);
-    assert_abs_diff_eq!(3.0, mc.call_state(&net, &rf, &s1), epsilon = 1e-2);
+    assert_abs_diff_eq!(3.0, mc.evaluate_state(&net, &rf, &s0), epsilon = 1e-2);
+    assert_abs_diff_eq!(3.0, mc.evaluate_state(&net, &rf, &s1), epsilon = 1e-2);
+    
+    let rst = mc.evaluate_state_space(&net, &rf);
+    assert_abs_diff_eq!(3.0, rst[&s0], epsilon = 1e-2);
+    assert_abs_diff_eq!(3.0, rst[&s1], epsilon = 1e-2);
+
 }
 
 #[test]
@@ -102,6 +107,10 @@ fn simple_factored_reward_function_chain_MC() {
         params::StateType::Discrete(0),
     ];
 
-    let mc = MonteCarloDiscountedRward::new(10000, 100.0, 1.0, Some(215));
-    assert_abs_diff_eq!(2.447, mc.call_state(&net, &rf, &s000), epsilon = 1e-1);
+    let mc = MonteCarloDiscountedRward::new(1000, 10.0, 1.0, Some(215));
+    assert_abs_diff_eq!(2.447, mc.evaluate_state(&net, &rf, &s000), epsilon = 1e-1);
+
+    let rst = mc.evaluate_state_space(&net, &rf);
+    assert_abs_diff_eq!(2.447, rst[&s000], epsilon = 1e-1);
+
 }
