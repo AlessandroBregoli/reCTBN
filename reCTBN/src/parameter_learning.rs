@@ -144,6 +144,12 @@ impl ParameterLearning for BayesianApproach {
             .zip(M.mapv(|x| x as f64).axis_iter(Axis(2)))
             .for_each(|(mut C, m)| C.assign(&(&m.mapv(|y| y + alpha) / &T.mapv(|y| y + tau))));
 
+
+        CIM.outer_iter_mut()
+            .for_each(|mut C| {
+                C.diag_mut().fill(0.0);
+            });
+
         //Set the diagonal of the inner matrices to the the row sum multiplied by -1
         let tmp_diag_sum: Array2<f64> = CIM.sum_axis(Axis(2)).mapv(|x| x * -1.0);
         CIM.outer_iter_mut()
