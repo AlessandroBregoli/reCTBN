@@ -48,6 +48,7 @@ impl<P: ParameterLearning> StructureLearningAlgorithm for CTPC<P> {
                 .collect();
             let mut b = 0;
             while b < candidate_parent_set.len() {
+                let mut not_parent_node: usize = child_node;
                 for parent_node in candidate_parent_set.iter() {
                     for separation_set in candidate_parent_set
                         .iter()
@@ -62,16 +63,30 @@ impl<P: ParameterLearning> StructureLearningAlgorithm for CTPC<P> {
                             *parent_node,
                             &separation_set,
                             &mut self.cache,
-                        ) && self.Chi2test.call(&net, child_node, *parent_node, &separation_set, &mut self.cache) {
-                            candidate_parent_set.remove(&parent_node);
+                        ) && self.Chi2test.call(
+                            &net,
+                            child_node,
+                            *parent_node,
+                            &separation_set,
+                            &mut self.cache,
+                        ) {
+                            not_parent_node = parent_node.clone();
                             break;
                         }
                     }
+                    if not_parent_node != child_node {
+                        break;
+                    }
+                }
+                if not_parent_node != child_node {
+                    candidate_parent_set.remove(&not_parent_node);
                 }
                 b = b + 1;
             }
+            for parent_node in candidate_parent_set.iter() {
+                net.add_edge(*parent_node, child_node);
+            }
         }
-
         net
     }
 }
