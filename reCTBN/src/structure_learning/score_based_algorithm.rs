@@ -21,7 +21,7 @@ impl<S: ScoreFunction> HillClimbing<S> {
 }
 
 impl<S: ScoreFunction> StructureLearningAlgorithm for HillClimbing<S> {
-    fn fit_transform<T>(&self, net: T, dataset: &tools::Dataset) -> T
+    fn fit_transform<T>(&mut self, net: T, dataset: &tools::Dataset) -> T
     where
         T: process::NetworkProcess,
     {

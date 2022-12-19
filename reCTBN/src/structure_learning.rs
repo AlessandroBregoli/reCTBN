@@ -7,7 +7,7 @@ pub mod score_function;
 use crate::{process, tools};
 
 pub trait StructureLearningAlgorithm {
-    fn fit_transform<T>(&self, net: T, dataset: &tools::Dataset) -> T
+    fn fit_transform<T>(&mut self, net: T, dataset: &tools::Dataset) -> T
     where
         T: process::NetworkProcess;
 }

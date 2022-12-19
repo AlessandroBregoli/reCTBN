@@ -58,7 +58,7 @@ fn simple_bic() {
     );
 }
 
-fn check_compatibility_between_dataset_and_network<T: StructureLearningAlgorithm>(sl: T) {
+fn check_compatibility_between_dataset_and_network<T: StructureLearningAlgorithm>(mut sl: T) {
     let mut net = CtbnNetwork::new();
     let n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"), 3))
@@ -125,7 +125,7 @@ pub fn check_compatibility_between_dataset_and_network_hill_climbing() {
     check_compatibility_between_dataset_and_network(hl);
 }
 
-fn learn_ternary_net_2_nodes<T: StructureLearningAlgorithm>(sl: T) {
+fn learn_ternary_net_2_nodes<T: StructureLearningAlgorithm>(mut sl: T) {
     let mut net = CtbnNetwork::new();
     let n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"), 3))
@@ -320,7 +320,7 @@ fn get_mixed_discrete_net_3_nodes_with_data() -> (CtbnNetwork, Dataset) {
     return (net, data);
 }
 
-fn learn_mixed_discrete_net_3_nodes<T: StructureLearningAlgorithm>(sl: T) {
+fn learn_mixed_discrete_net_3_nodes<T: StructureLearningAlgorithm>(mut sl: T) {
     let (net, data) = get_mixed_discrete_net_3_nodes_with_data();
     let net = sl.fit_transform(net, &data);
     assert_eq!(BTreeSet::new(), net.get_parent_set(0));
@@ -342,7 +342,7 @@ pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic() {
     learn_mixed_discrete_net_3_nodes(hl);
 }
 
-fn learn_mixed_discrete_net_3_nodes_1_parent_constraint<T: StructureLearningAlgorithm>(sl: T) {
+fn learn_mixed_discrete_net_3_nodes_1_parent_constraint<T: StructureLearningAlgorithm>(mut sl: T) {
     let (net, data) = get_mixed_discrete_net_3_nodes_with_data();
     let net = sl.fit_transform(net, &data);
     assert_eq!(BTreeSet::new(), net.get_parent_set(0));
