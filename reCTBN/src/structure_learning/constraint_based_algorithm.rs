@@ -46,15 +46,15 @@ impl<P: ParameterLearning> StructureLearningAlgorithm for CTPC<P> {
                 .into_iter()
                 .filter(|x| x != &child_node)
                 .collect();
-            let mut b = 0;
-            while b < candidate_parent_set.len() {
-                let mut not_parent_node: usize = child_node;
+            let mut separation_set_size = 0;
+            while separation_set_size < candidate_parent_set.len() {
+                let mut candidate_parent_set_TMP = candidate_parent_set.clone();
                 for parent_node in candidate_parent_set.iter() {
                     for separation_set in candidate_parent_set
                         .iter()
                         .filter(|x| x != &parent_node)
                         .map(|x| *x)
-                        .combinations(b)
+                        .combinations(separation_set_size)
                     {
                         let separation_set = separation_set.into_iter().collect();
                         if self.Ftest.call(
@@ -70,18 +70,13 @@ impl<P: ParameterLearning> StructureLearningAlgorithm for CTPC<P> {
                             &separation_set,
                             &mut self.cache,
                         ) {
-                            not_parent_node = parent_node.clone();
+                            candidate_parent_set_TMP.remove(parent_node);
                             break;
                         }
                     }
-                    if not_parent_node != child_node {
-                        break;
-                    }
                 }
-                if not_parent_node != child_node {
-                    candidate_parent_set.remove(&not_parent_node);
-                }
-                b = b + 1;
+                candidate_parent_set = candidate_parent_set_TMP;
+                separation_set_size += 1;
             }
             for parent_node in candidate_parent_set.iter() {
                 net.add_edge(*parent_node, child_node);
