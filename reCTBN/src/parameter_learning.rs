@@ -5,13 +5,13 @@ use std::collections::BTreeSet;
 use ndarray::prelude::*;
 
 use crate::params::*;
-use crate::{process, tools};
+use crate::{process, tools::Dataset};
 
 pub trait ParameterLearning {
     fn fit<T: process::NetworkProcess>(
         &self,
         net: &T,
-        dataset: &tools::Dataset,
+        dataset: &Dataset,
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
     ) -> Params;
@@ -19,7 +19,7 @@ pub trait ParameterLearning {
 
 pub fn sufficient_statistics<T: process::NetworkProcess>(
     net: &T,
-    dataset: &tools::Dataset,
+    dataset: &Dataset,
     node: usize,
     parent_set: &BTreeSet<usize>,
 ) -> (Array3<usize>, Array2<f64>) {
@@ -76,7 +76,7 @@ impl ParameterLearning for MLE {
     fn fit<T: process::NetworkProcess>(
         &self,
         net: &T,
-        dataset: &tools::Dataset,
+        dataset: &Dataset,
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
     ) -> Params {
@@ -123,7 +123,7 @@ impl ParameterLearning for BayesianApproach {
     fn fit<T: process::NetworkProcess>(
         &self,
         net: &T,
-        dataset: &tools::Dataset,
+        dataset: &Dataset,
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
     ) -> Params {
@@ -165,25 +165,21 @@ impl ParameterLearning for BayesianApproach {
     }
 }
 
-pub struct Cache<P: ParameterLearning> {
-    parameter_learning: P,
-    dataset: tools::Dataset,
+pub struct Cache<'a, P: ParameterLearning> {
+    parameter_learning: &'a P,
 }
 
-impl<P: ParameterLearning> Cache<P> {
-    pub fn new(parameter_learning: P, dataset: tools::Dataset) -> Cache<P> {
-        Cache {
-            parameter_learning,
-            dataset,
-        }
+impl<'a, P: ParameterLearning> Cache<'a, P> {
+    pub fn new(parameter_learning: &'a P) -> Cache<'a, P> {
+        Cache { parameter_learning }
     }
     pub fn fit<T: process::NetworkProcess>(
         &mut self,
         net: &T,
+        dataset: &Dataset,
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
     ) -> Params {
-        self.parameter_learning
-            .fit(net, &self.dataset, node, parent_set)
+        self.parameter_learning.fit(net, dataset, node, parent_set)
     }
 }

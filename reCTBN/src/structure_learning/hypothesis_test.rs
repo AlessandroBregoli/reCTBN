@@ -6,7 +6,7 @@ use ndarray::{Array3, Axis};
 use statrs::distribution::{ChiSquared, ContinuousCDF, FisherSnedecor};
 
 use crate::params::*;
-use crate::{parameter_learning, process};
+use crate::{parameter_learning, process, tools::Dataset};
 
 pub trait HypothesisTest {
     fn call<T, P>(
@@ -15,6 +15,7 @@ pub trait HypothesisTest {
         child_node: usize,
         parent_node: usize,
         separation_set: &BTreeSet<usize>,
+        dataset: &Dataset,
         cache: &mut parameter_learning::Cache<P>,
     ) -> bool
     where
@@ -84,19 +85,25 @@ impl HypothesisTest for F {
         child_node: usize,
         parent_node: usize,
         separation_set: &BTreeSet<usize>,
+        dataset: &Dataset,
         cache: &mut parameter_learning::Cache<P>,
     ) -> bool
     where
         T: process::NetworkProcess,
         P: parameter_learning::ParameterLearning,
     {
-        let P_small = match cache.fit(net, child_node, Some(separation_set.clone())) {
+        let P_small = match cache.fit(net, &dataset, child_node, Some(separation_set.clone())) {
             Params::DiscreteStatesContinousTime(node) => node,
         };
         let mut extended_separation_set = separation_set.clone();
         extended_separation_set.insert(parent_node);
 
-        let P_big = match cache.fit(net, child_node, Some(extended_separation_set.clone())) {
+        let P_big = match cache.fit(
+            net,
+            &dataset,
+            child_node,
+            Some(extended_separation_set.clone()),
+        ) {
             Params::DiscreteStatesContinousTime(node) => node,
         };
         let partial_cardinality_product: usize = extended_separation_set
@@ -218,6 +225,7 @@ impl HypothesisTest for ChiSquare {
         child_node: usize,
         parent_node: usize,
         separation_set: &BTreeSet<usize>,
+        dataset: &Dataset,
         cache: &mut parameter_learning::Cache<P>,
     ) -> bool
     where
@@ -227,14 +235,19 @@ impl HypothesisTest for ChiSquare {
         // Prendo dalla cache l'apprendimento dei parametri, che sarebbe una CIM
         // di dimensione nxn
         //  (CIM, M, T)
-        let P_small = match cache.fit(net, child_node, Some(separation_set.clone())) {
+        let P_small = match cache.fit(net, &dataset, child_node, Some(separation_set.clone())) {
             Params::DiscreteStatesContinousTime(node) => node,
         };
         //
         let mut extended_separation_set = separation_set.clone();
         extended_separation_set.insert(parent_node);
 
-        let P_big = match cache.fit(net, child_node, Some(extended_separation_set.clone())) {
+        let P_big = match cache.fit(
+            net,
+            &dataset,
+            child_node,
+            Some(extended_separation_set.clone()),
+        ) {
             Params::DiscreteStatesContinousTime(node) => node,
         };
         // Commentare qui

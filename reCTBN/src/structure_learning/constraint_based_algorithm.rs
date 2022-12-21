@@ -6,27 +6,28 @@ use std::usize;
 
 use super::hypothesis_test::*;
 use crate::parameter_learning::{Cache, ParameterLearning};
+use crate::process;
 use crate::structure_learning::StructureLearningAlgorithm;
-use crate::{process, tools};
+use crate::tools::Dataset;
 
 pub struct CTPC<P: ParameterLearning> {
+    parameter_learning: P,
     Ftest: F,
     Chi2test: ChiSquare,
-    cache: Cache<P>,
 }
 
 impl<P: ParameterLearning> CTPC<P> {
-    pub fn new(Ftest: F, Chi2test: ChiSquare, cache: Cache<P>) -> CTPC<P> {
+    pub fn new(parameter_learning: P, Ftest: F, Chi2test: ChiSquare) -> CTPC<P> {
         CTPC {
-            Chi2test,
+            parameter_learning,
             Ftest,
-            cache,
+            Chi2test,
         }
     }
 }
 
 impl<P: ParameterLearning> StructureLearningAlgorithm for CTPC<P> {
-    fn fit_transform<T>(&mut self, net: T, dataset: &tools::Dataset) -> T
+    fn fit_transform<T>(&self, net: T, dataset: &Dataset) -> T
     where
         T: process::NetworkProcess,
     {
@@ -41,6 +42,7 @@ impl<P: ParameterLearning> StructureLearningAlgorithm for CTPC<P> {
         net.initialize_adj_matrix();
 
         for child_node in net.get_node_indices() {
+            let mut cache = Cache::new(&self.parameter_learning);
             let mut candidate_parent_set: BTreeSet<usize> = net
                 .get_node_indices()
                 .into_iter()
@@ -62,13 +64,15 @@ impl<P: ParameterLearning> StructureLearningAlgorithm for CTPC<P> {
                             child_node,
                             *parent_node,
                             &separation_set,
-                            &mut self.cache,
+                            dataset,
+                            &mut cache,
                         ) && self.Chi2test.call(
                             &net,
                             child_node,
                             *parent_node,
                             &separation_set,
-                            &mut self.cache,
+                            dataset,
+                            &mut cache,
                         ) {
                             candidate_parent_set_TMP.remove(parent_node);
                             break;
