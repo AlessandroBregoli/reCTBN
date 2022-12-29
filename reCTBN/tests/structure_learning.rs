@@ -473,9 +473,11 @@ pub fn chi_square_call() {
     let chi_sq = ChiSquare::new(1e-4);
 
     assert!(chi_sq.call(&net, N1, N3, &separation_set, &data, &mut cache));
+    let mut cache = Cache::new(&parameter_learning);
     assert!(!chi_sq.call(&net, N3, N1, &separation_set, &data, &mut cache));
     assert!(!chi_sq.call(&net, N3, N2, &separation_set, &data, &mut cache));
     separation_set.insert(N1);
+    let mut cache = Cache::new(&parameter_learning);
     assert!(chi_sq.call(&net, N2, N3, &separation_set, &data, &mut cache));
 }
 
@@ -493,9 +495,11 @@ pub fn f_call() {
 
 
     assert!(f.call(&net, N1, N3, &separation_set, &data, &mut cache));
+    let mut cache = Cache::new(&parameter_learning);
     assert!(!f.call(&net, N3, N1, &separation_set, &data, &mut cache));
     assert!(!f.call(&net, N3, N2, &separation_set, &data, &mut cache));
     separation_set.insert(N1);
+    let mut cache = Cache::new(&parameter_learning);
     assert!(f.call(&net, N2, N3, &separation_set, &data, &mut cache));
 }
 
