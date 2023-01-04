@@ -8,7 +8,7 @@ use ndarray::prelude::*;
 use crate::params::*;
 use crate::{process, tools::Dataset};
 
-pub trait ParameterLearning {
+pub trait ParameterLearning: Sync {
     fn fit<T: process::NetworkProcess>(
         &self,
         net: &T,

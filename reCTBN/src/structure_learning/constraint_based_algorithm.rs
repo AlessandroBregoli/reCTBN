@@ -1,6 +1,8 @@
 //! Module containing constraint based algorithms like CTPC and Hiton.
 
 use itertools::Itertools;
+use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use rayon::prelude::ParallelExtend;
 use std::collections::BTreeSet;
 use std::usize;
 
@@ -41,7 +43,8 @@ impl<P: ParameterLearning> StructureLearningAlgorithm for CTPC<P> {
 
         net.initialize_adj_matrix();
 
-        for child_node in net.get_node_indices() {
+        let mut learned_parent_sets: Vec<(usize, BTreeSet<usize>)> = vec![];
+        learned_parent_sets.par_extend(net.get_node_indices().into_par_iter().map(|child_node| {
             let mut cache = Cache::new(&self.parameter_learning);
             let mut candidate_parent_set: BTreeSet<usize> = net
                 .get_node_indices()
@@ -82,6 +85,9 @@ impl<P: ParameterLearning> StructureLearningAlgorithm for CTPC<P> {
                 candidate_parent_set = candidate_parent_set_TMP;
                 separation_set_size += 1;
             }
+            (child_node, candidate_parent_set)
+        }));
+        for (child_node, candidate_parent_set) in learned_parent_sets {
             for parent_node in candidate_parent_set.iter() {
                 net.add_edge(*parent_node, child_node);
             }
