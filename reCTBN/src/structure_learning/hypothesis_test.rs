@@ -6,6 +6,7 @@ use ndarray::{Array3, Axis};
 use statrs::distribution::{ChiSquared, ContinuousCDF, FisherSnedecor};
 
 use crate::params::*;
+use crate::structure_learning::constraint_based_algorithm::Cache;
 use crate::{parameter_learning, process, tools::Dataset};
 
 pub trait HypothesisTest {
@@ -16,7 +17,7 @@ pub trait HypothesisTest {
         parent_node: usize,
         separation_set: &BTreeSet<usize>,
         dataset: &Dataset,
-        cache: &mut parameter_learning::Cache<P>,
+        cache: &mut Cache<P>,
     ) -> bool
     where
         T: process::NetworkProcess,
@@ -86,7 +87,7 @@ impl HypothesisTest for F {
         parent_node: usize,
         separation_set: &BTreeSet<usize>,
         dataset: &Dataset,
-        cache: &mut parameter_learning::Cache<P>,
+        cache: &mut Cache<P>,
     ) -> bool
     where
         T: process::NetworkProcess,
@@ -226,7 +227,7 @@ impl HypothesisTest for ChiSquare {
         parent_node: usize,
         separation_set: &BTreeSet<usize>,
         dataset: &Dataset,
-        cache: &mut parameter_learning::Cache<P>,
+        cache: &mut Cache<P>,
     ) -> bool
     where
         T: process::NetworkProcess,

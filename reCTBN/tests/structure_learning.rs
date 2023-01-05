@@ -7,7 +7,6 @@ use ndarray::{arr1, arr2, arr3};
 use reCTBN::process::ctbn::*;
 use reCTBN::process::NetworkProcess;
 use reCTBN::parameter_learning::BayesianApproach;
-use reCTBN::parameter_learning::Cache;
 use reCTBN::params;
 use reCTBN::structure_learning::hypothesis_test::*;
 use reCTBN::structure_learning::constraint_based_algorithm::*;
