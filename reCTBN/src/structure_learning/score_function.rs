@@ -7,7 +7,7 @@ use statrs::function::gamma;
 
 use crate::{parameter_learning, params, process, tools};
 
-pub trait ScoreFunction {
+pub trait ScoreFunction: Sync {
     fn call<T>(
         &self,
         net: &T,
