@@ -21,7 +21,7 @@ pub type NetworkProcessState = Vec<params::StateType>;
 
 /// It defines the required methods for a structure used as a Probabilistic Graphical Models (such
 /// as a CTBN).
-pub trait NetworkProcess {
+pub trait NetworkProcess: Sync {
     fn initialize_adj_matrix(&mut self);
     fn add_node(&mut self, n: params::Params) -> Result<usize, NetworkError>;
     /// Add an **directed edge** between a two nodes of the network.

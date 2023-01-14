@@ -13,6 +13,8 @@ bimap = "~0.6"
 enum_dispatch = "~0.3"
 statrs = "~0.16"
 rand_chacha = "~0.3"
+itertools = "~0.10"
+rayon = "~1.6"
 
 [dev-dependencies]
 approx = { package = "approx", version = "~0.5" }
