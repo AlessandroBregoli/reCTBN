@@ -1,7 +1,10 @@
 use std::collections::HashMap;
 
+use rayon::prelude::{IntoParallelIterator, ParallelIterator};
+
 use crate::params::{self, ParamsTrait};
 use crate::process;
+
 
 use crate::{
     process::NetworkProcessState,
@@ -55,7 +58,7 @@ impl RewardEvaluation for MonteCarloReward {
 
         let n_states: usize = variables_domain.iter().map(|x| x.len()).product();
 
-        (0..n_states)
+        (0..n_states).into_par_iter()
             .map(|s| {
                 let state: process::NetworkProcessState = variables_domain
                     .iter()

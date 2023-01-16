@@ -4,7 +4,6 @@ pub mod reward_evaluation;
 use std::collections::HashMap;
 
 use crate::process;
-use ndarray;
 
 /// Instantiation of reward function and instantaneous reward
 ///
@@ -22,7 +21,7 @@ pub struct Reward {
 
 /// The trait RewardFunction describe the methods that all the reward functions must satisfy
 
-pub trait RewardFunction {
+pub trait RewardFunction: Sync {
     /// Given the current state and the previous state, it compute the reward.
     ///
     /// # Arguments
