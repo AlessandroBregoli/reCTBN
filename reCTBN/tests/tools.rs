@@ -85,20 +85,20 @@ fn dataset_wrong_shape() {
 
 #[test]
 #[should_panic]
-fn structure_gen_wrong_density() {
+fn uniform_random_generator_wrong_density() {
     let density = 2.1;
-    StructureGen::new(density, None);
+    let _structure_generator: UniformRandomGenerator = RandomGraphGenerator::new(density, None);
 }
 
 #[test]
-fn structure_gen_right_densities() {
+fn uniform_random_generator_right_densities() {
     for density in [1.0, 0.75, 0.5, 0.25, 0.0] {
-        StructureGen::new(density, None);
+        let _structure_generator: UniformRandomGenerator = RandomGraphGenerator::new(density, None);
     }
 }
 
 #[test]
-fn structure_gen_gen_structure() {
+fn uniform_random_generator_generate_graph() {
     let mut net = CtbnNetwork::new();
     for node_label in 0..100 {
         net.add_node(
@@ -109,8 +109,8 @@ fn structure_gen_gen_structure() {
         ).unwrap();
     }
     let density = 1.0/3.0;
-    let mut structure_generator = StructureGen::new(density, Some(7641630759785120));
-    structure_generator.gen_structure(&mut net);
+    let mut structure_generator: UniformRandomGenerator = RandomGraphGenerator::new(density, Some(7641630759785120));
+    structure_generator.generate_graph(&mut net);
     let mut edges = 0;
     for node in net.get_node_indices(){
         edges += net.get_children_set(node).len()
@@ -118,7 +118,7 @@ fn structure_gen_gen_structure() {
     let nodes = net.get_node_indices().len() as f64;
     let expected_edges = (density * nodes * (nodes - 1.0)).round() as usize;
     let tolerance = ((expected_edges as f64)/100.0*5.0) as usize; // ±5% of tolerance
-    // As the way `gen_structure()` is implemented we can only reasonably
+    // As the way `generate_graph()` is implemented we can only reasonably
     // expect the number of edges to be somewhere around the expected value.
     assert!((expected_edges - tolerance) < edges && edges < (expected_edges + tolerance));
 }

@@ -113,13 +113,18 @@ pub fn trajectory_generator<T: process::NetworkProcess>(
     Dataset::new(trajectories)
 }
 
-pub struct StructureGen {
+pub trait RandomGraphGenerator {
+    fn new(density: f64, seed: Option<u64>) -> Self;
+    fn generate_graph<'a>(&'a mut self, net: &'a mut CtbnNetwork) -> &CtbnNetwork;
+}
+
+pub struct UniformRandomGenerator {
     density: f64,
     rng: ChaCha8Rng,
 }
 
-impl StructureGen {
-    pub fn new(density: f64, seed: Option<u64>) -> StructureGen {
+impl RandomGraphGenerator for UniformRandomGenerator {
+    fn new(density: f64, seed: Option<u64>) -> UniformRandomGenerator {
         if density < 0.0 || density > 1.0 {
             panic!(
                 "Density value must be between 1.0 and 0.0, got {}.",
@@ -130,10 +135,10 @@ impl StructureGen {
             Some(seed) => SeedableRng::seed_from_u64(seed),
             None => SeedableRng::from_entropy(),
         };
-        StructureGen { density, rng }
+        UniformRandomGenerator { density, rng }
     }
 
-    pub fn gen_structure<'a>(&'a mut self, net: &'a mut CtbnNetwork) -> &CtbnNetwork {
+    fn generate_graph<'a>(&'a mut self, net: &'a mut CtbnNetwork) -> &CtbnNetwork {
         let last_node_idx = net.get_node_indices().len();
         for parent in 0..last_node_idx {
             for child in 0..last_node_idx {
