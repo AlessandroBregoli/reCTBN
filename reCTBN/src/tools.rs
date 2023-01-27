@@ -4,7 +4,6 @@ use ndarray::prelude::*;
 use rand::{Rng, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 
-use crate::process::ctbn::CtbnNetwork;
 use crate::process::NetworkProcess;
 use crate::sampling::{ForwardSampler, Sampler};
 use crate::{params, process};
@@ -115,16 +114,16 @@ pub fn trajectory_generator<T: process::NetworkProcess>(
 
 pub trait RandomGraphGenerator {
     fn new(density: f64, seed: Option<u64>) -> Self;
-    fn generate_graph<'a>(&'a mut self, net: &'a mut CtbnNetwork) -> &CtbnNetwork;
+    fn generate_graph<T: NetworkProcess>(&mut self, net: &mut T);
 }
 
-pub struct UniformRandomGenerator {
+pub struct UniformGraphGenerator {
     density: f64,
     rng: ChaCha8Rng,
 }
 
-impl RandomGraphGenerator for UniformRandomGenerator {
-    fn new(density: f64, seed: Option<u64>) -> UniformRandomGenerator {
+impl RandomGraphGenerator for UniformGraphGenerator {
+    fn new(density: f64, seed: Option<u64>) -> UniformGraphGenerator {
         if density < 0.0 || density > 1.0 {
             panic!(
                 "Density value must be between 1.0 and 0.0, got {}.",
@@ -135,10 +134,11 @@ impl RandomGraphGenerator for UniformRandomGenerator {
             Some(seed) => SeedableRng::seed_from_u64(seed),
             None => SeedableRng::from_entropy(),
         };
-        UniformRandomGenerator { density, rng }
+        UniformGraphGenerator { density, rng }
     }
 
-    fn generate_graph<'a>(&'a mut self, net: &'a mut CtbnNetwork) -> &CtbnNetwork {
+    fn generate_graph<T: NetworkProcess>(&mut self, net: &mut T) {
+        net.initialize_adj_matrix();
         let last_node_idx = net.get_node_indices().len();
         for parent in 0..last_node_idx {
             for child in 0..last_node_idx {
@@ -149,6 +149,5 @@ impl RandomGraphGenerator for UniformRandomGenerator {
                 }
             }
         }
-        net
     }
 }
