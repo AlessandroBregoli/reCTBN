@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 use ndarray::{arr1, arr2, arr3};
 use reCTBN::process::ctbn::*;
 use reCTBN::process::NetworkProcess;
@@ -85,20 +87,27 @@ fn dataset_wrong_shape() {
 
 #[test]
 #[should_panic]
-fn uniform_random_generator_wrong_density() {
+fn uniform_graph_generator_wrong_density_1() {
     let density = 2.1;
     let _structure_generator: UniformGraphGenerator = RandomGraphGenerator::new(density, None);
 }
 
 #[test]
-fn uniform_random_generator_right_densities() {
+#[should_panic]
+fn uniform_graph_generator_wrong_density_2() {
+    let density = -0.5;
+    let _structure_generator: UniformGraphGenerator = RandomGraphGenerator::new(density, None);
+}
+
+#[test]
+fn uniform_graph_generator_right_densities() {
     for density in [1.0, 0.75, 0.5, 0.25, 0.0] {
         let _structure_generator: UniformGraphGenerator = RandomGraphGenerator::new(density, None);
     }
 }
 
 #[test]
-fn uniform_random_generator_generate_graph() {
+fn uniform_graph_generator_generate_graph() {
     let mut net = CtbnNetwork::new();
     for node_label in 0..100 {
         net.add_node(
@@ -121,4 +130,36 @@ fn uniform_random_generator_generate_graph() {
     // As the way `generate_graph()` is implemented we can only reasonably
     // expect the number of edges to be somewhere around the expected value.
     assert!((expected_edges - tolerance) <= edges && edges <= (expected_edges + tolerance));
+}
+
+#[test]
+#[should_panic]
+fn uniform_parameters_generator_wrong_density_1() {
+    let interval: Range<f64> = -2.0..-5.0;
+    let _cim_generator: UniformParametersGenerator = RandomParametersGenerator::new(interval, None);
+}
+
+#[test]
+#[should_panic]
+fn uniform_parameters_generator_wrong_density_2() {
+    let interval: Range<f64> = -1.0..0.0;
+    let _cim_generator: UniformParametersGenerator = RandomParametersGenerator::new(interval, None);
+}
+
+#[test]
+fn uniform_parameters_generator_right_densities() {
+    let mut net = CtbnNetwork::new();
+    for node_label in 0..3 {
+        net.add_node(
+            utils::generate_discrete_time_continous_node(
+                node_label.to_string(),
+                9,
+            )
+        ).unwrap();
+    }
+    let density = 1.0/3.0;
+    let mut structure_generator: UniformGraphGenerator = RandomGraphGenerator::new(density, Some(7641630759785120));
+    structure_generator.generate_graph(&mut net);
+    let mut cim_generator: UniformParametersGenerator = RandomParametersGenerator::new(0.0..7.0, Some(7641630759785120));
+    cim_generator.generate_parameters(&mut net);
 }
