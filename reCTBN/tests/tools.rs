@@ -1,6 +1,7 @@
 use std::ops::Range;
 
 use ndarray::{arr1, arr2, arr3};
+use reCTBN::params::ParamsTrait;
 use reCTBN::process::ctbn::*;
 use reCTBN::process::NetworkProcess;
 use reCTBN::params;
@@ -167,12 +168,9 @@ fn uniform_parameters_generator_right_densities() {
     let mut cim_generator: UniformParametersGenerator = RandomParametersGenerator::new(interval, seed);
     cim_generator.generate_parameters(&mut net);
     for node in net.get_node_indices() {
-        match &mut net.get_node_mut(node) {
-            params::Params::DiscreteStatesContinousTime(param) => {
-                assert_eq!(
-                    Ok(()),
-                    param.set_cim(param.get_cim().clone().unwrap()));
-            }
-        }
+        assert_eq!(
+            Ok(()),
+            net.get_node(node).validate_params()
+        );
     }
 }
