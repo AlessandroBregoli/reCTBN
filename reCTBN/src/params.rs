@@ -267,13 +267,11 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
             )));
         }
 
-        let domain_size = domain_size as f64;
-
         // Check if each row sum up to 0
         if cim
             .sum_axis(Axis(2))
             .iter()
-            .any(|x| f64::abs(x.clone()) > f64::EPSILON * domain_size)
+            .any(|x| f64::abs(x.clone()) > f64::EPSILON.sqrt())
         {
             return Err(ParamsError::InvalidCIM(String::from(
                 "The sum of each row must be 0",

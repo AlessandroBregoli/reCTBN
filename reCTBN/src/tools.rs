@@ -203,7 +203,10 @@ impl RandomParametersGenerator for UniformParametersGenerator {
                     self.rng.gen_range(self.interval.clone())
                 });
                 x.mul_assign(&diag.clone().insert_axis(Axis(1)));
-                x.diag_mut().assign(&-diag)
+                // Recomputing the diagonal in order to reduce the issues caused by the loss of
+                // precision when validating the parameters.
+                let diag_sum = -x.sum_axis(Axis(1));
+                x.diag_mut().assign(&diag_sum)
             });
             match &mut net.get_node_mut(node) {
                 params::Params::DiscreteStatesContinousTime(param) => {
