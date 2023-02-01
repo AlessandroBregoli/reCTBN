@@ -117,12 +117,64 @@ fn check_compatibility_between_dataset_and_network<T: StructureLearningAlgorithm
     let _net = sl.fit_transform(net, &data);
 }
 
+fn generate_nodes(
+    net: &mut CtbnNetwork,
+    nodes_cardinality: usize,
+    nodes_domain_cardinality: usize
+) {
+    for node_label in 0..nodes_cardinality {
+        net.add_node(
+            generate_discrete_time_continous_node(
+                node_label.to_string(),
+                nodes_domain_cardinality,
+            )
+        ).unwrap();
+    }
+}
+
+fn check_compatibility_between_dataset_and_network_gen<T: StructureLearningAlgorithm>(sl: T) {
+    let mut net = CtbnNetwork::new();
+    generate_nodes(&mut net, 2, 3);
+    net.add_node(
+        generate_discrete_time_continous_node(
+            String::from("3"),
+            4
+        )
+    ).unwrap();
+
+    net.add_edge(0, 1);
+
+    let mut cim_generator: UniformParametersGenerator = RandomParametersGenerator::new(
+        0.0..7.0,
+        Some(6813071588535822)
+    );
+    cim_generator.generate_parameters(&mut net);
+
+    let data = trajectory_generator(&net, 100, 30.0, Some(6347747169756259));
+
+    let mut net = CtbnNetwork::new();
+    let _n1 = net
+        .add_node(
+            generate_discrete_time_continous_node(String::from("0"),
+            3)
+        ).unwrap();
+    let _net = sl.fit_transform(net, &data);
+}
+
 #[test]
 #[should_panic]
 pub fn check_compatibility_between_dataset_and_network_hill_climbing() {
     let ll = LogLikelihood::new(1, 1.0);
     let hl = HillClimbing::new(ll, None);
     check_compatibility_between_dataset_and_network(hl);
+}
+
+#[test]
+#[should_panic]
+pub fn check_compatibility_between_dataset_and_network_hill_climbing_gen() {
+    let ll = LogLikelihood::new(1, 1.0);
+    let hl = HillClimbing::new(ll, None);
+    check_compatibility_between_dataset_and_network_gen(hl);
 }
 
 fn learn_ternary_net_2_nodes<T: StructureLearningAlgorithm>(sl: T) {
@@ -182,6 +234,25 @@ fn learn_ternary_net_2_nodes<T: StructureLearningAlgorithm>(sl: T) {
     assert_eq!(BTreeSet::new(), net.get_parent_set(n1));
 }
 
+fn learn_ternary_net_2_nodes_gen<T: StructureLearningAlgorithm>(sl: T) {
+    let mut net = CtbnNetwork::new();
+    generate_nodes(&mut net, 2, 3);
+
+    net.add_edge(0, 1);
+
+    let mut cim_generator: UniformParametersGenerator = RandomParametersGenerator::new(
+        0.0..7.0,
+        Some(6813071588535822)
+    );
+    cim_generator.generate_parameters(&mut net);
+
+    let data = trajectory_generator(&net, 100, 20.0, Some(6347747169756259));
+
+    let net = sl.fit_transform(net, &data);
+    assert_eq!(BTreeSet::from_iter(vec![0]), net.get_parent_set(1));
+    assert_eq!(BTreeSet::new(), net.get_parent_set(0));
+}
+
 #[test]
 pub fn learn_ternary_net_2_nodes_hill_climbing_ll() {
     let ll = LogLikelihood::new(1, 1.0);
@@ -190,10 +261,24 @@ pub fn learn_ternary_net_2_nodes_hill_climbing_ll() {
 }
 
 #[test]
+pub fn learn_ternary_net_2_nodes_hill_climbing_ll_gen() {
+    let ll = LogLikelihood::new(1, 1.0);
+    let hl = HillClimbing::new(ll, None);
+    learn_ternary_net_2_nodes_gen(hl);
+}
+
+#[test]
 pub fn learn_ternary_net_2_nodes_hill_climbing_bic() {
     let bic = BIC::new(1, 1.0);
     let hl = HillClimbing::new(bic, None);
     learn_ternary_net_2_nodes(hl);
+}
+
+#[test]
+pub fn learn_ternary_net_2_nodes_hill_climbing_bic_gen() {
+    let bic = BIC::new(1, 1.0);
+    let hl = HillClimbing::new(bic, None);
+    learn_ternary_net_2_nodes_gen(hl);
 }
 
 fn get_mixed_discrete_net_3_nodes_with_data() -> (CtbnNetwork, Dataset) {
@@ -320,8 +405,40 @@ fn get_mixed_discrete_net_3_nodes_with_data() -> (CtbnNetwork, Dataset) {
     return (net, data);
 }
 
+fn get_mixed_discrete_net_3_nodes_with_data_gen() -> (CtbnNetwork, Dataset) {
+    let mut net = CtbnNetwork::new();
+    generate_nodes(&mut net, 2, 3);
+    net.add_node(
+        generate_discrete_time_continous_node(
+            String::from("3"),
+            4
+        )
+    ).unwrap();
+
+    net.add_edge(0, 1);
+    net.add_edge(0, 2);
+    net.add_edge(1, 2);
+
+    let mut cim_generator: UniformParametersGenerator = RandomParametersGenerator::new(
+        0.0..7.0,
+        Some(6813071588535822)
+    );
+    cim_generator.generate_parameters(&mut net);
+
+    let data = trajectory_generator(&net, 300, 30.0, Some(6347747169756259));
+    return (net, data);
+}
+
 fn learn_mixed_discrete_net_3_nodes<T: StructureLearningAlgorithm>(sl: T) {
     let (net, data) = get_mixed_discrete_net_3_nodes_with_data();
+    let net = sl.fit_transform(net, &data);
+    assert_eq!(BTreeSet::new(), net.get_parent_set(0));
+    assert_eq!(BTreeSet::from_iter(vec![0]), net.get_parent_set(1));
+    assert_eq!(BTreeSet::from_iter(vec![0, 1]), net.get_parent_set(2));
+}
+
+fn learn_mixed_discrete_net_3_nodes_gen<T: StructureLearningAlgorithm>(sl: T) {
+    let (net, data) = get_mixed_discrete_net_3_nodes_with_data_gen();
     let net = sl.fit_transform(net, &data);
     assert_eq!(BTreeSet::new(), net.get_parent_set(0));
     assert_eq!(BTreeSet::from_iter(vec![0]), net.get_parent_set(1));
@@ -336,14 +453,36 @@ pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_ll() {
 }
 
 #[test]
+pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_ll_gen() {
+    let ll = LogLikelihood::new(1, 1.0);
+    let hl = HillClimbing::new(ll, None);
+    learn_mixed_discrete_net_3_nodes_gen(hl);
+}
+
+#[test]
 pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic() {
     let bic = BIC::new(1, 1.0);
     let hl = HillClimbing::new(bic, None);
     learn_mixed_discrete_net_3_nodes(hl);
 }
 
+#[test]
+pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic_gen() {
+    let bic = BIC::new(1, 1.0);
+    let hl = HillClimbing::new(bic, None);
+    learn_mixed_discrete_net_3_nodes_gen(hl);
+}
+
 fn learn_mixed_discrete_net_3_nodes_1_parent_constraint<T: StructureLearningAlgorithm>(sl: T) {
     let (net, data) = get_mixed_discrete_net_3_nodes_with_data();
+    let net = sl.fit_transform(net, &data);
+    assert_eq!(BTreeSet::new(), net.get_parent_set(0));
+    assert_eq!(BTreeSet::from_iter(vec![0]), net.get_parent_set(1));
+    assert_eq!(BTreeSet::from_iter(vec![0]), net.get_parent_set(2));
+}
+
+fn learn_mixed_discrete_net_3_nodes_1_parent_constraint_gen<T: StructureLearningAlgorithm>(sl: T) {
+    let (net, data) = get_mixed_discrete_net_3_nodes_with_data_gen();
     let net = sl.fit_transform(net, &data);
     assert_eq!(BTreeSet::new(), net.get_parent_set(0));
     assert_eq!(BTreeSet::from_iter(vec![0]), net.get_parent_set(1));
@@ -358,10 +497,24 @@ pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_ll_1_parent_constraint() {
 }
 
 #[test]
+pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_ll_1_parent_constraint_gen() {
+    let ll = LogLikelihood::new(1, 1.0);
+    let hl = HillClimbing::new(ll, Some(1));
+    learn_mixed_discrete_net_3_nodes_1_parent_constraint_gen(hl);
+}
+
+#[test]
 pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic_1_parent_constraint() {
     let bic = BIC::new(1, 1.0);
     let hl = HillClimbing::new(bic, Some(1));
     learn_mixed_discrete_net_3_nodes_1_parent_constraint(hl);
+}
+
+#[test]
+pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic_1_parent_constraint_gen() {
+    let bic = BIC::new(1, 1.0);
+    let hl = HillClimbing::new(bic, Some(1));
+    learn_mixed_discrete_net_3_nodes_1_parent_constraint_gen(hl);
 }
 
 #[test]
@@ -512,10 +665,28 @@ pub fn learn_ternary_net_2_nodes_ctpc() {
 }
 
 #[test]
+pub fn learn_ternary_net_2_nodes_ctpc_gen() {
+    let f = F::new(1e-6);
+    let chi_sq = ChiSquare::new(1e-4);
+    let parameter_learning = BayesianApproach { alpha: 1, tau:1.0 };
+    let ctpc = CTPC::new(parameter_learning, f, chi_sq);
+    learn_ternary_net_2_nodes_gen(ctpc);
+}
+
+#[test]
 fn learn_mixed_discrete_net_3_nodes_ctpc() {
     let f = F::new(1e-6);
     let chi_sq = ChiSquare::new(1e-4);
     let parameter_learning = BayesianApproach { alpha: 1, tau:1.0 };
     let ctpc = CTPC::new(parameter_learning, f, chi_sq);
     learn_mixed_discrete_net_3_nodes(ctpc);
+}
+
+#[test]
+fn learn_mixed_discrete_net_3_nodes_ctpc_gen() {
+    let f = F::new(1e-6);
+    let chi_sq = ChiSquare::new(1e-4);
+    let parameter_learning = BayesianApproach { alpha: 1, tau:1.0 };
+    let ctpc = CTPC::new(parameter_learning, f, chi_sq);
+    learn_mixed_discrete_net_3_nodes_gen(ctpc);
 }
