@@ -120,6 +120,72 @@ pub trait RandomGraphGenerator {
     fn generate_graph<T: NetworkProcess>(&mut self, net: &mut T);
 }
 
+/// Graph Generator using an uniform distribution.
+///
+/// A method to generate a random graph with edges uniformly distributed.
+///
+/// # Arguments
+///
+/// * `density` - is the density of the graph in terms of edges; domain: `0.0 ≤ density ≤ 1.0`.
+/// * `rng` - is the random numbers generator.
+///
+/// # Example
+///
+/// ```rust
+/// # use std::collections::BTreeSet;
+/// # use ndarray::{arr1, arr2, arr3};
+/// # use reCTBN::params;
+/// # use reCTBN::params::Params::DiscreteStatesContinousTime;
+/// # use reCTBN::tools::trajectory_generator;
+/// # use reCTBN::process::NetworkProcess;
+/// # use reCTBN::process::ctbn::CtbnNetwork;
+/// use reCTBN::tools::UniformGraphGenerator;
+/// use reCTBN::tools::RandomGraphGenerator;
+/// # let mut net = CtbnNetwork::new();
+/// # let nodes_cardinality = 8;
+/// # let domain_cardinality = 4;
+/// # for node in 0..nodes_cardinality {
+/// #   // Create the domain for a discrete node
+/// #   let mut domain = BTreeSet::new();
+/// #   for dvalue in 0..domain_cardinality {
+/// #     domain.insert(dvalue.to_string());
+/// #   }
+/// #   // Create the parameters for a discrete node using the domain
+/// #   let param = params::DiscreteStatesContinousTimeParams::new(
+/// #     node.to_string(),
+/// #     domain
+/// #   );
+/// #   //Create the node using the parameters
+/// #   let node = DiscreteStatesContinousTime(param);
+/// #   // Add the node to the network
+/// #   net.add_node(node).unwrap();
+/// # }
+///
+/// // Initialize the Graph Generator using the one with an
+/// // uniform distribution
+/// let density = 1.0/3.0;
+/// let seed = Some(7641630759785120);
+/// let mut structure_generator = UniformGraphGenerator::new(
+///     density,
+///     seed
+/// );
+///
+/// // Generate the graph directly on the network
+/// structure_generator.generate_graph(&mut net);
+/// # // Count all the edges generated in the network
+/// # let mut edges = 0;
+/// # for node in net.get_node_indices(){
+/// #     edges += net.get_children_set(node).len()
+/// # }
+/// # // Number of all the nodes in the network
+/// # let nodes = net.get_node_indices().len() as f64;
+/// # let expected_edges = (density * nodes * (nodes - 1.0)).round() as usize;
+/// # // ±10% of tolerance
+/// # let tolerance = ((expected_edges as f64)*0.10) as usize;
+/// # // As the way `generate_graph()` is implemented we can only reasonably
+/// # // expect the number of edges to be somewhere around the expected value.
+/// # assert!((expected_edges - tolerance) <= edges && edges <= (expected_edges + tolerance));
+/// ```
 pub struct UniformGraphGenerator {
     density: f64,
     rng: ChaCha8Rng,
@@ -140,6 +206,7 @@ impl RandomGraphGenerator for UniformGraphGenerator {
         UniformGraphGenerator { density, rng }
     }
 
+    /// Generate an uniformly distributed graph.
     fn generate_graph<T: NetworkProcess>(&mut self, net: &mut T) {
         net.initialize_adj_matrix();
         let last_node_idx = net.get_node_indices().len();
@@ -160,6 +227,76 @@ pub trait RandomParametersGenerator {
     fn generate_parameters<T: NetworkProcess>(&mut self, net: &mut T);
 }
 
+/// Parameters Generator using an uniform distribution.
+///
+/// A method to generate random parameters uniformly distributed.
+///
+/// # Arguments
+///
+/// * `interval` - is the interval of the random values oh the CIM's diagonal; domain: `≥ 0.0`.
+/// * `rng` - is the random numbers generator.
+///
+/// # Example
+///
+/// ```rust
+/// # use std::collections::BTreeSet;
+/// # use ndarray::{arr1, arr2, arr3};
+/// # use reCTBN::params;
+/// # use reCTBN::params::ParamsTrait;
+/// # use reCTBN::params::Params::DiscreteStatesContinousTime;
+/// # use reCTBN::process::NetworkProcess;
+/// # use reCTBN::process::ctbn::CtbnNetwork;
+/// # use reCTBN::tools::trajectory_generator;
+/// # use reCTBN::tools::RandomGraphGenerator;
+/// # use reCTBN::tools::UniformGraphGenerator;
+/// use reCTBN::tools::RandomParametersGenerator;
+/// use reCTBN::tools::UniformParametersGenerator;
+/// # let mut net = CtbnNetwork::new();
+/// # let nodes_cardinality = 8;
+/// # let domain_cardinality = 4;
+/// # for node in 0..nodes_cardinality {
+/// #   // Create the domain for a discrete node
+/// #   let mut domain = BTreeSet::new();
+/// #   for dvalue in 0..domain_cardinality {
+/// #     domain.insert(dvalue.to_string());
+/// #   }
+/// #   // Create the parameters for a discrete node using the domain
+/// #   let param = params::DiscreteStatesContinousTimeParams::new(
+/// #     node.to_string(),
+/// #     domain
+/// #   );
+/// #   //Create the node using the parameters
+/// #   let node = DiscreteStatesContinousTime(param);
+/// #   // Add the node to the network
+/// #   net.add_node(node).unwrap();
+/// # }
+/// #
+/// # // Initialize the Graph Generator using the one with an
+/// # // uniform distribution
+/// # let mut structure_generator = UniformGraphGenerator::new(
+/// #     1.0/3.0,
+/// #     Some(7641630759785120)
+/// # );
+/// #
+/// # // Generate the graph directly on the network
+/// # structure_generator.generate_graph(&mut net);
+///
+/// // Initialize the parameters generator with uniform distributin
+/// let mut cim_generator = UniformParametersGenerator::new(
+///     0.0..7.0,
+///     Some(7641630759785120)
+/// );
+///
+/// // Generate CIMs with uniformly distributed parameters.
+/// cim_generator.generate_parameters(&mut net);
+/// #
+/// # for node in net.get_node_indices() {
+/// #     assert_eq!(
+/// #         Ok(()),
+/// #         net.get_node(node).validate_params()
+/// #     );
+/// }
+/// ```
 pub struct UniformParametersGenerator {
     interval: Range<f64>,
     rng: ChaCha8Rng,
@@ -180,6 +317,7 @@ impl RandomParametersGenerator for UniformParametersGenerator {
         UniformParametersGenerator { interval, rng }
     }
 
+    /// Generate CIMs with uniformly distributed parameters.
     fn generate_parameters<T: NetworkProcess>(&mut self, net: &mut T) {
         for node in net.get_node_indices() {
             let parent_set_state_space_cardinality: usize = net
