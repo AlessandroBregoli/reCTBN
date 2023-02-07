@@ -20,7 +20,7 @@ pub enum ParamsError {
 }
 
 /// Allowed type of states
-#[derive(Clone)]
+#[derive(Clone, Hash, PartialEq, Eq, Debug)]
 pub enum StateType {
     Discrete(usize),
 }

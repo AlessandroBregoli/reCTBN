@@ -6,7 +6,7 @@ extern crate approx;
 pub mod parameter_learning;
 pub mod params;
 pub mod process;
-pub mod reward_function;
+pub mod reward;
 pub mod sampling;
 pub mod structure_learning;
 pub mod tools;
