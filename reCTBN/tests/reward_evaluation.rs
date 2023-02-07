@@ -1,6 +1,6 @@
 mod utils;
 
-use approx::{abs_diff_eq, assert_abs_diff_eq};
+use approx::assert_abs_diff_eq;
 use ndarray::*;
 use reCTBN::{
     params,
@@ -10,7 +10,7 @@ use reCTBN::{
 use utils::generate_discrete_time_continous_node;
 
 #[test]
-fn simple_factored_reward_function_binary_node_MC() {
+fn simple_factored_reward_function_binary_node_mc() {
     let mut net = CtbnNetwork::new();
     let n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"), 2))
@@ -50,7 +50,7 @@ fn simple_factored_reward_function_binary_node_MC() {
 }
 
 #[test]
-fn simple_factored_reward_function_chain_MC() {
+fn simple_factored_reward_function_chain_mc() {
     let mut net = CtbnNetwork::new();
     let n1 = net
         .add_node(generate_discrete_time_continous_node(String::from("n1"), 2))
