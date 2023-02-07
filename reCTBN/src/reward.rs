@@ -1,5 +1,5 @@
-pub mod reward_function;
 pub mod reward_evaluation;
+pub mod reward_function;
 
 use std::collections::HashMap;
 

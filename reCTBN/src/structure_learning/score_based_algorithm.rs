@@ -82,7 +82,7 @@ impl<S: ScoreFunction> StructureLearningAlgorithm for HillClimbing<S> {
             }
             (node, parent_set)
         }));
-            
+
         for (child_node, candidate_parent_set) in learned_parent_sets {
             for parent_node in candidate_parent_set.iter() {
                 net.add_edge(*parent_node, child_node);
