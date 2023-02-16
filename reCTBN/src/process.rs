@@ -5,7 +5,6 @@ pub mod ctmp;
 
 use std::collections::BTreeSet;
 
-use ndarray::Array2;
 use thiserror::Error;
 
 use crate::params;
@@ -118,5 +117,4 @@ pub trait NetworkProcess: Sync {
     ///
     /// * The **children set** of the selected node.
     fn get_children_set(&self, node: usize) -> BTreeSet<usize>;
-    fn get_adj_matrix(&self) -> Option<Array2<u16>>;
 }

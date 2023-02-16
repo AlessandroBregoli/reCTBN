@@ -1,7 +1,5 @@
 use std::collections::BTreeSet;
 
-use ndarray::Array2;
-
 use crate::{
     params::{Params, StateType},
     process,
@@ -112,8 +110,5 @@ impl NetworkProcess for CtmpProcess {
             }
             None => panic!("Uninitialized CtmpProcess"),
         }
-    }
-    fn get_adj_matrix(&self) -> Option<Array2<u16>> {
-        unimplemented!("CtmpProcess has only one node")
     }
 }
