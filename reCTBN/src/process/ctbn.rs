@@ -139,8 +139,8 @@ impl CtbnNetwork {
         return array_state;
     }
     /// Get the Adjacency Matrix.
-    pub fn get_adj_matrix(&self) -> Option<Array2<u16>> {
-        self.adj_matrix.clone()
+    pub fn get_adj_matrix(&self) -> Option<&Array2<u16>> {
+        self.adj_matrix.as_ref()
     }
 }
 
