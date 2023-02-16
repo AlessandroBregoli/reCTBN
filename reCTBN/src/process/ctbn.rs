@@ -240,4 +240,9 @@ impl process::NetworkProcess for CtbnNetwork {
             .filter_map(|(idx, x)| if x > &0 { Some(idx) } else { None })
             .collect()
     }
+
+    /// Get the Adjacency Matrix.
+    fn get_adj_matrix(&self) -> Option<Array2<u16>> {
+        self.adj_matrix.clone()
+    }
 }
