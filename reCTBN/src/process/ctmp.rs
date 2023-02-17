@@ -6,7 +6,17 @@ use crate::{
 };
 
 use super::{NetworkProcess, NetworkProcessState};
+use log::{debug, error, info, trace, warn};
 
+/// This structure represents a Continuous Time Markov process
+///
+/// * Arguments
+///
+/// * `param` - An Option containing the parameters of the process
+///
+///```rust
+///
+///```
 pub struct CtmpProcess {
     param: Option<Params>,
 }
@@ -28,13 +38,16 @@ impl NetworkProcess for CtmpProcess {
                 self.param = Some(n);
                 Ok(0)
             }
-            Some(_) => Err(process::NetworkError::NodeInsertionError(
+            Some(_) => {
+                warn!("A CTMP do not support more than one node");
+                Err(process::NetworkError::NodeInsertionError(
                 "CtmpProcess has only one node".to_string(),
-            )),
+            ))}
         }
     }
 
     fn add_edge(&mut self, _parent: usize, _child: usize) {
+        warn!("A CTMP cannot have endges")
         unimplemented!("CtmpProcess has only one node")
     }
 
