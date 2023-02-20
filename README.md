@@ -64,3 +64,11 @@ To generate the **documentation**:
 ```sh
 cargo rustdoc --package reCTBN --open -- --default-theme=ayu
 ```
+
+## License
+
+This software is distributed under the terms of both the Apache License
+(Version 2.0) and the MIT license.
+
+See [LICENSE-APACHE](./LICENSE-APACHE) and [LICENSE-MIT](./LICENSE-MIT) for
+details.
