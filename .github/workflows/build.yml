@@ -1,0 +1,53 @@
+name: build
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ dev ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup Rust stable (default)
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        default: true
+        components: clippy, rustfmt, rust-docs
+    - name: Setup Rust nightly
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: nightly
+        default: false
+        components: rustfmt
+    - name: Docs (doc)
+      uses: actions-rs/cargo@v1
+      with:
+        command: rustdoc
+        args: --package reCTBN -- --default-theme=ayu
+    - name: Linting (clippy)
+      uses: actions-rs/clippy-check@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        args: --all-targets -- -D warnings -A clippy::all -W clippy::correctness
+    - name: Formatting (rustfmt)
+      uses: actions-rs/cargo@v1
+      with:
+        toolchain: nightly
+        command: fmt
+        args: --all -- --check --verbose
+    - name: Tests (test)
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --tests

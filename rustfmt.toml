@@ -1,0 +1,39 @@
+# This file defines the Rust style for automatic reformatting.
+# See also https://rust-lang.github.io/rustfmt
+
+# NOTE: the unstable options will be uncommented when stabilized.
+
+# Version of the formatting rules to use.
+#version = "One"
+
+# Number of spaces per tab.
+tab_spaces = 4
+
+max_width = 100
+#comment_width = 80
+
+# Prevent carriage returns, admitted only \n.
+newline_style = "Unix"
+
+# The "Default" setting has a heuristic which can split lines too aggresively.
+#use_small_heuristics = "Max"
+
+# How imports should be grouped into `use` statements.
+#imports_granularity = "Module"
+
+# How consecutive imports are grouped together.
+#group_imports = "StdExternalCrate"
+
+# Error if unable to get all lines within max_width, except for comments and
+# string literals. 
+#error_on_line_overflow = true
+
+# Error if unable to get comments or string literals within max_width, or they
+# are left with trailing whitespaces.
+#error_on_unformatted = true
+
+# Files to ignore like third party code which is formatted upstream.
+# Ignoring tests is a temporary measure due some issues regarding rank-3 tensors
+ignore = [
+    "tests/"
+]
