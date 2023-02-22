@@ -6,7 +6,7 @@ use crate::{
 };
 
 use super::{NetworkProcess, NetworkProcessState};
-use log::{debug, error, info, trace, warn};
+use log::warn;
 
 /// This structure represents a Continuous Time Markov process
 ///
@@ -100,8 +100,9 @@ impl NetworkProcess for CtmpProcess {
             Some(_) => {
                 warn!("A CTMP do not support more than one node");
                 Err(process::NetworkError::NodeInsertionError(
-                "CtmpProcess has only one node".to_string(),
-            ))}
+                    "CtmpProcess has only one node".to_string(),
+                ))
+            }
         }
     }
 

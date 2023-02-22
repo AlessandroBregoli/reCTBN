@@ -23,8 +23,20 @@ pub type NetworkProcessState = Vec<params::StateType>;
 /// as a CTBN).
 pub trait NetworkProcess: Sync {
     fn initialize_adj_matrix(&mut self);
+
+    /// Add a **node** to the network
+    ///
+    ///  # Arguments
+    ///
+    ///  * `n` - instantiation of the `enum params::Params` describing a node
+    ///
+    ///  # Return
+    ///
+    ///  * A `Result` containing the `node_idx` automatically assigned if everything is fine, 
+    ///    or a `NetworkError` if something went wrong.
     fn add_node(&mut self, n: params::Params) -> Result<usize, NetworkError>;
-    /// Add an **directed edge** between a two nodes of the network.
+
+    /// Add a **directed edge** between a two nodes of the network.
     ///
     /// # Arguments
     ///

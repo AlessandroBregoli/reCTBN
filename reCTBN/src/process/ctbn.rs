@@ -2,6 +2,7 @@
 
 use std::collections::BTreeSet;
 
+use log::info;
 use ndarray::prelude::*;
 
 use crate::params::{DiscreteStatesContinousTimeParams, Params, ParamsTrait, StateType};
@@ -77,6 +78,7 @@ impl CtbnNetwork {
     ///
     /// * The equivalent *CtmpProcess* computed from the current CtbnNetwork
     pub fn amalgamation(&self) -> CtmpProcess {
+        info!("Network Amalgamation Started");
         let variables_domain =
             Array1::from_iter(self.nodes.iter().map(|x| x.get_reserved_space_as_parent()));
 
@@ -141,14 +143,12 @@ impl CtbnNetwork {
 }
 
 impl process::NetworkProcess for CtbnNetwork {
-    /// Initialize an Adjacency matrix.
     fn initialize_adj_matrix(&mut self) {
         self.adj_matrix = Some(Array2::<u16>::zeros(
             (self.nodes.len(), self.nodes.len()).f(),
         ));
     }
 
-    /// Add a new node.
     fn add_node(&mut self, mut n: Params) -> Result<usize, process::NetworkError> {
         n.reset_params();
         self.adj_matrix = Option::None;
@@ -156,7 +156,6 @@ impl process::NetworkProcess for CtbnNetwork {
         Ok(self.nodes.len() - 1)
     }
 
-    /// Connect two nodes with a new edge.
     fn add_edge(&mut self, parent: usize, child: usize) {
         if let None = self.adj_matrix {
             self.initialize_adj_matrix();
@@ -172,7 +171,6 @@ impl process::NetworkProcess for CtbnNetwork {
         0..self.nodes.len()
     }
 
-    /// Get the number of nodes of the network.
     fn get_number_of_nodes(&self) -> usize {
         self.nodes.len()
     }
@@ -217,7 +215,6 @@ impl process::NetworkProcess for CtbnNetwork {
             .0
     }
 
-    /// Get all the parents of the given node.
     fn get_parent_set(&self, node: usize) -> BTreeSet<usize> {
         self.adj_matrix
             .as_ref()
@@ -229,7 +226,6 @@ impl process::NetworkProcess for CtbnNetwork {
             .collect()
     }
 
-    /// Get all the children of the given node.
     fn get_children_set(&self, node: usize) -> BTreeSet<usize> {
         self.adj_matrix
             .as_ref()

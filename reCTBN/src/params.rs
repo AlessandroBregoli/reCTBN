@@ -3,7 +3,7 @@
 use std::collections::BTreeSet;
 
 use enum_dispatch::enum_dispatch;
-use log::{debug, error, info, trace, warn};
+use log::{debug, error, trace, warn};
 use ndarray::prelude::*;
 use rand::Rng;
 use rand_chacha::ChaCha8Rng;
@@ -262,8 +262,8 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
             Option::None => {
                 warn!("Cim not initialized for node {}", self.get_label());
                 Err(ParamsError::ParametersNotInitialized(String::from(
-                "CIM not initialized",
-            )))
+                    "CIM not initialized",
+                )))
             }
         }
     }
@@ -304,8 +304,11 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
         if cim
             .axis_iter(Axis(0))
             .any(|x| x.diag().iter().any(|x| x >= &0.0))
-        {   
-            warn!("The diagonal of each cim for node {} must be non-positive", self.get_label());
+        {
+            warn!(
+                "The diagonal of each cim for node {} must be non-positive",
+                self.get_label()
+            );
             return Err(ParamsError::InvalidCIM(String::from(
                 "The diagonal of each cim must be non-positive",
             )));
@@ -317,7 +320,10 @@ impl ParamsTrait for DiscreteStatesContinousTimeParams {
             .iter()
             .any(|x| f64::abs(x.clone()) > f64::EPSILON.sqrt())
         {
-            warn!("The sum of each row of the cim for node {} must be 0", self.get_label());
+            warn!(
+                "The sum of each row of the cim for node {} must be 0",
+                self.get_label()
+            );
             return Err(ParamsError::InvalidCIM(String::from(
                 "The sum of each row must be 0",
             )));

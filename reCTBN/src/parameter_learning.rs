@@ -7,7 +7,17 @@ use ndarray::prelude::*;
 use crate::params::*;
 use crate::{process, tools::Dataset};
 
+/// It defines the required methods for learn the `Parameters` from data.
 pub trait ParameterLearning: Sync {
+    /// Fit the parameter of the `node` over a `dataset` given a `parent_set`
+    ///
+    /// # Arguments
+    ///
+    /// * `net`: a `NetworkProcess` instance
+    /// * `dataset`: a dataset compatible with `net` used for computing the sufficient statistics
+    /// * `node`: the node index for which we want to compute the sufficient statistics
+    /// * `parent_set`: an `Option` containing the parent set used for computing the parameters of
+    /// `node`. If `None`, the parent set defined in `net` will be used.
     fn fit<T: process::NetworkProcess>(
         &self,
         net: &T,
@@ -17,6 +27,19 @@ pub trait ParameterLearning: Sync {
     ) -> Params;
 }
 
+/// Compute the sufficient statistics of a parameters computed from a dataset
+///
+/// # Arguments
+///
+/// * `net`: a `NetworkProcess` instance
+/// * `dataset`: a dataset compatible with `net` used for computing the sufficient statistics
+/// * `node`: the node index for which we want to compute the sufficient statistics
+/// * `parent_set`: the set of nodes (identified by indices) we want to use as parents of `node`
+///
+/// # Return
+///
+///  * A tuple containing the number of transitions (`Array3<usize>`) and the residence time
+///  (`Array2<f64>`).
 pub fn sufficient_statistics<T: process::NetworkProcess>(
     net: &T,
     dataset: &Dataset,
@@ -70,6 +93,8 @@ pub fn sufficient_statistics<T: process::NetworkProcess>(
     return (M, T);
 }
 
+
+/// Maximum Likelihood Estimation method for learning the parameters given a dataset.
 pub struct MLE {}
 
 impl ParameterLearning for MLE {
@@ -114,6 +139,13 @@ impl ParameterLearning for MLE {
     }
 }
 
+
+/// Bayesian Approach for learning the parameters given a dataset.
+///
+/// # Arguments 
+///
+/// `alpha`: hyperparameter for the priori over the number of transitions.
+/// `tau`: hyperparameter for the priori over the residence time.
 pub struct BayesianApproach {
     pub alpha: usize,
     pub tau: f64,
