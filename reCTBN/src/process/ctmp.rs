@@ -107,7 +107,7 @@ impl NetworkProcess for CtmpProcess {
     }
 
     fn add_edge(&mut self, _parent: usize, _child: usize) {
-        warn!("A CTMP cannot have endges");
+        warn!("A CTMP cannot have edges");
         unimplemented!("CtmpProcess has only one node")
     }
 
