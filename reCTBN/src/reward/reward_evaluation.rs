@@ -113,7 +113,7 @@ impl RewardEvaluation for MonteCarloReward {
                     };
                     ret += discount * r.instantaneous_reward;
                 } else {
-                    let r = reward_function.call(&previous.state, Some(&current.state));
+                    let r = reward_function.call(&current.state, Some(&previous.state));
                     let discount = match self.reward_criteria {
                         RewardCriteria::FiniteHorizon => current.t - previous.t,
                         RewardCriteria::InfiniteHorizon { discount_factor } => {
