@@ -7,6 +7,8 @@ use ndarray::prelude::*;
 use crate::params::*;
 use crate::{process, tools::Dataset};
 
+use log::debug;
+
 /// It defines the required methods for learn the `Parameters` from data.
 pub trait ParameterLearning: Sync {
     /// Fit the parameter of the `node` over a `dataset` given a `parent_set`
@@ -186,6 +188,8 @@ impl ParameterLearning for MLE {
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
     ) -> Params {
+
+        log::debug!("Learning params for node {} with parent set {:?} with MLE", node, parent_set);
         //Use parent_set from parameter if present. Otherwise use parent_set from network.
         let parent_set = match parent_set {
             Some(p) => p,
@@ -322,6 +326,7 @@ impl ParameterLearning for BayesianApproach {
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
     ) -> Params {
+        log::debug!("Learning params for node {} with parent set {:?} with BayesianApproach", node, parent_set);
         //Use parent_set from parameter if present. Otherwise use parent_set from network.
         let parent_set = match parent_set {
             Some(p) => p,
