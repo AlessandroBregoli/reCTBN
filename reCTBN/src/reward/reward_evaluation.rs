@@ -137,6 +137,7 @@ impl RewardEvaluation for MonteCarloReward {
         network_process: &N,
         reward_function: &R,
     ) -> HashMap<process::NetworkProcessState, f64> {
+        // Domain size of each variable in the `NetworkProcess`
         let variables_domain: Vec<Vec<params::StateType>> = network_process
             .get_node_indices()
             .map(|x| match network_process.get_node(x) {
@@ -146,9 +147,11 @@ impl RewardEvaluation for MonteCarloReward {
                     .collect(),
             })
             .collect();
-
+        
+        // Number of possible configuration of the `NetworkProcess`
         let n_states: usize = variables_domain.iter().map(|x| x.len()).product();
-
+        
+        // Compute the expected reward for each possible configuration of the `NetworkProcess`
         (0..n_states)
             .into_par_iter()
             .map(|s| {
@@ -175,16 +178,24 @@ impl RewardEvaluation for MonteCarloReward {
         reward_function: &R,
         state: &NetworkProcessState,
     ) -> f64 {
+        // Initialize the Forward Sampler.
         let mut sampler =
             ForwardSampler::new(network_process, self.seed.clone(), Some(state.clone()));
+
+        // Initialize the variable required to perform early stopping hypotesis test
         let mut expected_value = 0.0;
         let mut squared_expected_value = 0.0;
         let normal = statrs::distribution::Normal::new(0.0, 1.0).unwrap();
-
+        
+        // Generate and evaluate tranjectories util max_iteration is reached or early stopping rule
+        // is satisfied.
         for i in 0..self.max_iterations {
+            // Reset the sampler (Set time to 0 and initial value to `state`)
             sampler.reset();
             let mut ret = 0.0;
             let mut previous = sampler.next().unwrap();
+
+            // Generate transitions until `end_time` is reached
             while previous.t < self.end_time {
                 let current = sampler.next().unwrap();
                 if current.t > self.end_time {
@@ -216,7 +227,8 @@ impl RewardEvaluation for MonteCarloReward {
                 }
                 previous = current;
             }
-
+            
+            // Evaluate the early stopping hypothesis test .
             let float_i = i as f64;
             expected_value =
                 expected_value * float_i as f64 / (float_i + 1.0) + ret / (float_i + 1.0);
@@ -239,6 +251,77 @@ impl RewardEvaluation for MonteCarloReward {
     }
 }
 
+
+/// Compute the Neighborhood Relative Reward
+///
+/// The Neighborhood Relative Reward is the maximum ratio between the expected reward of the
+/// current state and the expected reward of each state reachable  with one transition.
+/// 
+/// # Arguments
+///
+/// *  `inner_reward`: a structure implementing the `trait RewardEvaluation`
+///
+/// # Example
+///
+///  ```rust
+/// 
+/// use approx::assert_abs_diff_eq;
+/// use ndarray::*;
+/// use reCTBN::{
+///     params,
+///     process::{ctbn::*, NetworkProcess, NetworkProcessState},
+///     reward::{reward_evaluation::*, reward_function::*, *},
+/// };
+/// use std::collections::BTreeSet;
+///
+/// //Create the domain for a discrete node
+/// let mut domain = BTreeSet::new();
+/// domain.insert(String::from("A"));
+/// domain.insert(String::from("B"));
+///
+/// //Create the parameters for a discrete node using the domain
+/// let param = params::DiscreteStatesContinousTimeParams::new("n1".to_string(), domain);
+///
+/// //Create the node using the parameters
+/// let n1 = params::Params::DiscreteStatesContinousTime(param);
+///
+/// // Initialize the CTBN
+/// let mut net = CtbnNetwork::new();
+///
+/// // Add the node n1 to the network
+/// let n1 = net
+///     .add_node(n1)
+///     .unwrap();
+/// 
+/// // Initialize the reward based no `n1`
+/// let mut rf = FactoredRewardFunction::initialize_from_network_process(&net);
+/// rf.get_transition_reward_mut(n1)
+///     .assign(&arr2(&[[0.0, 0.0], [0.0, 0.0]]));
+/// rf.get_instantaneous_reward_mut(n1)
+///     .assign(&arr1(&[3.0, 3.0]));
+///
+/// //Set the CIM for n1
+/// match &mut net.get_node_mut(n1) {
+///     params::Params::DiscreteStatesContinousTime(param) => {
+///         param.set_cim(arr3(&[[[-3.0, 3.0], [2.0, -2.0]]])).unwrap();
+///     }
+/// }
+///
+/// net.initialize_adj_matrix();
+/// 
+/// // Define the possible states for the network
+/// let s0: NetworkProcessState = vec![params::StateType::Discrete(0)];
+/// let s1: NetworkProcessState = vec![params::StateType::Discrete(1)];
+///
+/// //Initialize the `MonteCarloReward` with an infinite reward criteria
+/// let mc = MonteCarloReward::new(10000, 1e-1, 1e-1, 100.0, RewardCriteria::InfiniteHorizon { discount_factor: 0.1 }, Some(215));
+///
+/// let nrr = NeighborhoodRelativeReward::new(mc);
+///
+/// let rst = nrr.evaluate_state_space(&net, &rf);
+/// assert_abs_diff_eq!(1.0, rst[&s0], epsilon = 1e-2);
+/// assert_abs_diff_eq!(1.0, rst[&s1], epsilon = 1e-2);
+/// ```
 pub struct NeighborhoodRelativeReward<RE: RewardEvaluation> {
     inner_reward: RE,
 }
