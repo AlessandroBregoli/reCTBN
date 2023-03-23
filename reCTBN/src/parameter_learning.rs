@@ -189,7 +189,7 @@ impl ParameterLearning for MLE {
         parent_set: Option<BTreeSet<usize>>,
     ) -> Params {
 
-        log::debug!("Learning params for node {} with parent set {:?} with MLE", node, parent_set);
+        debug!("Learning params for node {} with parent set {:?} with MLE", node, parent_set);
         //Use parent_set from parameter if present. Otherwise use parent_set from network.
         let parent_set = match parent_set {
             Some(p) => p,
@@ -326,7 +326,7 @@ impl ParameterLearning for BayesianApproach {
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
     ) -> Params {
-        log::debug!("Learning params for node {} with parent set {:?} with BayesianApproach", node, parent_set);
+        debug!("Learning params for node {} with parent set {:?} with BayesianApproach", node, parent_set);
         //Use parent_set from parameter if present. Otherwise use parent_set from network.
         let parent_set = match parent_set {
             Some(p) => p,

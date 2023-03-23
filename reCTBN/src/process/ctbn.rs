@@ -79,23 +79,33 @@ impl CtbnNetwork {
     /// * The equivalent *CtmpProcess* computed from the current CtbnNetwork
     pub fn amalgamation(&self) -> CtmpProcess {
         info!("Network Amalgamation Started");
+
+        // Get the domanin (cardinality) for each node in the network
         let variables_domain =
             Array1::from_iter(self.nodes.iter().map(|x| x.get_reserved_space_as_parent()));
-
+        
+        // The state space size for a ctmp generated from a ctbn is equal to the product of the
+        // caridalities of each node in the ctbn.
         let state_space = variables_domain.product();
         let variables_set = BTreeSet::from_iter(self.get_node_indices());
         let mut amalgamated_cim: Array3<f64> = Array::zeros((1, state_space, state_space));
 
         for idx_current_state in 0..state_space {
+            //Compute the state of the ctbn given the state of the ctmp
             let current_state = CtbnNetwork::idx_to_state(&variables_domain, idx_current_state);
             let current_state_statetype: NetworkProcessState = current_state
                 .iter()
                 .map(|x| StateType::Discrete(*x))
                 .collect();
+
+            // Amalgamation for the current state (Generation of one row of the `amalgamated_cim`)
             for idx_node in 0..self.nodes.len() {
                 let p = match self.get_node(idx_node) {
                     Params::DiscreteStatesContinousTime(p) => p,
                 };
+
+                // Add the transition intensities for each possible configuration of the node
+                // `idx_node` in the `amalgamated_cim`
                 for next_node_state in 0..variables_domain[idx_node] {
                     let mut next_state = current_state.clone();
                     next_state[idx_node] = next_node_state;
@@ -115,7 +125,7 @@ impl CtbnNetwork {
                 }
             }
         }
-
+    
         let mut amalgamated_param = DiscreteStatesContinousTimeParams::new(
             "ctmp".to_string(),
             BTreeSet::from_iter((0..state_space).map(|x| x.to_string())),
@@ -129,7 +139,17 @@ impl CtbnNetwork {
             .unwrap();
         return ctmp;
     }
-
+    
+    /// Compute the state for each node given an index and a set of ordered variables
+    ///
+    /// # Arguments
+    ///
+    /// * `variables_domain` - domain of the considered variables
+    /// * `state` - specific configuration of the nodes represented with a single number.
+    ///
+    /// # Return
+    ///
+    /// * An array containing the state of each node
     pub fn idx_to_state(variables_domain: &Array1<usize>, state: usize) -> Array1<usize> {
         let mut state = state;
         let mut array_state = Array1::zeros(variables_domain.shape()[0]);
