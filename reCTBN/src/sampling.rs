@@ -27,11 +27,90 @@ pub trait Sampler: Iterator<Item = Sample> {
 }
 
 /// This structure implements the `Sampler` and allow to generate a sequence of `Sample`
+/// accordingly to *(Fan, Yu, and Christian R. Shelton. "Sampling for Approximate Inference in 
+/// Continuous Time Bayesian Networks." ISAIM. 2008.)*
 ///
 ///  # Attributes
 ///
-///  `net` - a structure implementing the `trait NetworkProcess`
-///  
+///  * `net` - a structure implementing the `trait NetworkProcess`
+///  * `rng` - a random number generator
+///  * `current_time` - current time of the sampler. This variable will be update every time the
+///                    sampler generate a sample
+///  * `current_state` - current state of the underline `NetworkProcess`. This variable will be
+///                     update every time the sampler generate a sample  
+///  * `next_transitions` - next time to transition for each variable in the
+///                       `NetworkProcess`
+///  * `initial_state`: - Initial state of the `NetworkProcess`
+///
+///  # Example
+///
+///```rust
+/// use crate::params::{StateType};
+/// use crate::process::{ctbn::CtbnNetwork, NetworkProcess, NetworkProcessState};
+/// use crate::sampling::{ForwardSampler, Sampler, Sample};
+/// use ndarray::*;
+///
+/// //Create the domain for a discrete node
+/// let mut domain = BTreeSet::new();
+/// domain.insert(String::from("A"));
+/// domain.insert(String::from("B"));
+///
+/// //Create the parameters for a discrete node using the domain
+/// let param = params::DiscreteStatesContinousTimeParams::new("X1".to_string(), domain);
+///
+/// //Create the node using the parameters
+/// let X1 = params::Params::DiscreteStatesContinousTime(param);
+///
+/// let mut domain = BTreeSet::new();
+/// domain.insert(String::from("A"));
+/// domain.insert(String::from("B"));
+/// let param = params::DiscreteStatesContinousTimeParams::new("X2".to_string(), domain);
+/// let X2 = params::Params::DiscreteStatesContinousTime(param);
+///
+/// //Initialize a ctbn
+/// let mut net = CtbnNetwork::new();
+///
+/// //Add nodes
+/// let X1 = net.add_node(X1).unwrap();
+/// let X2 = net.add_node(X2).unwrap();
+///
+/// //Add an edge
+/// net.add_edge(X1, X2);
+///
+///  //Initialize the cims
+///
+///  match &mut net.get_node_mut(X1) {
+///      params::Params::DiscreteStatesContinousTime(param) => {
+///          assert_eq!(Ok(()), param.set_cim(arr3(&[[[-0.1, 0.1], [1.0, -1.0]]])));
+///      }
+///  }
+///
+///  match &mut net.get_node_mut(X2) {
+///      params::Params::DiscreteStatesContinousTime(param) => {
+///          assert_eq!(
+///              Ok(()),
+///              param.set_cim(arr3(&[
+///                  [[-0.01, 0.01], [5.0, -5.0]],
+///                  [[-5.0, 5.0], [0.01, -0.01]]
+///              ]))
+///          );
+///      }
+///  }
+///
+/// // Define an initial state for the ctbn (X1 = 0, X2 = 0)
+/// let s0: NetworkProcessState = vec![StateType::Discrete(0), StateType::Discrete(0)];
+///
+///
+/// //initialize the Forward Sampler
+///
+///  let mut sampler = ForwardSampler::new(net, Some(1994), Some(s0.clone()))
+///
+///  //The first output of the iterator will be t=0 and state=s0
+///  let sample_t0 = sampler.next()
+///  assert_eq!(0.0, sample_t0.t)
+///  assert_eq!(s0, sample_t0.state);
+/// 
+///```
 pub struct ForwardSampler<'a, T>
 where
     T: NetworkProcess,
@@ -45,6 +124,15 @@ where
 }
 
 impl<'a, T: NetworkProcess> ForwardSampler<'a, T> {
+
+    /// Constructur method for `ForwardSampler`
+    ///
+    /// # Arguments
+    ///
+    /// * `net` - A structure implementing the `NetworkProcess` trait
+    /// * `seed` - Random seed used to make the trajectory generation reproducible
+    /// * `initial_state` - Initial state of the `NetworkProcess`. If none, an initial state will be 
+    ///    sampled
     pub fn new(
         net: &'a T,
         seed: Option<u64>,
@@ -73,9 +161,15 @@ impl<'a, T: NetworkProcess> Iterator for ForwardSampler<'a, T> {
     type Item = Sample;
 
     fn next(&mut self) -> Option<Self::Item> {
+        // Set the variable to be returned (time and state)
         let ret_time = self.current_time.clone();
         let ret_state = self.current_state.clone();
-
+        
+        //  All the operation stating from here are required to compute the time and state that
+        //  will be returned at the next call of this function. 
+        
+        //Check if there are any node without a next time to transition and sample it from an
+        //exponential distribution governed by the main diagonal of the CIM.
         for (idx, val) in self.next_transitions.iter_mut().enumerate() {
             if let None = val {
                 *val = Some(
@@ -93,7 +187,8 @@ impl<'a, T: NetworkProcess> Iterator for ForwardSampler<'a, T> {
                 );
             }
         }
-
+        
+        //The next node to transition will be the node with the smallest value in next_transitions
         let next_node_transition = self
             .next_transitions
             .iter()
@@ -103,7 +198,9 @@ impl<'a, T: NetworkProcess> Iterator for ForwardSampler<'a, T> {
             .0;
 
         self.current_time = self.next_transitions[next_node_transition].unwrap().clone();
-
+        
+        // Generate the new  state of the node from a multinomial distribution governed by the off
+        // diagonal parameters of the CIM.
         self.current_state[next_node_transition] = self
             .net
             .get_node(next_node_transition)
@@ -117,8 +214,10 @@ impl<'a, T: NetworkProcess> Iterator for ForwardSampler<'a, T> {
             )
             .unwrap();
 
+        //Reset the next_transition for the transitioning node.
         self.next_transitions[next_node_transition] = None;
 
+        //Reset the next_transition for each child of the transitioning node.
         for child in self.net.get_children_set(next_node_transition) {
             self.next_transitions[child] = None;
         }
