@@ -7,16 +7,31 @@ use crate::{
 use rand::SeedableRng;
 use rand_chacha::ChaCha8Rng;
 
+/// This structure represent one `sample` of a trajectory.
+///
+/// # Attributes
+///
+/// * `t` - time instant of the sample
+/// * `state` - state of the `NetworkProcess` in the time instant `t`
 #[derive(Clone)]
 pub struct Sample {
     pub t: f64,
     pub state: NetworkProcessState,
 }
 
+/// The `trait Sampler` is an iterator that generate a sequence of `Sample`. 
 pub trait Sampler: Iterator<Item = Sample> {
+
+    /// Reset the Sampler to the initial state.
     fn reset(&mut self);
 }
 
+/// This structure implements the `Sampler` and allow to generate a sequence of `Sample`
+///
+///  # Attributes
+///
+///  `net` - a structure implementing the `trait NetworkProcess`
+///  
 pub struct ForwardSampler<'a, T>
 where
     T: NetworkProcess,
