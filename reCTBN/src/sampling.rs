@@ -45,10 +45,11 @@ pub trait Sampler: Iterator<Item = Sample> {
 ///  # Example
 ///
 ///```rust
-/// use crate::params::{StateType};
-/// use crate::process::{ctbn::CtbnNetwork, NetworkProcess, NetworkProcessState};
-/// use crate::sampling::{ForwardSampler, Sampler, Sample};
+/// use reCTBN::params;
+/// use reCTBN::process::{ctbn::CtbnNetwork, NetworkProcess, NetworkProcessState};
+/// use reCTBN::sampling::{ForwardSampler, Sampler, Sample};
 /// use ndarray::*;
+/// use std::collections::BTreeSet;
 ///
 /// //Create the domain for a discrete node
 /// let mut domain = BTreeSet::new();
@@ -98,16 +99,16 @@ pub trait Sampler: Iterator<Item = Sample> {
 ///  }
 ///
 /// // Define an initial state for the ctbn (X1 = 0, X2 = 0)
-/// let s0: NetworkProcessState = vec![StateType::Discrete(0), StateType::Discrete(0)];
+/// let s0: NetworkProcessState = vec![params::StateType::Discrete(0), params::StateType::Discrete(0)];
 ///
 ///
 /// //initialize the Forward Sampler
 ///
-///  let mut sampler = ForwardSampler::new(net, Some(1994), Some(s0.clone()))
+///  let mut sampler = ForwardSampler::new(&net, Some(1994), Some(s0.clone()));
 ///
 ///  //The first output of the iterator will be t=0 and state=s0
-///  let sample_t0 = sampler.next()
-///  assert_eq!(0.0, sample_t0.t)
+///  let sample_t0 = sampler.next().unwrap();
+///  assert_eq!(0.0, sample_t0.t);
 ///  assert_eq!(s0, sample_t0.state);
 /// 
 ///```
