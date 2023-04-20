@@ -43,13 +43,35 @@ pub trait RewardFunction: Sync {
     fn initialize_from_network_process<T: process::NetworkProcess>(p: &T) -> Self;
 }
 
+/// The trait RewardEvaluation descibe the methods that all reward evaluation functors must satisfy.
 pub trait RewardEvaluation {
+    /// Evaluate the reward_function for all the possible configurations
+    ///
+    /// # Arguments
+    ///
+    /// * `network_process`: a `NetworkProcess` instance.
+    /// * `reward_function`: the reward functin used over the network_process
+    ///
+    /// # Return
+    ///
+    /// * Return the reward for all the possible configurations of `network_process`.
     fn evaluate_state_space<N: process::NetworkProcess, R: RewardFunction>(
         &self,
         network_process: &N,
         reward_function: &R,
     ) -> HashMap<process::NetworkProcessState, f64>;
 
+    /// Evaluate the reward_function for a single state
+    ///
+    /// # Arguments
+    ///
+    /// * `network_process`: a `NetworkProcess` instance.
+    /// * `reward_function`: the reward functin used over the network_process
+    /// * `state`: specific configuration of the `network_process`.
+    ///
+    /// # Return
+    ///
+    /// * Return the reward for the specific instance as an `f64` value.
     fn evaluate_state<N: process::NetworkProcess, R: RewardFunction>(
         &self,
         network_process: &N,
