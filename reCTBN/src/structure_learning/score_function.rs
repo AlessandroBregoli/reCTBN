@@ -7,7 +7,20 @@ use statrs::function::gamma;
 
 use crate::{parameter_learning, params, process, tools};
 
+/// It defines the required methods for a decomposable ScoreFunction functor over a `NetworkProcess`
 pub trait ScoreFunction: Sync {
+    /// Compute the score function for a node its parentset given a dataset.
+    /// # Arguments
+    ///
+    /// * `net`: `NetworkProcess` object.
+    /// * `node`: Node target for the decomposable score.
+    /// * `parent_set`: parentset of the `node`.
+    /// * `dataset`: instantiation of the `struct tools::Dataset` containing the
+    ///              observations used to compute the score.
+    ///
+    /// # Return
+    ///
+    /// * A `float` representing the score of the node given the dataset.
     fn call<T>(
         &self,
         net: &T,
@@ -19,12 +32,19 @@ pub trait ScoreFunction: Sync {
         T: process::NetworkProcess;
 }
 
+/// LogLikelihood for a `NetworkProcess`
 pub struct LogLikelihood {
     alpha: usize,
     tau: f64,
 }
 
 impl LogLikelihood {
+    /// Create a `struct LogLikelihood`
+    ///
+    /// # Arguments
+    ///
+    /// * `alpha`: pseudo count (immaginary  number of transitions)
+    /// * `tau`: pseudo residence time (immaginary residence time)
     pub fn new(alpha: usize, tau: f64) -> LogLikelihood {
         //Tau must be >=0.0
         if tau < 0.0 {
@@ -106,11 +126,18 @@ impl ScoreFunction for LogLikelihood {
     }
 }
 
+/// BIC for a `train NetworkProcess`
 pub struct BIC {
     ll: LogLikelihood,
 }
 
 impl BIC {
+    /// Create a `struct BIC`
+    ///
+    /// # Arguments
+    ///
+    /// * `alpha`: pseudo count (immaginary  number of transitions)
+    /// * `tau`: pseudo residence time (immaginary residence time)
     pub fn new(alpha: usize, tau: f64) -> BIC {
         BIC {
             ll: LogLikelihood::new(alpha, tau),
