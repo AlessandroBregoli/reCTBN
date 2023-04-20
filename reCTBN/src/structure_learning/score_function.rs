@@ -6,8 +6,22 @@ use ndarray::prelude::*;
 use statrs::function::gamma;
 
 use crate::{parameter_learning, params, process, tools};
+use log::debug;
 
+/// It defines the required methods for a decomposable ScoreFunction functor over a `NetworkProcess`
 pub trait ScoreFunction: Sync {
+    /// Compute the score function for a node its parentset given a dataset.
+    /// # Arguments
+    ///
+    /// * `net`: `NetworkProcess` object.
+    /// * `node`: Node target for the decomposable score.
+    /// * `parent_set`: parentset of the `node`.
+    /// * `dataset`: instantiation of the `struct tools::Dataset` containing the
+    ///              observations used to compute the score.
+    ///
+    /// # Return
+    ///
+    /// * A `float` representing the score of the node given the dataset.
     fn call<T>(
         &self,
         net: &T,
@@ -19,12 +33,19 @@ pub trait ScoreFunction: Sync {
         T: process::NetworkProcess;
 }
 
+/// LogLikelihood for a `NetworkProcess`
 pub struct LogLikelihood {
     alpha: usize,
     tau: f64,
 }
 
 impl LogLikelihood {
+    /// Create a `struct LogLikelihood`
+    ///
+    /// # Arguments
+    ///
+    /// * `alpha`: pseudo count (immaginary  number of transitions)
+    /// * `tau`: pseudo residence time (immaginary residence time)
     pub fn new(alpha: usize, tau: f64) -> LogLikelihood {
         //Tau must be >=0.0
         if tau < 0.0 {
@@ -102,15 +123,27 @@ impl ScoreFunction for LogLikelihood {
     where
         T: process::NetworkProcess,
     {
-        self.compute_score(net, node, parent_set, dataset).0
+        let score = self.compute_score(net, node, parent_set, dataset).0;
+        debug!(
+            "Node: {} - Parentset: {:?} - score: {}",
+            node, parent_set, score
+        );
+        score
     }
 }
 
+/// BIC for a `train NetworkProcess`
 pub struct BIC {
     ll: LogLikelihood,
 }
 
 impl BIC {
+    /// Create a `struct BIC`
+    ///
+    /// # Arguments
+    ///
+    /// * `alpha`: pseudo count (immaginary  number of transitions)
+    /// * `tau`: pseudo residence time (immaginary residence time)
     pub fn new(alpha: usize, tau: f64) -> BIC {
         BIC {
             ll: LogLikelihood::new(alpha, tau),
@@ -141,6 +174,11 @@ impl ScoreFunction for BIC {
             .map(|x| x.get_time().len() - 1)
             .sum();
         //Compute BIC
-        ll - f64::ln(sample_size as f64) / 2.0 * n_parameters as f64
+        let score = ll - f64::ln(sample_size as f64) / 2.0 * n_parameters as f64;
+        debug!(
+            "Node: {} - Parentset: {:?} - score: {}",
+            node, parent_set, score
+        );
+        score
     }
 }
