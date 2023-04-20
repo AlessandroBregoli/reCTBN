@@ -11,7 +11,7 @@ use std::usize;
 use super::hypothesis_test::*;
 use crate::parameter_learning::ParameterLearning;
 use crate::process;
-use crate::structure_learning::StructureLearningAlgorithm;
+use crate::structure_learning::StructuralLearningAlgorithm;
 use crate::tools::Dataset;
 
 pub struct Cache<'a, P: ParameterLearning> {
@@ -98,7 +98,7 @@ impl<'a, P: ParameterLearning> Cache<'a, P> {
 /// # use reCTBN::process::NetworkProcess;
 /// # use reCTBN::process::ctbn::CtbnNetwork;
 /// use reCTBN::parameter_learning::BayesianApproach;
-/// use reCTBN::structure_learning::StructureLearningAlgorithm;
+/// use reCTBN::structure_learning::StructuralLearningAlgorithm;
 /// use reCTBN::structure_learning::hypothesis_test::{F, ChiSquare};
 /// use reCTBN::structure_learning::constraint_based_algorithm::CTPC;
 /// #
@@ -279,7 +279,7 @@ impl<P: ParameterLearning> CTPC<P> {
     }
 }
 
-impl<P: ParameterLearning> StructureLearningAlgorithm for CTPC<P> {
+impl<P: ParameterLearning> StructuralLearningAlgorithm for CTPC<P> {
     fn fit_transform<T>(&self, net: T, dataset: &Dataset) -> T
     where
         T: process::NetworkProcess,

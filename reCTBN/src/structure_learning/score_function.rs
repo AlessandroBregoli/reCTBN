@@ -6,6 +6,7 @@ use ndarray::prelude::*;
 use statrs::function::gamma;
 
 use crate::{parameter_learning, params, process, tools};
+use log::debug;
 
 /// It defines the required methods for a decomposable ScoreFunction functor over a `NetworkProcess`
 pub trait ScoreFunction: Sync {
@@ -122,7 +123,12 @@ impl ScoreFunction for LogLikelihood {
     where
         T: process::NetworkProcess,
     {
-        self.compute_score(net, node, parent_set, dataset).0
+        let score = self.compute_score(net, node, parent_set, dataset).0;
+        debug!(
+            "Node: {} - Parentset: {:?} - score: {}",
+            node, parent_set, score
+        );
+        score
     }
 }
 
@@ -168,6 +174,11 @@ impl ScoreFunction for BIC {
             .map(|x| x.get_time().len() - 1)
             .sum();
         //Compute BIC
-        ll - f64::ln(sample_size as f64) / 2.0 * n_parameters as f64
+        let score = ll - f64::ln(sample_size as f64) / 2.0 * n_parameters as f64;
+        debug!(
+            "Node: {} - Parentset: {:?} - score: {}",
+            node, parent_set, score
+        );
+        score
     }
 }
