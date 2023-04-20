@@ -19,15 +19,14 @@ pub struct Sample {
     pub state: NetworkProcessState,
 }
 
-/// The `trait Sampler` is an iterator that generate a sequence of `Sample`. 
+/// The `trait Sampler` is an iterator that generate a sequence of `Sample`.
 pub trait Sampler: Iterator<Item = Sample> {
-
     /// Reset the Sampler to the initial state.
     fn reset(&mut self);
 }
 
 /// This structure implements the `Sampler` and allow to generate a sequence of `Sample`
-/// accordingly to *(Fan, Yu, and Christian R. Shelton. "Sampling for Approximate Inference in 
+/// accordingly to *(Fan, Yu, and Christian R. Shelton. "Sampling for Approximate Inference in
 /// Continuous Time Bayesian Networks." ISAIM. 2008.)*
 ///
 ///  # Attributes
@@ -110,7 +109,7 @@ pub trait Sampler: Iterator<Item = Sample> {
 ///  let sample_t0 = sampler.next().unwrap();
 ///  assert_eq!(0.0, sample_t0.t);
 ///  assert_eq!(s0, sample_t0.state);
-/// 
+///
 ///```
 pub struct ForwardSampler<'a, T>
 where
@@ -125,14 +124,13 @@ where
 }
 
 impl<'a, T: NetworkProcess> ForwardSampler<'a, T> {
-
     /// Constructur method for `ForwardSampler`
     ///
     /// # Arguments
     ///
     /// * `net` - A structure implementing the `NetworkProcess` trait
     /// * `seed` - Random seed used to make the trajectory generation reproducible
-    /// * `initial_state` - Initial state of the `NetworkProcess`. If none, an initial state will be 
+    /// * `initial_state` - Initial state of the `NetworkProcess`. If none, an initial state will be
     ///    sampled
     pub fn new(
         net: &'a T,
@@ -165,10 +163,10 @@ impl<'a, T: NetworkProcess> Iterator for ForwardSampler<'a, T> {
         // Set the variable to be returned (time and state)
         let ret_time = self.current_time.clone();
         let ret_state = self.current_state.clone();
-        
+
         //  All the operation stating from here are required to compute the time and state that
-        //  will be returned at the next call of this function. 
-        
+        //  will be returned at the next call of this function.
+
         //Check if there are any node without a next time to transition and sample it from an
         //exponential distribution governed by the main diagonal of the CIM.
         for (idx, val) in self.next_transitions.iter_mut().enumerate() {
@@ -188,7 +186,7 @@ impl<'a, T: NetworkProcess> Iterator for ForwardSampler<'a, T> {
                 );
             }
         }
-        
+
         //The next node to transition will be the node with the smallest value in next_transitions
         let next_node_transition = self
             .next_transitions
@@ -199,7 +197,7 @@ impl<'a, T: NetworkProcess> Iterator for ForwardSampler<'a, T> {
             .0;
 
         self.current_time = self.next_transitions[next_node_transition].unwrap().clone();
-        
+
         // Generate the new  state of the node from a multinomial distribution governed by the off
         // diagonal parameters of the CIM.
         self.current_state[next_node_transition] = self

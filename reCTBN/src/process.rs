@@ -32,7 +32,7 @@ pub trait NetworkProcess: Sync {
     ///
     ///  # Return
     ///
-    ///  * A `Result` containing the `node_idx` automatically assigned if everything is fine, 
+    ///  * A `Result` containing the `node_idx` automatically assigned if everything is fine,
     ///    or a `NetworkError` if something went wrong.
     fn add_node(&mut self, n: params::Params) -> Result<usize, NetworkError>;
 

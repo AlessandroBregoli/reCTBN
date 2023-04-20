@@ -83,7 +83,7 @@ impl CtbnNetwork {
         // Get the domanin (cardinality) for each node in the network
         let variables_domain =
             Array1::from_iter(self.nodes.iter().map(|x| x.get_reserved_space_as_parent()));
-        
+
         // The state space size for a ctmp generated from a ctbn is equal to the product of the
         // caridalities of each node in the ctbn.
         let state_space = variables_domain.product();
@@ -125,7 +125,7 @@ impl CtbnNetwork {
                 }
             }
         }
-    
+
         let mut amalgamated_param = DiscreteStatesContinousTimeParams::new(
             "ctmp".to_string(),
             BTreeSet::from_iter((0..state_space).map(|x| x.to_string())),
@@ -139,7 +139,7 @@ impl CtbnNetwork {
             .unwrap();
         return ctmp;
     }
-    
+
     /// Compute the state for each node given an index and a set of ordered variables
     ///
     /// # Arguments

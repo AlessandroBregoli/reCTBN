@@ -95,7 +95,6 @@ pub fn sufficient_statistics<T: process::NetworkProcess>(
     return (M, T);
 }
 
-
 /// Maximum Likelihood Estimation method for learning the parameters given a dataset.
 ///
 /// # Example
@@ -157,7 +156,7 @@ pub fn sufficient_statistics<T: process::NetworkProcess>(
 ///
 /// //Generate a synthetic dataset from net
 ///  let data = trajectory_generator(&net, 100, 100.0, Some(6347747169756259));
-/// 
+///
 /// //Initialize the `struct MLE`
 ///  let pl = MLE{};
 ///
@@ -188,8 +187,10 @@ impl ParameterLearning for MLE {
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
     ) -> Params {
-
-        debug!("Learning params for node {} with parent set {:?} with MLE", node, parent_set);
+        debug!(
+            "Learning params for node {} with parent set {:?} with MLE",
+            node, parent_set
+        );
         //Use parent_set from parameter if present. Otherwise use parent_set from network.
         let parent_set = match parent_set {
             Some(p) => p,
@@ -224,10 +225,9 @@ impl ParameterLearning for MLE {
     }
 }
 
-
 /// Bayesian Approach for learning the parameters given a dataset.
 ///
-/// # Arguments 
+/// # Arguments
 ///
 /// `alpha`: hyperparameter for the priori over the number of transitions.
 /// `tau`: hyperparameter for the priori over the residence time.
@@ -292,7 +292,7 @@ impl ParameterLearning for MLE {
 ///
 /// //Generate a synthetic dataset from net
 ///  let data = trajectory_generator(&net, 100, 100.0, Some(6347747169756259));
-/// 
+///
 /// //Initialize the `struct BayesianApproach`
 ///  let pl = BayesianApproach{alpha: 1, tau: 1.0};
 ///
@@ -326,7 +326,10 @@ impl ParameterLearning for BayesianApproach {
         node: usize,
         parent_set: Option<BTreeSet<usize>>,
     ) -> Params {
-        debug!("Learning params for node {} with parent set {:?} with BayesianApproach", node, parent_set);
+        debug!(
+            "Learning params for node {} with parent set {:?} with BayesianApproach",
+            node, parent_set
+        );
         //Use parent_set from parameter if present. Otherwise use parent_set from network.
         let parent_set = match parent_set {
             Some(p) => p,
