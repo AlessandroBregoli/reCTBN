@@ -315,7 +315,12 @@ impl ParameterLearning for MLE {
 /// ```
 pub struct BayesianApproach {
     pub alpha: usize,
-    pub tau: f64,
+    pub tau: Tau,
+}
+
+pub enum Tau {
+    Constant(f64),
+    Adaptive,
 }
 
 impl ParameterLearning for BayesianApproach {
@@ -339,13 +344,31 @@ impl ParameterLearning for BayesianApproach {
         let (M, T) = sufficient_statistics(net, dataset, node.clone(), &parent_set);
 
         let alpha: f64 = self.alpha as f64 / M.shape()[0] as f64;
-        let tau: f64 = self.tau as f64 / M.shape()[0] as f64;
+        let tau: Array1<f64> = match self.tau {
+            Tau::Constant(tau) => {
+                let tau = tau as f64 / T.shape()[0] as f64;
+                Array1::from_iter((0..T.shape()[1]).map(|_| tau))
+            }
+            Tau::Adaptive => {
+                let mle = MLE {};
+                let params = mle.fit(net, dataset, node, Some(BTreeSet::new()));
+                match params {
+                    Params::DiscreteStatesContinousTime(params) => params
+                        .get_cim()
+                        .as_ref()
+                        .unwrap()
+                        .index_axis(Axis(0), 0)
+                        .into_diag()
+                        .mapv(|x| -1.0 / x),
+                }
+            }
+        };
 
         //Compute the CIM as M[i,x,y]/T[i,x]
         let mut CIM: Array3<f64> = Array::zeros((M.shape()[0], M.shape()[1], M.shape()[2]));
         CIM.axis_iter_mut(Axis(2))
             .zip(M.mapv(|x| x as f64).axis_iter(Axis(2)))
-            .for_each(|(mut C, m)| C.assign(&(&m.mapv(|y| y + alpha) / &T.mapv(|y| y + tau))));
+            .for_each(|(mut C, m)| C.assign(&(&m.mapv(|y| y + alpha) / (&T + &tau))));
 
         CIM.outer_iter_mut().for_each(|mut C| {
             C.diag_mut().fill(0.0);

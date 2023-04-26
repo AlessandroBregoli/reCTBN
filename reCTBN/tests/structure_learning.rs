@@ -5,6 +5,7 @@ use std::collections::BTreeSet;
 
 use ndarray::{arr1, arr2, arr3};
 use reCTBN::parameter_learning::BayesianApproach;
+use reCTBN::parameter_learning::Tau;
 use reCTBN::params;
 use reCTBN::process::ctbn::*;
 use reCTBN::process::NetworkProcess;
@@ -507,7 +508,10 @@ pub fn chi_square_call() {
     let N2: usize = 1;
     let N1: usize = 0;
     let mut separation_set = BTreeSet::new();
-    let parameter_learning = BayesianApproach { alpha: 1, tau: 1.0 };
+    let parameter_learning = BayesianApproach {
+        alpha: 1,
+        tau: Tau::Constant(1.0),
+    };
     let mut cache = Cache::new(&parameter_learning);
     let chi_sq = ChiSquare::new(1e-4);
 
@@ -527,7 +531,10 @@ pub fn f_call() {
     let N2: usize = 1;
     let N1: usize = 0;
     let mut separation_set = BTreeSet::new();
-    let parameter_learning = BayesianApproach { alpha: 1, tau: 1.0 };
+    let parameter_learning = BayesianApproach {
+        alpha: 1,
+        tau: Tau::Constant(1.0),
+    };
     let mut cache = Cache::new(&parameter_learning);
     let f = F::new(1e-6);
 
@@ -544,7 +551,10 @@ pub fn f_call() {
 pub fn learn_ternary_net_2_nodes_ctpc() {
     let f = F::new(1e-6);
     let chi_sq = ChiSquare::new(1e-4);
-    let parameter_learning = BayesianApproach { alpha: 1, tau: 1.0 };
+    let parameter_learning = BayesianApproach {
+        alpha: 1,
+        tau: Tau::Constant(1.0),
+    };
     let ctpc = CTPC::new(parameter_learning, f, chi_sq);
     learn_ternary_net_2_nodes(ctpc);
 }
@@ -553,7 +563,10 @@ pub fn learn_ternary_net_2_nodes_ctpc() {
 pub fn learn_ternary_net_2_nodes_ctpc_gen() {
     let f = F::new(1e-6);
     let chi_sq = ChiSquare::new(1e-4);
-    let parameter_learning = BayesianApproach { alpha: 1, tau: 1.0 };
+    let parameter_learning = BayesianApproach {
+        alpha: 1,
+        tau: Tau::Constant(1.0),
+    };
     let ctpc = CTPC::new(parameter_learning, f, chi_sq);
     learn_ternary_net_2_nodes_gen(ctpc);
 }
@@ -562,7 +575,10 @@ pub fn learn_ternary_net_2_nodes_ctpc_gen() {
 fn learn_mixed_discrete_net_3_nodes_ctpc() {
     let f = F::new(1e-6);
     let chi_sq = ChiSquare::new(1e-4);
-    let parameter_learning = BayesianApproach { alpha: 1, tau: 1.0 };
+    let parameter_learning = BayesianApproach {
+        alpha: 1,
+        tau: Tau::Constant(1.0),
+    };
     let ctpc = CTPC::new(parameter_learning, f, chi_sq);
     learn_mixed_discrete_net_3_nodes(ctpc);
 }
@@ -571,7 +587,10 @@ fn learn_mixed_discrete_net_3_nodes_ctpc() {
 fn learn_mixed_discrete_net_3_nodes_ctpc_gen() {
     let f = F::new(1e-6);
     let chi_sq = ChiSquare::new(1e-4);
-    let parameter_learning = BayesianApproach { alpha: 1, tau: 1.0 };
+    let parameter_learning = BayesianApproach {
+        alpha: 1,
+        tau: Tau::Constant(1.0),
+    };
     let ctpc = CTPC::new(parameter_learning, f, chi_sq);
     learn_mixed_discrete_net_3_nodes_gen(ctpc);
 }

@@ -2,11 +2,11 @@
 
 mod utils;
 use ndarray::arr3;
-use reCTBN::process::ctbn::*;
-use reCTBN::process::NetworkProcess;
 use reCTBN::parameter_learning::*;
 use reCTBN::params;
 use reCTBN::params::Params::DiscreteStatesContinousTime;
+use reCTBN::process::ctbn::*;
+use reCTBN::process::NetworkProcess;
 use reCTBN::tools::*;
 use utils::*;
 
@@ -34,14 +34,8 @@ fn learn_binary_cim<T: ParameterLearning>(pl: T) {
             assert_eq!(
                 Ok(()),
                 param.set_cim(arr3(&[
-                    [
-                        [-1.0, 1.0],
-                        [4.0, -4.0]
-                    ],
-                    [
-                        [-6.0, 6.0],
-                        [2.0, -2.0]
-                    ],
+                    [[-1.0, 1.0], [4.0, -4.0]],
+                    [[-6.0, 6.0], [2.0, -2.0]],
                 ]))
             );
         }
@@ -53,16 +47,7 @@ fn learn_binary_cim<T: ParameterLearning>(pl: T) {
     };
     assert_eq!(p.get_cim().as_ref().unwrap().shape(), [2, 2, 2]);
     assert!(p.get_cim().as_ref().unwrap().abs_diff_eq(
-        &arr3(&[
-            [
-                [-1.0, 1.0],
-                [4.0, -4.0]
-            ],
-            [
-                [-6.0, 6.0],
-                [2.0, -2.0]
-            ],
-        ]),
+        &arr3(&[[[-1.0, 1.0], [4.0, -4.0]], [[-6.0, 6.0], [2.0, -2.0]],]),
         0.1
     ));
 }
@@ -70,15 +55,14 @@ fn learn_binary_cim<T: ParameterLearning>(pl: T) {
 fn generate_nodes(
     net: &mut CtbnNetwork,
     nodes_cardinality: usize,
-    nodes_domain_cardinality: usize
+    nodes_domain_cardinality: usize,
 ) {
     for node_label in 0..nodes_cardinality {
-        net.add_node(
-            generate_discrete_time_continous_node(
-                node_label.to_string(),
-                nodes_domain_cardinality,
-            )
-        ).unwrap();
+        net.add_node(generate_discrete_time_continous_node(
+            node_label.to_string(),
+            nodes_domain_cardinality,
+        ))
+        .unwrap();
     }
 }
 
@@ -88,10 +72,8 @@ fn learn_binary_cim_gen<T: ParameterLearning>(pl: T) {
 
     net.add_edge(0, 1);
 
-    let mut cim_generator: UniformParametersGenerator = RandomParametersGenerator::new(
-        1.0..6.0,
-        Some(6813071588535822)
-    );
+    let mut cim_generator: UniformParametersGenerator =
+        RandomParametersGenerator::new(1.0..6.0, Some(6813071588535822));
     cim_generator.generate_parameters(&mut net);
 
     let p_gen = match net.get_node(1) {
@@ -107,12 +89,11 @@ fn learn_binary_cim_gen<T: ParameterLearning>(pl: T) {
         p_tj.get_cim().as_ref().unwrap().shape(),
         p_gen.get_cim().as_ref().unwrap().shape()
     );
-    assert!(
-        p_tj.get_cim().as_ref().unwrap().abs_diff_eq(
-            &p_gen.get_cim().as_ref().unwrap(),
-            0.1
-        )
-    );
+    assert!(p_tj
+        .get_cim()
+        .as_ref()
+        .unwrap()
+        .abs_diff_eq(&p_gen.get_cim().as_ref().unwrap(), 0.1));
 }
 
 #[test]
@@ -129,13 +110,19 @@ fn learn_binary_cim_MLE_gen() {
 
 #[test]
 fn learn_binary_cim_BA() {
-    let ba = BayesianApproach { alpha: 1, tau: 1.0 };
+    let ba = BayesianApproach {
+        alpha: 1,
+        tau: Tau::Constant(1.0),
+    };
     learn_binary_cim(ba);
 }
 
 #[test]
 fn learn_binary_cim_BA_gen() {
-    let ba = BayesianApproach { alpha: 1, tau: 1.0 };
+    let ba = BayesianApproach {
+        alpha: 1,
+        tau: Tau::Constant(1.0),
+    };
     learn_binary_cim_gen(ba);
 }
 
@@ -153,13 +140,11 @@ fn learn_ternary_cim<T: ParameterLearning>(pl: T) {
         params::Params::DiscreteStatesContinousTime(param) => {
             assert_eq!(
                 Ok(()),
-                param.set_cim(arr3(&[
-                    [
-                        [-3.0, 2.0, 1.0],
-                        [1.5, -2.0, 0.5],
-                        [0.4, 0.6, -1.0]
-                    ],
-                ]))
+                param.set_cim(arr3(&[[
+                    [-3.0, 2.0, 1.0],
+                    [1.5, -2.0, 0.5],
+                    [0.4, 0.6, -1.0]
+                ],]))
             );
         }
     }
@@ -169,21 +154,9 @@ fn learn_ternary_cim<T: ParameterLearning>(pl: T) {
             assert_eq!(
                 Ok(()),
                 param.set_cim(arr3(&[
-                    [
-                        [-1.0, 0.5, 0.5],
-                        [3.0, -4.0, 1.0],
-                        [0.9, 0.1, -1.0]
-                    ],
-                    [
-                        [-6.0, 2.0, 4.0],
-                        [1.5, -2.0, 0.5],
-                        [3.0, 1.0, -4.0]
-                    ],
-                    [
-                        [-1.0, 0.1, 0.9],
-                        [2.0, -2.5, 0.5],
-                        [0.9, 0.1, -1.0]
-                    ],
+                    [[-1.0, 0.5, 0.5], [3.0, -4.0, 1.0], [0.9, 0.1, -1.0]],
+                    [[-6.0, 2.0, 4.0], [1.5, -2.0, 0.5], [3.0, 1.0, -4.0]],
+                    [[-1.0, 0.1, 0.9], [2.0, -2.5, 0.5], [0.9, 0.1, -1.0]],
                 ]))
             );
         }
@@ -196,21 +169,9 @@ fn learn_ternary_cim<T: ParameterLearning>(pl: T) {
     assert_eq!(p.get_cim().as_ref().unwrap().shape(), [3, 3, 3]);
     assert!(p.get_cim().as_ref().unwrap().abs_diff_eq(
         &arr3(&[
-            [
-                [-1.0, 0.5, 0.5],
-                [3.0, -4.0, 1.0],
-                [0.9, 0.1, -1.0]
-            ],
-            [
-                [-6.0, 2.0, 4.0],
-                [1.5, -2.0, 0.5],
-                [3.0, 1.0, -4.0]
-            ],
-            [
-                [-1.0, 0.1, 0.9],
-                [2.0, -2.5, 0.5],
-                [0.9, 0.1, -1.0]
-            ],
+            [[-1.0, 0.5, 0.5], [3.0, -4.0, 1.0], [0.9, 0.1, -1.0]],
+            [[-6.0, 2.0, 4.0], [1.5, -2.0, 0.5], [3.0, 1.0, -4.0]],
+            [[-1.0, 0.1, 0.9], [2.0, -2.5, 0.5], [0.9, 0.1, -1.0]],
         ]),
         0.1
     ));
@@ -222,10 +183,8 @@ fn learn_ternary_cim_gen<T: ParameterLearning>(pl: T) {
 
     net.add_edge(0, 1);
 
-    let mut cim_generator: UniformParametersGenerator = RandomParametersGenerator::new(
-        4.0..6.0,
-        Some(6813071588535822)
-    );
+    let mut cim_generator: UniformParametersGenerator =
+        RandomParametersGenerator::new(4.0..6.0, Some(6813071588535822));
     cim_generator.generate_parameters(&mut net);
 
     let p_gen = match net.get_node(1) {
@@ -241,12 +200,11 @@ fn learn_ternary_cim_gen<T: ParameterLearning>(pl: T) {
         p_tj.get_cim().as_ref().unwrap().shape(),
         p_gen.get_cim().as_ref().unwrap().shape()
     );
-    assert!(
-        p_tj.get_cim().as_ref().unwrap().abs_diff_eq(
-            &p_gen.get_cim().as_ref().unwrap(),
-            0.1
-        )
-    );
+    assert!(p_tj
+        .get_cim()
+        .as_ref()
+        .unwrap()
+        .abs_diff_eq(&p_gen.get_cim().as_ref().unwrap(), 0.1));
 }
 
 #[test]
@@ -263,13 +221,19 @@ fn learn_ternary_cim_MLE_gen() {
 
 #[test]
 fn learn_ternary_cim_BA() {
-    let ba = BayesianApproach { alpha: 1, tau: 1.0 };
+    let ba = BayesianApproach {
+        alpha: 1,
+        tau: Tau::Constant(1.0),
+    };
     learn_ternary_cim(ba);
 }
 
 #[test]
 fn learn_ternary_cim_BA_gen() {
-    let ba = BayesianApproach { alpha: 1, tau: 1.0 };
+    let ba = BayesianApproach {
+        alpha: 1,
+        tau: Tau::Constant(1.0),
+    };
     learn_ternary_cim_gen(ba);
 }
 
@@ -287,13 +251,11 @@ fn learn_ternary_cim_no_parents<T: ParameterLearning>(pl: T) {
         params::Params::DiscreteStatesContinousTime(param) => {
             assert_eq!(
                 Ok(()),
-                param.set_cim(arr3(&[
-                    [
-                        [-3.0, 2.0, 1.0],
-                        [1.5, -2.0, 0.5],
-                        [0.4, 0.6, -1.0]
-                    ]
-                ]))
+                param.set_cim(arr3(&[[
+                    [-3.0, 2.0, 1.0],
+                    [1.5, -2.0, 0.5],
+                    [0.4, 0.6, -1.0]
+                ]]))
             );
         }
     }
@@ -303,21 +265,9 @@ fn learn_ternary_cim_no_parents<T: ParameterLearning>(pl: T) {
             assert_eq!(
                 Ok(()),
                 param.set_cim(arr3(&[
-                    [
-                        [-1.0, 0.5, 0.5],
-                        [3.0, -4.0, 1.0],
-                        [0.9, 0.1, -1.0]
-                    ],
-                    [
-                        [-6.0, 2.0, 4.0],
-                        [1.5, -2.0, 0.5],
-                        [3.0, 1.0, -4.0]
-                    ],
-                    [
-                        [-1.0, 0.1, 0.9],
-                        [2.0, -2.5, 0.5],
-                        [0.9, 0.1, -1.0]
-                    ],
+                    [[-1.0, 0.5, 0.5], [3.0, -4.0, 1.0], [0.9, 0.1, -1.0]],
+                    [[-6.0, 2.0, 4.0], [1.5, -2.0, 0.5], [3.0, 1.0, -4.0]],
+                    [[-1.0, 0.1, 0.9], [2.0, -2.5, 0.5], [0.9, 0.1, -1.0]],
                 ]))
             );
         }
@@ -329,13 +279,7 @@ fn learn_ternary_cim_no_parents<T: ParameterLearning>(pl: T) {
     };
     assert_eq!(p.get_cim().as_ref().unwrap().shape(), [1, 3, 3]);
     assert!(p.get_cim().as_ref().unwrap().abs_diff_eq(
-        &arr3(&[
-            [
-                [-3.0, 2.0, 1.0],
-                [1.5, -2.0, 0.5],
-                [0.4, 0.6, -1.0]
-            ],
-        ]),
+        &arr3(&[[[-3.0, 2.0, 1.0], [1.5, -2.0, 0.5], [0.4, 0.6, -1.0]],]),
         0.1
     ));
 }
@@ -346,10 +290,8 @@ fn learn_ternary_cim_no_parents_gen<T: ParameterLearning>(pl: T) {
 
     net.add_edge(0, 1);
 
-    let mut cim_generator: UniformParametersGenerator = RandomParametersGenerator::new(
-        1.0..6.0,
-        Some(6813071588535822)
-    );
+    let mut cim_generator: UniformParametersGenerator =
+        RandomParametersGenerator::new(1.0..6.0, Some(6813071588535822));
     cim_generator.generate_parameters(&mut net);
 
     let p_gen = match net.get_node(0) {
@@ -365,12 +307,11 @@ fn learn_ternary_cim_no_parents_gen<T: ParameterLearning>(pl: T) {
         p_tj.get_cim().as_ref().unwrap().shape(),
         p_gen.get_cim().as_ref().unwrap().shape()
     );
-    assert!(
-        p_tj.get_cim().as_ref().unwrap().abs_diff_eq(
-            &p_gen.get_cim().as_ref().unwrap(),
-            0.1
-        )
-    );
+    assert!(p_tj
+        .get_cim()
+        .as_ref()
+        .unwrap()
+        .abs_diff_eq(&p_gen.get_cim().as_ref().unwrap(), 0.1));
 }
 
 #[test]
@@ -387,13 +328,19 @@ fn learn_ternary_cim_no_parents_MLE_gen() {
 
 #[test]
 fn learn_ternary_cim_no_parents_BA() {
-    let ba = BayesianApproach { alpha: 1, tau: 1.0 };
+    let ba = BayesianApproach {
+        alpha: 1,
+        tau: Tau::Constant(1.0),
+    };
     learn_ternary_cim_no_parents(ba);
 }
 
 #[test]
 fn learn_ternary_cim_no_parents_BA_gen() {
-    let ba = BayesianApproach { alpha: 1, tau: 1.0 };
+    let ba = BayesianApproach {
+        alpha: 1,
+        tau: Tau::Constant(1.0),
+    };
     learn_ternary_cim_no_parents_gen(ba);
 }
 
@@ -417,13 +364,11 @@ fn learn_mixed_discrete_cim<T: ParameterLearning>(pl: T) {
         params::Params::DiscreteStatesContinousTime(param) => {
             assert_eq!(
                 Ok(()),
-                param.set_cim(arr3(&[
-                    [
-                        [-3.0, 2.0, 1.0],
-                        [1.5, -2.0, 0.5],
-                        [0.4, 0.6, -1.0]
-                    ],
-                ]))
+                param.set_cim(arr3(&[[
+                    [-3.0, 2.0, 1.0],
+                    [1.5, -2.0, 0.5],
+                    [0.4, 0.6, -1.0]
+                ],]))
             );
         }
     }
@@ -433,21 +378,9 @@ fn learn_mixed_discrete_cim<T: ParameterLearning>(pl: T) {
             assert_eq!(
                 Ok(()),
                 param.set_cim(arr3(&[
-                    [
-                        [-1.0, 0.5, 0.5],
-                        [3.0, -4.0, 1.0],
-                        [0.9, 0.1, -1.0]
-                    ],
-                    [
-                        [-6.0, 2.0, 4.0],
-                        [1.5, -2.0, 0.5],
-                        [3.0, 1.0, -4.0]
-                    ],
-                    [
-                        [-1.0, 0.1, 0.9],
-                        [2.0, -2.5, 0.5],
-                        [0.9, 0.1, -1.0]
-                    ],
+                    [[-1.0, 0.5, 0.5], [3.0, -4.0, 1.0], [0.9, 0.1, -1.0]],
+                    [[-6.0, 2.0, 4.0], [1.5, -2.0, 0.5], [3.0, 1.0, -4.0]],
+                    [[-1.0, 0.1, 0.9], [2.0, -2.5, 0.5], [0.9, 0.1, -1.0]],
                 ]))
             );
         }
@@ -586,20 +519,14 @@ fn learn_mixed_discrete_cim<T: ParameterLearning>(pl: T) {
 fn learn_mixed_discrete_cim_gen<T: ParameterLearning>(pl: T) {
     let mut net = CtbnNetwork::new();
     generate_nodes(&mut net, 2, 3);
-    net.add_node(
-        generate_discrete_time_continous_node(
-            String::from("3"),
-            4
-        )
-    ).unwrap();
+    net.add_node(generate_discrete_time_continous_node(String::from("3"), 4))
+        .unwrap();
     net.add_edge(0, 1);
     net.add_edge(0, 2);
     net.add_edge(1, 2);
 
-    let mut cim_generator: UniformParametersGenerator = RandomParametersGenerator::new(
-        1.0..8.0,
-        Some(6813071588535822)
-    );
+    let mut cim_generator: UniformParametersGenerator =
+        RandomParametersGenerator::new(1.0..8.0, Some(6813071588535822));
     cim_generator.generate_parameters(&mut net);
 
     let p_gen = match net.get_node(2) {
@@ -615,12 +542,11 @@ fn learn_mixed_discrete_cim_gen<T: ParameterLearning>(pl: T) {
         p_tj.get_cim().as_ref().unwrap().shape(),
         p_gen.get_cim().as_ref().unwrap().shape()
     );
-    assert!(
-        p_tj.get_cim().as_ref().unwrap().abs_diff_eq(
-            &p_gen.get_cim().as_ref().unwrap(),
-            0.2
-        )
-    );
+    assert!(p_tj
+        .get_cim()
+        .as_ref()
+        .unwrap()
+        .abs_diff_eq(&p_gen.get_cim().as_ref().unwrap(), 0.2));
 }
 
 #[test]
@@ -637,12 +563,18 @@ fn learn_mixed_discrete_cim_MLE_gen() {
 
 #[test]
 fn learn_mixed_discrete_cim_BA() {
-    let ba = BayesianApproach { alpha: 1, tau: 1.0 };
+    let ba = BayesianApproach {
+        alpha: 1,
+        tau: Tau::Constant(1.0),
+    };
     learn_mixed_discrete_cim(ba);
 }
 
 #[test]
 fn learn_mixed_discrete_cim_BA_gen() {
-    let ba = BayesianApproach { alpha: 1, tau: 1.0 };
+    let ba = BayesianApproach {
+        alpha: 1,
+        tau: Tau::Constant(1.0),
+    };
     learn_mixed_discrete_cim_gen(ba);
 }
