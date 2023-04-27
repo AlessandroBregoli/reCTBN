@@ -31,7 +31,7 @@ fn simple_score_test() {
 
     let dataset = Dataset::new(vec![trj]);
 
-    let ll = LogLikelihood::new(1, 1.0);
+    let ll = LogLikelihood::new(1, Tau::Constant(1.0));
 
     assert_abs_diff_eq!(
         0.04257,
@@ -50,7 +50,7 @@ fn simple_bic() {
     let trj = Trajectory::new(arr1(&[0.0, 0.1, 0.3]), arr2(&[[0], [1], [1]]));
 
     let dataset = Dataset::new(vec![trj]);
-    let bic = BIC::new(1, 1.0);
+    let bic = BIC::new(1, Tau::Constant(1.0));
 
     assert_abs_diff_eq!(
         -0.65058,
@@ -142,7 +142,7 @@ fn check_compatibility_between_dataset_and_network_gen<T: StructuralLearningAlgo
 #[test]
 #[should_panic]
 pub fn check_compatibility_between_dataset_and_network_hill_climbing() {
-    let ll = LogLikelihood::new(1, 1.0);
+    let ll = LogLikelihood::new(1, Tau::Constant(1.0));
     let hl = HillClimbing::new(ll, None);
     check_compatibility_between_dataset_and_network(hl);
 }
@@ -150,7 +150,7 @@ pub fn check_compatibility_between_dataset_and_network_hill_climbing() {
 #[test]
 #[should_panic]
 pub fn check_compatibility_between_dataset_and_network_hill_climbing_gen() {
-    let ll = LogLikelihood::new(1, 1.0);
+    let ll = LogLikelihood::new(1, Tau::Constant(1.0));
     let hl = HillClimbing::new(ll, None);
     check_compatibility_between_dataset_and_network_gen(hl);
 }
@@ -217,28 +217,28 @@ fn learn_ternary_net_2_nodes_gen<T: StructuralLearningAlgorithm>(sl: T) {
 
 #[test]
 pub fn learn_ternary_net_2_nodes_hill_climbing_ll() {
-    let ll = LogLikelihood::new(1, 1.0);
+    let ll = LogLikelihood::new(1, Tau::Constant(1.0));
     let hl = HillClimbing::new(ll, None);
     learn_ternary_net_2_nodes(hl);
 }
 
 #[test]
 pub fn learn_ternary_net_2_nodes_hill_climbing_ll_gen() {
-    let ll = LogLikelihood::new(1, 1.0);
+    let ll = LogLikelihood::new(1, Tau::Constant(1.0));
     let hl = HillClimbing::new(ll, None);
     learn_ternary_net_2_nodes_gen(hl);
 }
 
 #[test]
 pub fn learn_ternary_net_2_nodes_hill_climbing_bic() {
-    let bic = BIC::new(1, 1.0);
+    let bic = BIC::new(1, Tau::Constant(1.0));
     let hl = HillClimbing::new(bic, None);
     learn_ternary_net_2_nodes(hl);
 }
 
 #[test]
 pub fn learn_ternary_net_2_nodes_hill_climbing_bic_gen() {
-    let bic = BIC::new(1, 1.0);
+    let bic = BIC::new(1, Tau::Constant(1.0));
     let hl = HillClimbing::new(bic, None);
     learn_ternary_net_2_nodes_gen(hl);
 }
@@ -389,28 +389,28 @@ fn learn_mixed_discrete_net_3_nodes_gen<T: StructuralLearningAlgorithm>(sl: T) {
 
 #[test]
 pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_ll() {
-    let ll = LogLikelihood::new(1, 1.0);
+    let ll = LogLikelihood::new(1, Tau::Constant(1.0));
     let hl = HillClimbing::new(ll, None);
     learn_mixed_discrete_net_3_nodes(hl);
 }
 
 #[test]
 pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_ll_gen() {
-    let ll = LogLikelihood::new(1, 1.0);
+    let ll = LogLikelihood::new(1, Tau::Constant(1.0));
     let hl = HillClimbing::new(ll, None);
     learn_mixed_discrete_net_3_nodes_gen(hl);
 }
 
 #[test]
 pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic() {
-    let bic = BIC::new(1, 1.0);
+    let bic = BIC::new(1, Tau::Constant(1.0));
     let hl = HillClimbing::new(bic, None);
     learn_mixed_discrete_net_3_nodes(hl);
 }
 
 #[test]
 pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic_gen() {
-    let bic = BIC::new(1, 1.0);
+    let bic = BIC::new(1, Tau::Constant(1.0));
     let hl = HillClimbing::new(bic, None);
     learn_mixed_discrete_net_3_nodes_gen(hl);
 }
@@ -433,28 +433,28 @@ fn learn_mixed_discrete_net_3_nodes_1_parent_constraint_gen<T: StructuralLearnin
 
 #[test]
 pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_ll_1_parent_constraint() {
-    let ll = LogLikelihood::new(1, 1.0);
+    let ll = LogLikelihood::new(1, Tau::Constant(1.0));
     let hl = HillClimbing::new(ll, Some(1));
     learn_mixed_discrete_net_3_nodes_1_parent_constraint(hl);
 }
 
 #[test]
 pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_ll_1_parent_constraint_gen() {
-    let ll = LogLikelihood::new(1, 1.0);
+    let ll = LogLikelihood::new(1, Tau::Constant(1.0));
     let hl = HillClimbing::new(ll, Some(1));
     learn_mixed_discrete_net_3_nodes_1_parent_constraint_gen(hl);
 }
 
 #[test]
 pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic_1_parent_constraint() {
-    let bic = BIC::new(1, 1.0);
+    let bic = BIC::new(1, Tau::Constant(1.0));
     let hl = HillClimbing::new(bic, Some(1));
     learn_mixed_discrete_net_3_nodes_1_parent_constraint(hl);
 }
 
 #[test]
 pub fn learn_mixed_discrete_net_3_nodes_hill_climbing_bic_1_parent_constraint_gen() {
-    let bic = BIC::new(1, 1.0);
+    let bic = BIC::new(1, Tau::Constant(1.0));
     let hl = HillClimbing::new(bic, Some(1));
     learn_mixed_discrete_net_3_nodes_1_parent_constraint_gen(hl);
 }

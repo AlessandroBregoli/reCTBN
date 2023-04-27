@@ -5,7 +5,10 @@ use std::collections::BTreeSet;
 use ndarray::prelude::*;
 use statrs::function::gamma;
 
-use crate::{parameter_learning, params, process, tools};
+use crate::{
+    parameter_learning::{self, Tau},
+    params, process, tools,
+};
 use log::debug;
 
 /// It defines the required methods for a decomposable ScoreFunction functor over a `NetworkProcess`
@@ -36,7 +39,7 @@ pub trait ScoreFunction: Sync {
 /// LogLikelihood for a `NetworkProcess`
 pub struct LogLikelihood {
     alpha: usize,
-    tau: f64,
+    tau: Tau,
 }
 
 impl LogLikelihood {
@@ -46,10 +49,12 @@ impl LogLikelihood {
     ///
     /// * `alpha`: pseudo count (immaginary  number of transitions)
     /// * `tau`: pseudo residence time (immaginary residence time)
-    pub fn new(alpha: usize, tau: f64) -> LogLikelihood {
+    pub fn new(alpha: usize, tau: Tau) -> LogLikelihood {
         //Tau must be >=0.0
-        if tau < 0.0 {
-            panic!("tau must be >=0.0");
+        if let Tau::Constant(tau) = tau {
+            if tau < 0.0 {
+                panic!("tau must be >=0.0");
+            }
         }
         LogLikelihood { alpha, tau }
     }
@@ -75,17 +80,29 @@ impl LogLikelihood {
                 //Scale alpha accordingly to the size of the parent set
                 let alpha = self.alpha as f64 / M.shape()[0] as f64;
                 //Scale tau accordingly to the size of the parent set
-                let tau = self.tau / M.shape()[0] as f64;
+                let tau: Array1<f64> = match self.tau {
+                    Tau::Constant(tau) => {
+                        let tau = tau as f64 / T.shape()[0] as f64;
+                        Array1::from_iter((0..T.shape()[1]).map(|_| tau))
+                    }
+                    Tau::Adaptive => {
+                        T.sum_axis(Axis(0))
+                            / M.sum_axis(Axis(0)).sum_axis(Axis(1)).mapv(|x| x as f64)
+                            / T.shape()[0] as f64
+                    }
+                };
 
                 //Compute the log likelihood for q
                 let log_ll_q: f64 = M
                     .sum_axis(Axis(2))
                     .iter()
                     .zip(T.iter())
-                    .map(|(m, t)| {
-                        gamma::ln_gamma(alpha + *m as f64 + 1.0) + (alpha + 1.0) * f64::ln(tau)
+                    .enumerate()
+                    .map(|(idx, (m, t))| {
+                        gamma::ln_gamma(alpha + *m as f64 + 1.0)
+                            + (alpha + 1.0) * f64::ln(tau[idx % tau.shape()[0]])
                             - gamma::ln_gamma(alpha + 1.0)
-                            - (alpha + *m as f64 + 1.0) * f64::ln(tau + t)
+                            - (alpha + *m as f64 + 1.0) * f64::ln(tau[idx % tau.shape()[0]] + t)
                     })
                     .sum();
 
@@ -144,7 +161,7 @@ impl BIC {
     ///
     /// * `alpha`: pseudo count (immaginary  number of transitions)
     /// * `tau`: pseudo residence time (immaginary residence time)
-    pub fn new(alpha: usize, tau: f64) -> BIC {
+    pub fn new(alpha: usize, tau: Tau) -> BIC {
         BIC {
             ll: LogLikelihood::new(alpha, tau),
         }

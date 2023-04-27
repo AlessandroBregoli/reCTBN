@@ -350,17 +350,9 @@ impl ParameterLearning for BayesianApproach {
                 Array1::from_iter((0..T.shape()[1]).map(|_| tau))
             }
             Tau::Adaptive => {
-                let mle = MLE {};
-                let params = mle.fit(net, dataset, node, Some(BTreeSet::new()));
-                match params {
-                    Params::DiscreteStatesContinousTime(params) => params
-                        .get_cim()
-                        .as_ref()
-                        .unwrap()
-                        .index_axis(Axis(0), 0)
-                        .into_diag()
-                        .mapv(|x| -1.0 / x),
-                }
+                T.sum_axis(Axis(0))
+                    / M.sum_axis(Axis(0)).sum_axis(Axis(1)).mapv(|x| x as f64)
+                    / T.shape()[0] as f64
             }
         };
 
