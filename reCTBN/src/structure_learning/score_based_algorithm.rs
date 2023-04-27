@@ -32,6 +32,7 @@ use rayon::prelude::ParallelExtend;
 /// use reCTBN::structure_learning::StructuralLearningAlgorithm;
 /// use reCTBN::structure_learning::score_based_algorithm::*;
 /// use reCTBN::structure_learning::score_function::*;
+/// use reCTBN::parameter_learning::Tau;
 /// #
 /// # // Create the domain for a discrete node
 /// # let mut domain = BTreeSet::new();
@@ -177,7 +178,7 @@ use rayon::prelude::ParallelExtend;
 /// # let data = trajectory_generator(&net, 300, 30.0, Some(4164901764658873));
 ///
 /// // Initialize the BIC score function
-/// let bic = BIC::new(1, 0.1);
+/// let bic = BIC::new(1, Tau::Constant(0.1));
 ///
 /// //Initialize HC
 /// let hc = HillClimbing::new(bic, None);

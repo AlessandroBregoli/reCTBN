@@ -294,7 +294,7 @@ impl ParameterLearning for MLE {
 ///  let data = trajectory_generator(&net, 100, 100.0, Some(6347747169756259));
 ///
 /// //Initialize the `struct BayesianApproach`
-///  let pl = BayesianApproach{alpha: 1, tau: 1.0};
+///  let pl = BayesianApproach{alpha: 1, tau: Tau::Constant(1.0)};
 ///
 ///  // Fit the parameters for X2
 ///  let p = match pl.fit(&net, &data, X2, None) {

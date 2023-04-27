@@ -97,7 +97,7 @@ impl<'a, P: ParameterLearning> Cache<'a, P> {
 /// # use reCTBN::tools::trajectory_generator;
 /// # use reCTBN::process::NetworkProcess;
 /// # use reCTBN::process::ctbn::CtbnNetwork;
-/// use reCTBN::parameter_learning::BayesianApproach;
+/// use reCTBN::parameter_learning::{BayesianApproach, Tau};
 /// use reCTBN::structure_learning::StructuralLearningAlgorithm;
 /// use reCTBN::structure_learning::hypothesis_test::{F, ChiSquare};
 /// use reCTBN::structure_learning::constraint_based_algorithm::CTPC;
@@ -250,7 +250,7 @@ impl<'a, P: ParameterLearning> Cache<'a, P> {
 /// let f = F::new(1e-6);
 /// let chi_sq = ChiSquare::new(1e-4);
 /// // Use the bayesian approach to learn the parameters
-/// let parameter_learning = BayesianApproach { alpha: 1, tau:1.0 };
+/// let parameter_learning = BayesianApproach { alpha: 1, tau: Tau::Constant(1.0) };
 ///
 /// //Initialize CTPC
 /// let ctpc = CTPC::new(parameter_learning, f, chi_sq);
