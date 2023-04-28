@@ -318,6 +318,7 @@ pub struct BayesianApproach {
     pub tau: Tau,
 }
 
+#[derive(Copy, Clone)]
 pub enum Tau {
     Constant(f64),
     Adaptive,
