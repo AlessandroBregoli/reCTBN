@@ -128,7 +128,7 @@ impl MonteCarloReward {
             seed,
         }
     }
-    fn evaluate_state_mc<N: crate::process::NetworkProcess, R: super::RewardFunction>(
+    pub fn evaluate_state_mc<N: crate::process::NetworkProcess, R: super::RewardFunction>(
         &self,
         network_process: &N,
         reward_function: &R,
