@@ -128,6 +128,50 @@ impl MonteCarloReward {
             seed,
         }
     }
+    pub fn evaluate_state_space_mc<N: process::NetworkProcess, R: super::RewardFunction>(
+        &self,
+        network_process: &N,
+        reward_function: &R,
+        return_samples: bool,
+    ) -> HashMap<process::NetworkProcessState, (f64, Option<Vec<f64>>)> {
+        // Domain size of each variable in the `NetworkProcess`
+        let variables_domain: Vec<Vec<params::StateType>> = network_process
+            .get_node_indices()
+            .map(|x| match network_process.get_node(x) {
+                params::Params::DiscreteStatesContinousTime(x) => (0..x
+                    .get_reserved_space_as_parent())
+                    .map(|s| params::StateType::Discrete(s))
+                    .collect(),
+            })
+            .collect();
+
+        // Number of possible configuration of the `NetworkProcess`
+        let n_states: usize = variables_domain.iter().map(|x| x.len()).product();
+
+        // Compute the expected reward for each possible configuration of the `NetworkProcess`
+        (0..n_states)
+            .into_par_iter()
+            .map(|s| {
+                let state: process::NetworkProcessState = variables_domain
+                    .iter()
+                    .fold((s, vec![]), |mut acc, x| {
+                        let idx_s = acc.0 % x.len();
+                        acc.1.push(x[idx_s].clone());
+                        acc.0 = acc.0 / x.len();
+                        acc
+                    })
+                    .1;
+
+                let r = self.evaluate_state_mc(
+                    network_process,
+                    reward_function,
+                    &state,
+                    return_samples,
+                );
+                (state, r)
+            })
+            .collect()
+    }
     pub fn evaluate_state_mc<N: crate::process::NetworkProcess, R: super::RewardFunction>(
         &self,
         network_process: &N,
@@ -209,8 +253,8 @@ impl MonteCarloReward {
                         state, i, expected_value
                     );
                     let return_samplaes_vec = match return_samples {
-                        False => None,
-                        True => Some(return_samples_vec),
+                        true => Some(return_samples_vec),
+                        false => None,
                     };
                     return (expected_value, return_samplaes_vec);
                 }
@@ -223,53 +267,14 @@ impl MonteCarloReward {
         );
 
         let return_samplaes_vec = match return_samples {
-            False => None,
-            True => Some(return_samples_vec),
+            false => None,
+            true => Some(return_samples_vec),
         };
         (expected_value, return_samplaes_vec)
     }
 }
 
 impl RewardEvaluation for MonteCarloReward {
-    fn evaluate_state_space<N: process::NetworkProcess, R: super::RewardFunction>(
-        &self,
-        network_process: &N,
-        reward_function: &R,
-    ) -> HashMap<process::NetworkProcessState, f64> {
-        // Domain size of each variable in the `NetworkProcess`
-        let variables_domain: Vec<Vec<params::StateType>> = network_process
-            .get_node_indices()
-            .map(|x| match network_process.get_node(x) {
-                params::Params::DiscreteStatesContinousTime(x) => (0..x
-                    .get_reserved_space_as_parent())
-                    .map(|s| params::StateType::Discrete(s))
-                    .collect(),
-            })
-            .collect();
-
-        // Number of possible configuration of the `NetworkProcess`
-        let n_states: usize = variables_domain.iter().map(|x| x.len()).product();
-
-        // Compute the expected reward for each possible configuration of the `NetworkProcess`
-        (0..n_states)
-            .into_par_iter()
-            .map(|s| {
-                let state: process::NetworkProcessState = variables_domain
-                    .iter()
-                    .fold((s, vec![]), |mut acc, x| {
-                        let idx_s = acc.0 % x.len();
-                        acc.1.push(x[idx_s].clone());
-                        acc.0 = acc.0 / x.len();
-                        acc
-                    })
-                    .1;
-
-                let r = self.evaluate_state(network_process, reward_function, &state);
-                (state, r)
-            })
-            .collect()
-    }
-
     fn evaluate_state<N: process::NetworkProcess, R: super::RewardFunction>(
         &self,
         network_process: &N,
@@ -278,6 +283,15 @@ impl RewardEvaluation for MonteCarloReward {
     ) -> f64 {
         self.evaluate_state_mc(network_process, reward_function, state, false)
             .0
+    }
+
+    fn evaluate_state_space<N: process::NetworkProcess, R: super::RewardFunction>(
+        &self,
+        network_process: &N,
+        reward_function: &R,
+    ) -> HashMap<process::NetworkProcessState, f64> {
+        let ret = self.evaluate_state_space_mc(network_process, reward_function, false);
+        ret.into_iter().map(|(key, val)| (key, val.0)).collect()
     }
 }
 
