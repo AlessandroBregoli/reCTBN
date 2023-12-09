@@ -19,3 +19,8 @@ log = "~0.4"
 
 [dev-dependencies]
 approx = { package = "approx", version = "~0.5" }
+criterion = "0.4.*"
+
+[[bench]]
+name = "structure_learning"
+harness = false
