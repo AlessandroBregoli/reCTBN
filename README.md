@@ -10,6 +10,10 @@
 
 A Continuous Time Bayesian Networks Library written in Rust. 🦀
 
+## Contribute
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) to know how to report bugs, propose
+features, merge requests or other forms of contribution! 😎🚀
 
 
 ## License

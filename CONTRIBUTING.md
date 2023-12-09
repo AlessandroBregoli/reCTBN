@@ -17,11 +17,6 @@ cargo build
 
 That's all! ☕️
 
-## Contribute
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) to know how to report bugs, propose
-features, merge requests or other forms of contribution! 😎🚀
-
 ## Testing & Linting
 
 To launch **tests**:
