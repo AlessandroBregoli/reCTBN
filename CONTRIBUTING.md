@@ -3,6 +3,61 @@
 Thank you for considering contributing. All contributions are welcome and
 appreciated!
 
+## Develop
+
+**Prerequisites:**
+
++ `rust`
+
+_Prepare_ the development environment:
+
+```sh
+cargo build
+```
+
+That's all! ☕️
+
+## Contribute
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) to know how to report bugs, propose
+features, merge requests or other forms of contribution! 😎🚀
+
+## Testing & Linting
+
+To launch **tests**:
+
+```sh
+cargo test
+```
+
+To **lint** with `cargo check`:
+
+```sh
+cargo check --all-targets
+```
+
+Or with `clippy`:
+
+```sh
+cargo clippy --all-targets -- -A clippy::all -W clippy::correctness
+```
+
+To check the **formatting**:
+
+> **NOTE:** remove `--check` to apply the changes to the file(s).
+
+```sh
+cargo fmt --all -- --check
+```
+
+## Documentation
+
+To generate the **documentation**:
+
+```sh
+cargo rustdoc --package reCTBN --open -- --default-theme=ayu
+```
+
 ## Bug Reports
 
 > **Note:** Be sure to have censored any sensitive data before posting,

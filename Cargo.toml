@@ -1,5 +1,21 @@
-[workspace]
+[package]
+name = "reCTBN"
+version = "0.1.0"
+edition = "2021"
 
-members = [
-  "reCTBN",
-]
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ndarray = {version="~0.15", features=["approx-0_5"]}
+thiserror = "1.0.37"
+rand = "~0.8"
+bimap = "~0.6"
+enum_dispatch = "~0.3"
+statrs = "~0.16"
+rand_chacha = "~0.3"
+itertools = "~0.10"
+rayon = "~1.6"
+log = "~0.4"
+
+[dev-dependencies]
+approx = { package = "approx", version = "~0.5" }
