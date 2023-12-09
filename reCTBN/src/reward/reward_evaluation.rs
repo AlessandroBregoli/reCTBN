@@ -203,8 +203,9 @@ impl RewardEvaluation for MonteCarloReward {
                     let discount = match self.reward_criteria {
                         RewardCriteria::FiniteHorizon => self.end_time - previous.t,
                         RewardCriteria::InfiniteHorizon { discount_factor } => {
-                            std::f64::consts::E.powf(-discount_factor * previous.t)
-                                - std::f64::consts::E.powf(-discount_factor * self.end_time)
+                            (std::f64::consts::E.powf(-discount_factor * previous.t)
+                                - std::f64::consts::E.powf(-discount_factor * self.end_time))
+                                / discount_factor
                         }
                     };
                     ret += discount * r.instantaneous_reward;
@@ -213,8 +214,9 @@ impl RewardEvaluation for MonteCarloReward {
                     let discount = match self.reward_criteria {
                         RewardCriteria::FiniteHorizon => current.t - previous.t,
                         RewardCriteria::InfiniteHorizon { discount_factor } => {
-                            std::f64::consts::E.powf(-discount_factor * previous.t)
-                                - std::f64::consts::E.powf(-discount_factor * current.t)
+                            (std::f64::consts::E.powf(-discount_factor * previous.t)
+                                - std::f64::consts::E.powf(-discount_factor * current.t))
+                                / discount_factor
                         }
                     };
                     ret += discount * r.instantaneous_reward;
